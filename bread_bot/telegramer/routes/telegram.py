@@ -29,7 +29,7 @@ async def handle_message(
     logger.debug(json.loads(data))
     try:
         await MessageHandler(request_body=request_body, db=db).handle_message()
-    except:
+    except Exception:
         pass
     return 'OK'
 
