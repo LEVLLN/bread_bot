@@ -12,6 +12,7 @@ class MemberSchema(BaseModel):
 
 class ChatSchema(BaseModel):
     id: int
+    title: Optional[str] = None
     type: Optional[str] = None
 
 

@@ -10,7 +10,8 @@ class Stats(mixins.AbstractIsActiveBaseModel,
     __tablename__ = 'stats'
 
     member_id = Column(Integer, ForeignKey('members.id'))
+    chat_id = Column(BigInteger, ForeignKey('chats.chat_id'), nullable=False)
     slug = Column(String(255), nullable=False)
     count = Column(BigInteger, default=0, nullable=False)
     member = relationship('Member', back_populates='stats')
-    chat_id = Column(BigInteger, nullable=True)
+    chat = relationship('Chat', back_populates='stats')

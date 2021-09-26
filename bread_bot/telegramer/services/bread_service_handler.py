@@ -15,6 +15,7 @@ class BreadServiceHandler(BreadService):
 
     async def build_message(self) -> Optional[str]:
         member_db = await self.handle_member(member=self.message.source)
+        await self.handle_chat()
 
         if self.is_edited:
             await self.count_stats(

@@ -1,15 +1,18 @@
+import logging
 import random
 import re
 from typing import List, Union, Dict
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bread_bot.telegramer.models import Stats, Member, LocalMeme
+from bread_bot.telegramer.models import Stats, Member, LocalMeme, Chat
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema, \
     MemberSchema
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
+
+logger = logging.getLogger(__name__)
 
 
 class BreadService:
@@ -110,6 +113,33 @@ class BreadService:
                 )
             )
         return member_db
+
+    async def handle_chat(self):
+        title = self.message.chat.title \
+            if self.message.chat.title is not None \
+            else self.message.source.username
+
+        chat_db = await Chat.async_first(
+            session=self.db,
+            filter_expression=Chat.chat_id == self.chat_id,
+        )
+        if chat_db is None:
+            chat_db = await Chat.async_add(
+                db=self.db,
+                instance=Chat(
+                    name=title,
+                    chat_id=self.chat_id
+                )
+            )
+        else:
+            if chat_db.name != title:
+                chat_db.name = title
+                chat_db = await Chat.async_add(
+                    db=self.db,
+                    instance=chat_db,
+                )
+            logger.info(f'Чат {self.chat_id} обновил название на {title}')
+        return chat_db
 
     async def get_free_words(self) -> dict:
         free_words_db = await LocalMeme.get_local_meme(

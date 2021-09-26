@@ -26,7 +26,7 @@ class TelegramClient(BaseHTTPClient):
         if reply_to is not None:
             data['reply_to_message_id'] = reply_to
 
-        await self.request(
+        return await self.request(
             method='POST',
             url=f'{self.base_url}/{self.send_message_method}',
             data=data,
