@@ -1,0 +1,10 @@
+-c requirements.txt
+# codestyle
+flake8==3.9.2
+# tests
+aiosqlite==0.17.0
+coverage==5.5
+freezegun==1.1.0
+# common
+python-dateutil==2.8.2
+respx==0.17.1
