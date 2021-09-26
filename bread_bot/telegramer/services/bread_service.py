@@ -173,7 +173,7 @@ class BreadService:
         return [chat.user for chat in chats if not chat.user.is_bot]
 
     async def add_local_meme(self, meme_type: str) -> str:
-        meme_name, value = self.params.strip().split('=')
+        meme_name, value = self.params.strip().split('=', 1)
         meme_name = meme_name.lower().strip()
         local_meme = await LocalMeme.get_local_meme(
             db=self.db,

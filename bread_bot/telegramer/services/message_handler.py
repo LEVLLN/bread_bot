@@ -56,6 +56,7 @@ class MessageHandler:
                 message=random.choice(structs.ERROR_CHAT_MESSAGES),
                 reply_to=self.message.message_id,
             )
+            raise e
         else:
             if result_text is None:
                 return
