@@ -6,6 +6,7 @@ from alembic import context
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
+from bread_bot.main import settings
 from bread_bot.main.settings import APP_MODULES, APP_NAME
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -74,6 +75,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    config.set_main_option('sqlalchemy.url', settings.DATABASE_URI)
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
