@@ -113,6 +113,9 @@ COMMANDS_MAPPER = {
     'добавь привязку': 'add_local_meme_name',
     'удали привязку': 'delete_local_meme_name',
     'покажи привязки': 'show_local_meme_names',
+    'добавь подстроку': 'add_local_substring',
+    'удали подстроку': 'delete_local_substring',
+    'покажи подстроки': 'show_local_substrings',
     'добавь ответ': 'add_unknown_answer',
     'добавь триггер': 'add_local_free_word',
     'удали триггер': 'delete_local_free_word',
@@ -131,6 +134,7 @@ class StatsEnum(Enum):
 
 
 class LocalMemeTypesEnum(Enum):
-    MEME_NAMES = 'Клички участников'
+    MEME_NAMES = 'Локальные команды'
     UNKNOWN_MESSAGE = 'Фразы на отсутствующие команды'
-    FREE_WORDS = 'Фразы без ключевых слов'
+    FREE_WORDS = 'Триггеры'
+    SUBSTRING_WORDS = 'Входящие значения'

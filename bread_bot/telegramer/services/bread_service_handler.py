@@ -24,10 +24,13 @@ class BreadServiceHandler(BreadService):
             )
             return random.choice(structs.FAGGOT_EDITOR_MESSAGES)
 
-        free_words = await self.get_free_words()
+        free_word = await self.handle_free_words()
+        if free_word is not None:
+            return free_word
 
-        if self.message.text.lower() in free_words:
-            return await self.handle_free_words(free_words=free_words)
+        substring_word = await self.handle_substring_words()
+        if substring_word is not None:
+            return substring_word
 
         try:
             await self.parse_incoming_message()
@@ -178,6 +181,10 @@ class BreadServiceHandler(BreadService):
         return await self.add_local_meme(
             meme_type=LocalMemeTypesEnum.MEME_NAMES.name)
 
+    async def add_local_substring(self):
+        return await self.add_local_meme(
+            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name)
+
     async def add_local_free_word(self):
         return await self.add_local_meme(
             meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
@@ -186,6 +193,10 @@ class BreadServiceHandler(BreadService):
         return await self.delete_local_meme(
             meme_type=LocalMemeTypesEnum.MEME_NAMES.name)
 
+    async def delete_local_substring(self):
+        return await self.delete_local_meme(
+            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name)
+
     async def delete_local_free_word(self):
         return await self.delete_local_meme(
             meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
@@ -193,6 +204,10 @@ class BreadServiceHandler(BreadService):
     async def show_local_meme_names(self):
         return await self.show_local_memes(
             meme_type=LocalMemeTypesEnum.MEME_NAMES.name)
+
+    async def show_local_substrings(self):
+        return await self.show_local_memes(
+            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name)
 
     async def show_local_free_words(self):
         return await self.show_local_memes(

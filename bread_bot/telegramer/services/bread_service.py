@@ -1,7 +1,7 @@
 import logging
 import random
 import re
-from typing import List, Union, Dict
+from typing import List, Union, Dict, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -141,17 +141,6 @@ class BreadService:
             logger.info(f'Чат {self.chat_id} обновил название на {title}')
         return chat_db
 
-    async def get_free_words(self) -> dict:
-        free_words_db = await LocalMeme.get_local_meme(
-            db=self.db,
-            chat_id=self.chat_id,
-            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
-        )
-        free_words = structs.FREE_WORDS
-        if free_words_db is not None:
-            free_words.update(**free_words_db.data)
-        return free_words
-
     async def get_unknown_messages(self) -> list:
         unknown_message_db = await LocalMeme.get_local_meme(
             db=self.db,
@@ -163,13 +152,49 @@ class BreadService:
             unknown_messages.extend(unknown_message_db.data)
         return unknown_messages
 
-    async def handle_free_words(self, free_words: dict) -> str:
-        value = free_words.get(self.message.text.lower().strip(), 'пнх')
-        if value == 'f':
+    async def handle_free_words(self) -> Optional[str]:
+        free_words_db = await LocalMeme.get_local_meme(
+            db=self.db,
+            chat_id=self.chat_id,
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
+        )
+        free_words = structs.FREE_WORDS
+        if free_words_db is not None:
+            free_words.update(**free_words_db.data)
+        message_text = self.message.text.lower().strip()
+        if message_text not in free_words:
+            return None
+        value = free_words.get(message_text, 'упс!')
+        if value == 'F':
             self.reply_to_message = False
         if isinstance(value, list):
             return random.choice(value)
         return value
+
+    async def handle_substring_words(self) -> Optional[str]:
+        substring_words_db = await LocalMeme.get_local_meme(
+            db=self.db,
+            chat_id=self.chat_id,
+            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+        )
+        if substring_words_db is None:
+            return None
+        substring_words = substring_words_db.data
+        if not substring_words:
+            return None
+
+        substring_words_mask = self.composite_mask(substring_words.keys())
+        regex = f'({substring_words_mask})'
+        groups = re.findall(regex, self.message.text, re.IGNORECASE)
+        if len(groups) > 0:
+            substring_word = groups[0]
+            print(substring_word)
+            value = substring_words.get(substring_word.lower().strip(), 'упс!')
+            if isinstance(value, list):
+                return random.choice(value)
+            else:
+                return value
+        return None
 
     @staticmethod
     async def regular_phrases(
@@ -219,7 +244,7 @@ class BreadService:
                     data={meme_name: [value]}
                 )
             )
-            return 'Ура! У группы появились свои ключевые слова'
+            return f'Ура! У группы появились свои ключевые слова: {meme_type}'
 
         data = local_meme.data.copy()
 
