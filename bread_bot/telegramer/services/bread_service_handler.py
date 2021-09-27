@@ -13,14 +13,15 @@ from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
 class BreadServiceHandler(BreadService):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.member_db = None
 
     async def build_message(self) -> Optional[str]:
-        member_db = await self.handle_member(member=self.message.source)
+        self.member_db = await self.handle_member(member=self.message.source)
         await self.handle_chat()
 
         if self.is_edited:
             await self.count_stats(
-                member_db=member_db,
+                member_db=self.member_db,
                 stats_enum=StatsEnum.EDITOR,
             )
             return random.choice(structs.FAGGOT_EDITOR_MESSAGES)
@@ -37,13 +38,13 @@ class BreadServiceHandler(BreadService):
             await self.parse_incoming_message()
         except Exception:
             await self.count_stats(
-                member_db=member_db,
+                member_db=self.member_db,
                 stats_enum=StatsEnum.FLUDER,
             )
             return None
 
         await self.count_stats(
-            member_db=member_db,
+            member_db=self.member_db,
             stats_enum=StatsEnum.TOTAL_CALL_SLUG,
         )
 
@@ -219,7 +220,10 @@ class BreadServiceHandler(BreadService):
             meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
         )
 
-    @staticmethod
-    async def get_quote() -> str:
+    async def get_quote(self) -> str:
         quote = await ForismaticClient().get_quote_text()
+        await self.count_stats(
+            member_db=self.member_db,
+            stats_enum=StatsEnum.QUOTER,
+        )
         return f'{quote.text}\n\n© {quote.author}'

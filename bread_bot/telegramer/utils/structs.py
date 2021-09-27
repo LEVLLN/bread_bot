@@ -133,6 +133,7 @@ class StatsEnum(Enum):
     FAGGOTER = 'Сколько раз стал пидором'
     EDITOR = 'Сколько раз редактировал сообщения'
     FLUDER = 'Сколько раз написал сообщение'
+    QUOTER = 'Сколько раз просил цитату'
 
 
 class LocalMemeTypesEnum(Enum):
