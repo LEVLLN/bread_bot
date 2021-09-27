@@ -203,7 +203,7 @@ class CRUDMixin(object):
                 await db.rollback()
                 raise exc
             else:
-                logger.info('Созданы/Обновлены объекты %s: %s',
+                logger.info('Созданы/Обновлён объекты %s: %s',
                             cls.__name__, instances)
 
     @classmethod
@@ -226,7 +226,7 @@ class CRUDMixin(object):
                 await db.refresh(instance)
             except Exception:
                 logger.debug(f'Невозможно обновить объект: {instance}')
-            logger.info(f'Создан {cls.__name__}: {instance}')
+            logger.info(f'Создан/Обновлён {cls.__name__}: {instance}')
             return instance
 
     @classmethod
@@ -266,7 +266,7 @@ class CRUDMixin(object):
             db.rollback()
             raise exc
         else:
-            logger.info(f'Создан {cls.__name__}: {instance}')
+            logger.info(f'Создан/Обновлён {cls.__name__}: {instance}')
             return instance
 
     @classmethod
