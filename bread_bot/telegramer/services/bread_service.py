@@ -131,14 +131,15 @@ class BreadService:
                     chat_id=self.chat_id
                 )
             )
-        else:
-            if chat_db.name != title:
-                chat_db.name = title
-                chat_db = await Chat.async_add(
-                    db=self.db,
-                    instance=chat_db,
-                )
+        elif chat_db.name != title:
+            chat_db.name = title
+            chat_db = await Chat.async_add(
+                db=self.db,
+                instance=chat_db,
+            )
             logger.info(f'Чат {self.chat_id} обновил название на {title}')
+        else:
+            return chat_db
         return chat_db
 
     async def get_unknown_messages(self) -> list:
