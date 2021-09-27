@@ -36,13 +36,11 @@ def upgrade():
                                 sa.PrimaryKeyConstraint('id'),
                                 sa.UniqueConstraint('chat_id')
                                 )
-    # Migrate existing farm info to the new farminfo table.
-    # Request all of the old info.
+
     conn = op.get_bind()
     res = conn.execute("select distinct chat_id from stats")
     results = res.fetchall()
 
-    # Prepare an old_info object to insert into the new farminfo table.
     old_info = [{
         'chat_id': r[0],
         'name': 'UNKNOWN',
@@ -51,7 +49,6 @@ def upgrade():
         'created_at': datetime.datetime.now(),
     } for r in results]
 
-    # Insert old_info into new farminfo table.
     op.bulk_insert(new_table, old_info)
 
     op.create_foreign_key(None, 'local_memes', 'chats', ['chat_id'],
