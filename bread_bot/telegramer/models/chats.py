@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger
+from sqlalchemy import Column, String, BigInteger, Boolean
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
@@ -11,6 +11,8 @@ class Chat(mixins.AbstractIsActiveBaseModel,
 
     chat_id = Column(BigInteger, nullable=False, unique=True)
     name = Column(String(255), nullable=True)
+    is_edited_trigger = Column(Boolean, default=False, nullable=False)
+
     stats = relationship(
         'Stats',
         back_populates='chat',

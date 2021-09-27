@@ -19,6 +19,7 @@ class SendMessageSchema(BaseModel):
 class ChatSchema(BaseModel):
     chat_id: int
     name: str
+    is_edited_trigger: bool
 
     class Config:
         orm_mode = True

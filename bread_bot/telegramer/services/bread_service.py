@@ -138,8 +138,6 @@ class BreadService:
                 instance=chat_db,
             )
             logger.info(f'Чат {self.chat_id} обновил название на {title}')
-        else:
-            return chat_db
         return chat_db
 
     async def get_unknown_messages(self) -> list:

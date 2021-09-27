@@ -122,6 +122,7 @@ COMMANDS_MAPPER = {
     'цит': 'get_quote',
     'понедельник': 'get_quote',
     'обнуляй': 'get_quote',
+    'редактирование': 'set_edited_trigger',
 }
 
 COMMANDS_COLLECTION = list(OTHER_DIALOGS.keys()) + \

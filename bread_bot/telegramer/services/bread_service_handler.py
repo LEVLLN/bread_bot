@@ -2,7 +2,7 @@ import random
 from collections import defaultdict
 from typing import Optional
 
-from bread_bot.telegramer.models import Stats, LocalMeme
+from bread_bot.telegramer.models import Stats, LocalMeme, Chat
 from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
@@ -14,17 +14,21 @@ class BreadServiceHandler(BreadService):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.member_db = None
+        self.chat_db = None
 
     async def build_message(self) -> Optional[str]:
         self.member_db = await self.handle_member(member=self.message.source)
-        await self.handle_chat()
+        self.chat_db = await self.handle_chat()
 
         if self.is_edited:
-            await self.count_stats(
-                member_db=self.member_db,
-                stats_enum=StatsEnum.EDITOR,
-            )
-            return random.choice(structs.FAGGOT_EDITOR_MESSAGES)
+            if self.chat_db.is_edited_trigger:
+                await self.count_stats(
+                    member_db=self.member_db,
+                    stats_enum=StatsEnum.EDITOR,
+                )
+                return random.choice(structs.FAGGOT_EDITOR_MESSAGES)
+            else:
+                return None
 
         free_word = await self.handle_free_words()
         if free_word is not None:
@@ -112,10 +116,6 @@ class BreadServiceHandler(BreadService):
         return f'Топ {self.params}:\n{result}'
 
     @staticmethod
-    async def set_null() -> str:
-        return '*Тут скоро будут пацанские цитаты или картиночки с волками*'
-
-    @staticmethod
     async def wednesday() -> str:
         return '*пикча жабы* Это среда мои чуваки'
 
@@ -146,7 +146,7 @@ class BreadServiceHandler(BreadService):
             with open('About.md', 'r', encoding='utf-8') as file:
                 text = file.read()
         except Exception:
-            return '...нет нихуя'
+            return '... не найдено'
         else:
             return text
 
@@ -159,9 +159,9 @@ class BreadServiceHandler(BreadService):
     async def show_stats(self) -> str:
         statistics = defaultdict(str)
         for stat in await Stats.async_filter(
-            session=self.db,
-            filter_expression=Stats.chat_id == self.chat_id,
-            select_in_load=Stats.member,
+                session=self.db,
+                filter_expression=Stats.chat_id == self.chat_id,
+                select_in_load=Stats.member,
         ):
             member = MemberSchema(
                 first_name=stat.member.first_name,
@@ -227,3 +227,12 @@ class BreadServiceHandler(BreadService):
             stats_enum=StatsEnum.QUOTER,
         )
         return f'{quote.text}\n\n© {quote.author}'
+
+    async def set_edited_trigger(self):
+        self.chat_db.is_edited_trigger = not self.chat_db.is_edited_trigger
+        self.chat_db = await Chat.async_add(
+            db=self.db,
+            instance=self.chat_db,
+        )
+        message = 'Включено' if self.chat_db.is_edited_trigger else 'Выключено'
+        return f'{message} реагирование на редактирование сообщений'
