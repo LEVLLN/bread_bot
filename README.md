@@ -1,7 +1,7 @@
-# TEMPLATE PROJECT
+# BREAD BOT
 ## Author: Lev Kudryashov
-Данный проект является шаблоном для микросервиса.
-Шаблон выполнен на стэке:
+Данный проект является телеграм-ботом для локальных чатов.
+Бот выполнен на стеке:
 - python version 3.9.4. 
 - SQLAlchemy для взаимодействия с БД
 - Alembic для реализации миграций в БД
@@ -86,7 +86,7 @@ APP_MODULES = [
 # Web
 FastAPI использует в качестве веб-сервера uvicorn. Есть несколько вариантов запуска приложения:
 ```commandline
-uvicorn test_project.main.webserver:app
+uvicorn bread_bot.main.webserver:app
 или
 python server.py
 ```
@@ -95,14 +95,6 @@ python server.py
 Не секрет, что fastapi умеет автодокументировать в swagger, redoc, openapi.json все маршруты и точки входа. Поэтому мой совет как разработчика тщательно описывать схемы Pydantic для удобства и читабельности проекта. Желательно с кейсами использования. Все можно найти в официальной спецификации фреймворка.
 # База данных и модели
 Реализован CRUDMixin для оперирования простыми командами как get, filter, first, create, update, итд итп. Расширять данную модель можно до бесконечности
-
-# Я хочу доработать в данном темплейте. TODO:
-- AIOTASKS: Celery framework >=5.1 with async python, celery beat [Приоритет]
-- STATICFILES: Add work with static-files with NGINX
-- CACHE: Redis cache for web-sessions and default cache engine for app [Приоритет]
-- Фабрика HTTPClient со схемой-валидатором запросов и ответов, телеметрией и логгированием в json [Приоритет]
-- DEPLOY: Check multi-replica mode on of app
-- DEPLOY: Dockerfile and docker-compose.yml for project
 
 # Зависимости
 Если Вы хотите добавить/удалить/изменить зависимость, то необходимо придерживаться правил:
@@ -118,7 +110,7 @@ pip-compile -r requirements/dev.in
 И можно спокойно коммитить. 
 
 # QUICK START
-Для начала везде, где Вы видите слово `test_project` - тут может оказаться наименование вашего микросервиса. Ну логично, да?
+Для начала везде, где Вы видите слово `bread_bot` - тут может оказаться наименование вашего микросервиса. Ну логично, да?
 Необходимо установить все зависимости в проекте:
 ```commandline
 pip install -r requirements/requirements.txt
@@ -126,7 +118,7 @@ pip install -r requirements/requirements.txt
 Представьте на секунду, что вы уже поставили PostgreSQL. И теперь нужно создать БД с пользователем и паролем:
 ```postgresql
 CREATE DATABASE bread_bot;
-CREATE ROLE bread_bot with LOGIN PASSWORD 'test_project_password';
+CREATE ROLE bread_bot with LOGIN PASSWORD 'my_password';
 GRANT ALL PRIVILEGES ON DATABASE bread_bot TO bread_bot;
 ```
 Миграция схемы баз данных
@@ -143,7 +135,7 @@ alembic revision --autogenerate -m 'my migration message'
 ```
 Запускаем локально веб-сервер
 ```commandline
-uvicorn test_project.main.webserver:app --reload
+uvicorn bread_bot.main.webserver:app --reload
 или так:
 python server.py
 ```
@@ -175,4 +167,4 @@ coverage erase
 ```commandline
 coverage erase && coverage run -m unittest && coverage html
 ```
-И ... можно переименовывать папку `my_app` на название вашей бизнес-логики, например `orders`/`tariffs`/etc и писать бизнес-логику :)
+Функциональность бота описана в [About.md](About.md)
