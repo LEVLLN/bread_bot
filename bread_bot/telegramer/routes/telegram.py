@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.requests import Request
 
-from bread_bot.telegramer.models import LocalMeme, Chat
+from bread_bot.telegramer.models import LocalMeme, Chat, Member
 from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
-    SendMessageSchema, ChatSchema
+    SendMessageSchema, ChatSchema, MemberDBSchema
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
 from bread_bot.telegramer.services.message_handler import MessageHandler
 from bread_bot.telegramer.services.telegram_client import TelegramClient
@@ -43,7 +43,6 @@ async def set_local_meme(
         request_body: LocalMemeSchema,
         db: AsyncSession = Depends(get_async_session)
 ):
-
     local_meme = await LocalMeme.async_first(
         session=db,
         filter_expression=(LocalMeme.type == request_body.type) &
@@ -81,3 +80,30 @@ async def send_message_to_chat(
 @router.get('/chats', response_model=List[ChatSchema])
 async def get_chats(db: AsyncSession = Depends(get_async_session)):
     return await Chat.async_all(db)
+
+
+@router.get('/members', response_model=List[MemberDBSchema])
+async def get_members(db: AsyncSession = Depends(get_async_session)):
+    return await Member.async_all(db)
+
+
+@router.get('/members/{username}', response_model=MemberDBSchema)
+async def get_members(username: str,
+                      db: AsyncSession = Depends(get_async_session)):
+    member = await Member.async_first(db, Member.username == username)
+    if member is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Пользователь не найден'
+        )
+    return member
+
+
+@router.delete('/members/{username}')
+async def get_members(username: str,
+                      db: AsyncSession = Depends(get_async_session)):
+    return {
+        'deleted': await Member.async_delete(
+            session=db,
+            filter_expression=Member.username == username)
+    }

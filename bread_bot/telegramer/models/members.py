@@ -14,4 +14,6 @@ class Member(mixins.AbstractIsActiveBaseModel,
     first_name = Column(String(255))
     last_name = Column(String(255))
     is_bot = Column(Boolean, default=False)
-    stats = relationship('Stats', back_populates="member")
+    stats = relationship('Stats',
+                         back_populates='member',
+                         cascade='all, delete-orphan')

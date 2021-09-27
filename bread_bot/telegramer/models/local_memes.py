@@ -12,10 +12,15 @@ class LocalMeme(mixins.AbstractIsActiveBaseModel,
                 mixins.CRUDMixin):
     __tablename__ = 'local_memes'
 
-    chat_id = Column(BigInteger, ForeignKey('chats.chat_id'), nullable=False)
+    chat_id = Column(
+        BigInteger,
+        ForeignKey('chats.chat_id', ondelete='CASCADE'),
+        nullable=False)
     type = Column(String(255), nullable=False)
     data = Column(JSON, default=JSON.NULL, nullable=True)
-    chat = relationship('Chat', back_populates='local_memes')
+    chat = relationship('Chat',
+                        back_populates='local_memes',
+                        cascade='all, delete-orphan')
 
     @classmethod
     async def get_local_meme(

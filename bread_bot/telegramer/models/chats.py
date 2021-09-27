@@ -11,5 +11,9 @@ class Chat(mixins.AbstractIsActiveBaseModel,
 
     chat_id = Column(BigInteger, nullable=False, unique=True)
     name = Column(String(255), nullable=True)
-    stats = relationship('Stats', back_populates="chat")
-    local_memes = relationship('LocalMeme', back_populates="chat")
+    stats = relationship('Stats',
+                         back_populates='chat',
+                         cascade='all, delete-orphan')
+    local_memes = relationship('LocalMeme',
+                               back_populates='chat',
+                               cascade='all, delete-orphan')

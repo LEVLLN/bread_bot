@@ -1,7 +1,8 @@
 import datetime
 import logging
 
-from sqlalchemy import Column, Integer, DateTime, inspect, Boolean, select
+from sqlalchemy import Column, Integer, DateTime, inspect, Boolean, select, \
+    delete
 from sqlalchemy.engine import ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, declared_attr, selectinload
@@ -91,6 +92,35 @@ class CRUDMixin(object):
         logger.debug(expression)
         result = await session.execute(expression)
         return result.scalars()
+
+    @classmethod
+    async def async_delete(
+            cls,
+            session: AsyncSession,
+            filter_expression,
+    ) -> bool:
+        """
+        Удаление объектов
+
+        :param session: Сессия Базы Данных
+        :param filter_expression: Выражение для where
+        """
+        expression = delete(cls)
+        if filter_expression is not None:
+            expression = expression.where(
+                filter_expression
+            )
+        logger.debug(expression)
+
+        result = await session.execute(expression)
+        try:
+            await session.commit()
+        except Exception as exc:
+            await session.rollback()
+            raise exc
+        else:
+            await session.flush()
+        return result.rowcount > 0
 
     @classmethod
     async def async_filter(
