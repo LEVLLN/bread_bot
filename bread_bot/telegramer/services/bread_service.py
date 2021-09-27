@@ -188,7 +188,6 @@ class BreadService:
         groups = re.findall(regex, self.message.text, re.IGNORECASE)
         if len(groups) > 0:
             substring_word = groups[0]
-            print(substring_word)
             value = substring_words.get(substring_word.lower().strip(), 'упс!')
             if isinstance(value, list):
                 return random.choice(value)
