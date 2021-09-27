@@ -5,6 +5,7 @@ from typing import Optional
 from bread_bot.telegramer.models import Stats, LocalMeme
 from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
 from bread_bot.telegramer.services.bread_service import BreadService
+from bread_bot.telegramer.services.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
 
@@ -217,3 +218,8 @@ class BreadServiceHandler(BreadService):
         return await self.add_list_value(
             meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
         )
+
+    @staticmethod
+    async def get_quote() -> str:
+        quote = await ForismaticClient().get_quote_text()
+        return f'{quote.text}\n\n© {quote.author}'

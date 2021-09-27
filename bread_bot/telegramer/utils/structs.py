@@ -90,8 +90,6 @@ COMMANDS_MAPPER = {
     'кто': 'who_is',
     'у кого': 'who_have_is',
     'топ': 'top',
-    'обнуляй': 'set_null',
-    'понедельник': 'set_null',
     'среда': 'wednesday',
     'четверг': 'thursday',
     'вторник': 'tuesday',
@@ -120,6 +118,10 @@ COMMANDS_MAPPER = {
     'добавь триггер': 'add_local_free_word',
     'удали триггер': 'delete_local_free_word',
     'покажи триггеры': 'show_local_free_words',
+    'цитата': 'get_quote',
+    'цит': 'get_quote',
+    'понедельник': 'get_quote',
+    'обнуляй': 'get_quote',
 }
 
 COMMANDS_COLLECTION = list(OTHER_DIALOGS.keys()) + \
