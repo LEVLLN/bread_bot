@@ -35,12 +35,12 @@ class BreadServiceHandler(BreadService):
             return free_word
 
         substring_word = await self.handle_substring_words()
-        if substring_word is not None:
-            return substring_word
 
         try:
             await self.parse_incoming_message()
         except Exception:
+            if substring_word is not None:
+                return substring_word
             await self.count_stats(
                 member_db=self.member_db,
                 stats_enum=StatsEnum.FLUDER,
@@ -73,6 +73,8 @@ class BreadServiceHandler(BreadService):
             method = getattr(self, structs.COMMANDS_MAPPER[self.command])
             return await method()
 
+        if substring_word is not None:
+            return substring_word
         return random.choice(unknown_messages)
 
     async def who_is(self) -> str:
