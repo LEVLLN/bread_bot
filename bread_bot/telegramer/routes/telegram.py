@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.requests import Request
 
+from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.telegramer.models import LocalMeme, Chat, Member
 from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
     SendMessageSchema, ChatSchema, MemberDBSchema
@@ -38,7 +39,8 @@ async def handle_message(
     return 'OK'
 
 
-@router.post('/set_local_meme')
+@router.post('/set_local_meme',
+             dependencies=[Depends(get_current_active_admin_user)])
 async def set_local_meme(
         request_body: LocalMemeSchema,
         db: AsyncSession = Depends(get_async_session)
@@ -59,7 +61,8 @@ async def set_local_meme(
     return 'OK'
 
 
-@router.post('/send_message')
+@router.post('/send_message',
+             dependencies=[Depends(get_current_active_admin_user)])
 async def send_message_to_chat(
         message: SendMessageSchema,
 ):
@@ -77,17 +80,23 @@ async def send_message_to_chat(
     return 'OK'
 
 
-@router.get('/chats', response_model=List[ChatSchema])
+@router.get('/chats',
+            response_model=List[ChatSchema],
+            dependencies=[Depends(get_current_active_admin_user)])
 async def get_chats(db: AsyncSession = Depends(get_async_session)):
     return await Chat.async_all(db)
 
 
-@router.get('/members', response_model=List[MemberDBSchema])
+@router.get('/members',
+            response_model=List[MemberDBSchema],
+            dependencies=[Depends(get_current_active_admin_user)])
 async def get_members(db: AsyncSession = Depends(get_async_session)):
     return await Member.async_all(db)
 
 
-@router.get('/members/{username}', response_model=MemberDBSchema)
+@router.get('/members/{username}',
+            response_model=MemberDBSchema,
+            dependencies=[Depends(get_current_active_admin_user)])
 async def get_members(username: str,
                       db: AsyncSession = Depends(get_async_session)):
     member = await Member.async_first(db, Member.username == username)
@@ -99,7 +108,8 @@ async def get_members(username: str,
     return member
 
 
-@router.delete('/members/{username}')
+@router.delete('/members/{username}',
+               dependencies=[Depends(get_current_active_admin_user)])
 async def get_members(username: str,
                       db: AsyncSession = Depends(get_async_session)):
     return {

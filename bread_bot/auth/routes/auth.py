@@ -9,7 +9,7 @@ from bread_bot.auth.methods.auth_methods import (
     get_password_hash,
     authenticate_user,
     create_access_token,
-    get_current_active_user,
+    get_current_active_admin_user,
 )
 from bread_bot.auth.models import User
 from bread_bot.auth.schemas.auth import TokenSchema, \
@@ -53,7 +53,7 @@ async def create_user(user_schema: UserCreateSchema,
 
 @router.get('/users',
             response_model=list[UserInfoSchema],
-            dependencies=[Depends(get_current_active_user)])
+            dependencies=[Depends(get_current_active_admin_user)])
 async def get_users(db: AsyncSession = Depends(get_async_session),
                     offset_params: OffsetQueryParams = Depends()):
     """

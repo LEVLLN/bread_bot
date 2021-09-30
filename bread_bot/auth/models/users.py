@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, Boolean
 from sqlalchemy.orm import Session
 
 from bread_bot.main.database import mixins
@@ -13,6 +13,7 @@ class User(mixins.AbstractIsActiveBaseModel,
     surname = Column(String(255))
     email = Column(String(255), nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
+    is_admin = Column(Boolean, nullable=False, default=False)
 
     @classmethod
     def get_user(cls, db: Session, username: str) -> 'User':
