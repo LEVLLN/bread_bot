@@ -81,9 +81,3 @@ async def login_for_access_token(
         data={'sub': user.username}, expires_delta=access_token_expires
     )
     return {'access_token': access_token, 'token_type': 'bearer'}
-
-
-@router.get('/users/public/', response_model=list[UserInfoSchema])
-async def public_users(session: AsyncSession = Depends(get_async_session)):
-    logger.info('Getting All public users')
-    return await User.async_all(session)
