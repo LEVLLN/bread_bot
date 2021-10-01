@@ -29,4 +29,7 @@ async def get_async_session() -> AsyncSession:
     Асинхронная зависимость для создания асинхронной сессии БД
     """
     async with AsyncSessionLocal() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            session.close()
