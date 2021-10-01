@@ -138,7 +138,9 @@ class CRUDMixin(object):
             order_by=order_by,
             limit=limit,
         )
-        return scalars.all()
+        result = scalars.all()
+        await session.flush()
+        return result
 
     @classmethod
     async def async_first(
@@ -155,7 +157,9 @@ class CRUDMixin(object):
             order_by=order_by,
             limit=1
         )
-        return scalars.first()
+        result = scalars.first()
+        await session.flush()
+        return result
 
     @classmethod
     async def async_all(cls, db: AsyncSession):
@@ -167,7 +171,9 @@ class CRUDMixin(object):
         result = await db.execute(
             select(cls)
         )
-        return result.scalars().all()
+        res = result.scalars().all()
+        await db.flush()
+        return res
 
     @classmethod
     async def async_offset_records(
