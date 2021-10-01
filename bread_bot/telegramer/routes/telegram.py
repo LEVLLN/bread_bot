@@ -94,12 +94,12 @@ async def get_members(db: AsyncSession = Depends(get_async_session)):
     return await Member.async_all(db)
 
 
-@router.get('/members/{username}',
+@router.get('/members/{object_id}',
             response_model=MemberDBSchema,
             dependencies=[Depends(get_current_active_admin_user)])
-async def get_members(username: str,
+async def get_members(object_id: int,
                       db: AsyncSession = Depends(get_async_session)):
-    member = await Member.async_first(db, Member.username == username)
+    member = await Member.async_first(db, Member.id == object_id)
     if member is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -108,12 +108,14 @@ async def get_members(username: str,
     return member
 
 
-@router.delete('/members/{username}',
-               dependencies=[Depends(get_current_active_admin_user)])
-async def get_members(username: str,
-                      db: AsyncSession = Depends(get_async_session)):
+@router.delete(
+    '/members/{object_id}',
+    dependencies=[Depends(get_current_active_admin_user)])
+async def delete_members(
+        object_id: int,
+        db: AsyncSession = Depends(get_async_session)):
     return {
         'deleted': await Member.async_delete(
             session=db,
-            filter_expression=Member.username == username)
+            filter_expression=Member.id == object_id)
     }

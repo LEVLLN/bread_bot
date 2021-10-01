@@ -18,5 +18,6 @@ class Stats(mixins.AbstractIsActiveBaseModel,
         nullable=False)
     slug = Column(String(255), nullable=False)
     count = Column(BigInteger, default=0, nullable=False)
+
     member = relationship('Member', back_populates='stats')
     chat = relationship('Chat', back_populates='stats')

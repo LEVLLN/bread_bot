@@ -1,11 +1,13 @@
 import logging
 import random
 import re
+from collections import defaultdict
 from typing import List, Union, Dict, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.telegramer.models import Stats, Member, LocalMeme, Chat
+from bread_bot.telegramer.models.chats_to_members import ChatToMember
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema, \
     MemberSchema
 from bread_bot.telegramer.services.telegram_client import TelegramClient
@@ -29,10 +31,10 @@ class BreadService:
         self.is_edited = is_edited
         self.db = db
         self.trigger_mask = self.composite_mask(structs.TRIGGER_WORDS)
-        self.command = None
-        self.params = None
-        self.trigger_word = None
-        self.reply_to_message = True
+        self.command: Optional[str] = None
+        self.params: Optional[str] = None
+        self.trigger_word: Optional[str] = None
+        self.reply_to_message: bool = True
 
     @staticmethod
     def composite_mask(collection, split=True) -> str:
@@ -53,7 +55,7 @@ class BreadService:
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
         )
-        command_collection = structs.COMMANDS_MAPPER.keys()
+        command_collection = list(structs.COMMANDS_MAPPER.keys())
 
         if meme_name is not None:
             command_collection += list(meme_name.data.keys())
@@ -107,7 +109,7 @@ class BreadService:
             filter_expression=Member.username == member.username
         )
         if member_db is None:
-            member_db = await Member.async_add(
+            member_db: Member = await Member.async_add(
                 db=self.db,
                 instance=Member(
                     username=member.username,
@@ -116,19 +118,33 @@ class BreadService:
                     is_bot=member.is_bot,
                 )
             )
+        else:
+            is_updated = False
+            if member.id != member_db.member_id:
+                member_db.member_id = member.id
+                is_updated = True
+            for key in ('username', 'first_name', 'last_name'):
+                if getattr(member, key, None) != getattr(member_db, key, None):
+                    setattr(member_db, key, getattr(member, key))
+                    is_updated = True
+            if is_updated:
+                member_db: Member = await Member.async_add(
+                    db=self.db,
+                    instance=member_db,
+                )
         return member_db
 
-    async def handle_chat(self):
+    async def handle_chat(self) -> Chat:
         title = self.message.chat.title \
             if self.message.chat.title is not None \
             else self.message.source.username
 
-        chat_db = await Chat.async_first(
+        chat_db: Chat = await Chat.async_first(
             session=self.db,
             filter_expression=Chat.chat_id == self.chat_id,
         )
         if chat_db is None:
-            chat_db = await Chat.async_add(
+            chat_db: Chat = await Chat.async_add(
                 db=self.db,
                 instance=Chat(
                     name=title,
@@ -143,6 +159,25 @@ class BreadService:
             )
             logger.info(f'Чат {self.chat_id} обновил название на {title}')
         return chat_db
+
+    async def handle_chats_to_members(self, member_id: int, chat_id: int):
+        member: Member = await Member.async_first(
+            session=self.db,
+            filter_expression=Member.id == member_id,
+            select_in_load=Member.chats
+        )
+        chat: Chat = await Chat.async_first(
+            session=self.db,
+            filter_expression=Chat.id == chat_id
+        )
+        if not member or not chat:
+            return
+        if chat.id in [chat.chat_id for chat in member.chats]:
+            return
+
+        member.chats.append(ChatToMember(chat_id=chat_id))
+        await member.commit(db=self.db)
+        return
 
     async def get_unknown_messages(self) -> list:
         unknown_message_db = await LocalMeme.get_local_meme(
@@ -188,7 +223,7 @@ class BreadService:
 
         substring_words_mask = self.composite_mask(
             collection=substring_words.keys(),
-            split=False,
+            split=True,
         )
         regex = f'({substring_words_mask})'
         groups = re.findall(regex, self.message.text, re.IGNORECASE)
@@ -316,4 +351,98 @@ class BreadService:
         data.append(value)
         local_meme.data = data
         await LocalMeme.async_add(self.db, local_meme)
+        return 'Сделал'
+
+    async def show_stats(self) -> str:
+        statistics = defaultdict(str)
+        for stat in await Stats.async_filter(
+                session=self.db,
+                filter_expression=Stats.chat_id == self.chat_id,
+                select_in_load=Stats.member,
+        ):
+            member = MemberSchema(
+                first_name=stat.member.first_name,
+                last_name=stat.member.last_name,
+                username=stat.member.username,
+                is_bot=stat.member.is_bot,
+            )
+            row = f'{await self.get_username(member)} - {stat.count}'
+            if statistics[stat.slug] == '':
+                statistics[stat.slug] = row + '\n'
+            else:
+                statistics[stat.slug] += row + '\n'
+        result = ''
+        for stat_slug, value in statistics.items():
+            result += f'{StatsEnum[stat_slug].value}:\n{value}\n\n'
+        return result if result != '' else 'Пока не набрал статистики'
+
+    async def propagate_members_memes(self) -> str:
+        if self.chat_id < 0:
+            return 'Нельзя из чата копировать в другой чат. ' \
+                   'Только из личных сообщений с ботом!'
+        destination_chat: Chat = await Chat.async_first(
+            session=self.db,
+            filter_expression=Chat.name == self.params.strip(),
+        )
+        if destination_chat is None:
+            return 'Не найдено чата для отправки'
+        if destination_chat.chat_id > 0:
+            return 'Невозможно копировать другим людям свои данные'
+        if destination_chat.chat_id == self.chat_id:
+            return 'Нельзя распространять себе в личку'
+
+        member: Member = await Member.async_first(
+            session=self.db,
+            filter_expression=Member.username == self.message.source.username,
+            select_in_load=Member.chats
+        )
+        if not member:
+            return 'Что-то пошло не так'
+
+        if destination_chat.id not in [chat.chat_id for chat in member.chats]:
+            return 'Нет прав на указанный чат'
+
+        destination_local_memes = await LocalMeme.async_filter(
+            session=self.db,
+            filter_expression=LocalMeme.chat_id == destination_chat.chat_id,
+        )
+        source_local_memes = await LocalMeme.async_filter(
+            session=self.db,
+            filter_expression=LocalMeme.chat_id == self.chat_id,
+        )
+        if not source_local_memes or not destination_local_memes:
+            return 'Не найдено данных для копирования'
+
+        data_to_add = defaultdict(lambda: defaultdict(list))
+        local_memes_types = [d.type for d in destination_local_memes]
+        update_list = []
+        for source_meme in source_local_memes:
+            for k, v in source_meme.data.items():
+                data_to_add[source_meme.type][k] = v
+            if source_meme.type not in local_memes_types:
+                update_list.append(
+                    LocalMeme(
+                        type=source_meme.type,
+                        data=source_meme.data,
+                        chat_id=destination_chat.chat_id,
+                    )
+                )
+        for local_meme in destination_local_memes:
+            data = local_meme.data.copy()
+            has_updated = False
+            for k, v_list in data_to_add[local_meme.type].items():
+                if k in data:
+                    has_updated = True
+                    data[k] += v_list
+                else:
+                    has_updated = True
+                    data[k] = v_list
+            if has_updated:
+                local_meme.data = data
+                update_list.append(local_meme)
+
+        if update_list:
+            await LocalMeme.async_add_all(self.db, update_list)
+        else:
+            return 'Нечего обновлять'
         return 'Сделал'

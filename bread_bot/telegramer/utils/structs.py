@@ -78,6 +78,7 @@ COMMANDS_MAPPER = {
     'понедельник': 'get_quote',
     'обнуляй': 'get_quote',
     'редактирование': 'set_edited_trigger',
+    'распространи в': 'propagate_members_memes',
 }
 
 

@@ -1,9 +1,7 @@
 import random
-from collections import defaultdict
 from typing import Optional
 
-from bread_bot.telegramer.models import Stats, LocalMeme, Chat
-from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
+from bread_bot.telegramer.models import LocalMeme, Chat
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils import structs
@@ -19,6 +17,7 @@ class BreadServiceHandler(BreadService):
     async def build_message(self) -> Optional[str]:
         self.member_db = await self.handle_member(member=self.message.source)
         self.chat_db = await self.handle_chat()
+        await self.handle_chats_to_members(self.member_db.id, self.chat_db.id)
 
         if self.is_edited:
             if self.chat_db.is_edited_trigger:
@@ -156,29 +155,6 @@ class BreadServiceHandler(BreadService):
         if len(choose_list) <= 1:
             choose_list = self.params.split(',')
         return random.choice(choose_list).strip()
-
-    async def show_stats(self) -> str:
-        statistics = defaultdict(str)
-        for stat in await Stats.async_filter(
-                session=self.db,
-                filter_expression=Stats.chat_id == self.chat_id,
-                select_in_load=Stats.member,
-        ):
-            member = MemberSchema(
-                first_name=stat.member.first_name,
-                last_name=stat.member.last_name,
-                username=stat.member.username,
-                is_bot=stat.member.is_bot,
-            )
-            row = f'{await self.get_username(member)} - {stat.count}'
-            if statistics[stat.slug] == '':
-                statistics[stat.slug] = row + '\n'
-            else:
-                statistics[stat.slug] += row + '\n'
-        result = ''
-        for stat_slug, value in statistics.items():
-            result += f'{StatsEnum[stat_slug].value}:\n{value}\n\n'
-        return result if result != '' else 'Пока не набрал статистики'
 
     async def add_local_meme_name(self):
         return await self.add_local_meme(

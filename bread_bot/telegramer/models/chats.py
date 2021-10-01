@@ -21,3 +21,6 @@ class Chat(mixins.AbstractIsActiveBaseModel,
         'LocalMeme',
         back_populates='chat',
         cascade='all, delete-orphan')
+    members = relationship(
+        'ChatToMember',
+        back_populates='chat')

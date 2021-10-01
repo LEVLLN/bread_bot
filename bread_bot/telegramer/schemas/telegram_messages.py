@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class MemberSchema(BaseModel):
+    id: Optional[int] = None
     is_bot: bool
     username: Optional[str] = ''
     last_name: Optional[str] = ''

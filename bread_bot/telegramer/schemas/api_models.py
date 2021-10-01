@@ -26,6 +26,8 @@ class ChatSchema(BaseModel):
 
 
 class MemberDBSchema(MemberSchema):
+    member_id: Optional[int] = None
+
     class Config:
         orm_mode = True
 

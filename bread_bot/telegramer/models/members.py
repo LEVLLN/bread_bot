@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String, Boolean, BigInteger
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
@@ -9,6 +9,7 @@ class Member(mixins.AbstractIsActiveBaseModel,
              mixins.CRUDMixin):
     __tablename__ = 'members'
 
+    member_id = Column(BigInteger, nullable=True)
     username = Column(String(255), nullable=False, unique=True)
     first_name = Column(String(255))
     last_name = Column(String(255))
@@ -17,3 +18,6 @@ class Member(mixins.AbstractIsActiveBaseModel,
         'Stats',
         back_populates='member',
         cascade='all, delete-orphan')
+    chats = relationship(
+        'ChatToMember',
+        back_populates='member')

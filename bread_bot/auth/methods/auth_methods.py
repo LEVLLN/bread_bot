@@ -106,7 +106,8 @@ async def get_current_active_user(
 async def get_current_active_admin_user(
         current_user: User = Depends(get_current_user)) -> User:
     """
-    Dependency: Логин по токену + проверка пользователя на активность + Проверка на активность
+    Dependency: Логин по токену + проверка
+    пользователя на активность + Проверка на активность
     """
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail='Access Denied')

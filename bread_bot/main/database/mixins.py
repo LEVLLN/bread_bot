@@ -54,6 +54,13 @@ class CRUDMixin(object):
     """
     __table_args__ = {'extend_existing': True}
 
+    async def commit(self, db: AsyncSession):
+        try:
+            await db.commit()
+        except Exception as exc:
+            await db.rollback()
+            raise exc
+
     @classmethod
     async def _async_filter(
             cls,
