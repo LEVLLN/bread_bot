@@ -62,8 +62,7 @@ class BreadServiceHandler(BreadService):
             meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
         )
         if meme_names_db is not None:
-            if self.command in meme_names_db.data.keys() \
-                    or self.command in structs.OTHER_DIALOGS.keys():
+            if self.command in meme_names_db.data.keys():
                 return await self.regular_phrases(
                     meme_name=self.command,
                     meme_name_data=meme_names_db.data

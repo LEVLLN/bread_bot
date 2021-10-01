@@ -35,10 +35,14 @@ class BreadService:
         self.reply_to_message = True
 
     @staticmethod
-    def composite_mask(collection) -> str:
+    def composite_mask(collection, split=True) -> str:
+        if split:
+            mask_part = '\\b{}\\b'
+        else:
+            mask_part = '{}'
         return '|'.join(
             map(
-                lambda x: f'\\b{x}\\b',
+                lambda x: mask_part.format(x),
                 collection,
             )
         )
@@ -49,7 +53,7 @@ class BreadService:
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
         )
-        command_collection = structs.COMMANDS_COLLECTION
+        command_collection = structs.COMMANDS_MAPPER.keys()
 
         if meme_name is not None:
             command_collection += list(meme_name.data.keys())
@@ -182,7 +186,10 @@ class BreadService:
         if not substring_words:
             return None
 
-        substring_words_mask = self.composite_mask(substring_words.keys())
+        substring_words_mask = self.composite_mask(
+            collection=substring_words.keys(),
+            split=False,
+        )
         regex = f'({substring_words_mask})'
         groups = re.findall(regex, self.message.text, re.IGNORECASE)
         if len(groups) > 0:
@@ -201,12 +208,9 @@ class BreadService:
     ) -> str:
         meme_prefix = random.choice(
             structs.DEFAULT_PREFIX + [meme_name.capitalize(), ])
-        meme_sequence = meme_name_data.get(meme_name, []) + \
-            structs.OTHER_DIALOGS.get(meme_name, [])
+        meme_sequence = meme_name_data.get(meme_name, [])
         meme_value = random.choice(meme_sequence)
 
-        if meme_name in structs.OTHER_DIALOGS.keys() or meme_prefix == '':
-            return meme_value
         return meme_prefix + ' ' + meme_value
 
     @staticmethod
