@@ -146,7 +146,7 @@ class BreadService:
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
         )
-        unknown_messages = structs.DEFAULT_UNKNOWN_MESSAGE
+        unknown_messages = structs.DEFAULT_UNKNOWN_MESSAGE.copy()
         if unknown_message_db is not None:
             unknown_messages.extend(unknown_message_db.data)
         return unknown_messages
@@ -157,7 +157,7 @@ class BreadService:
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
         )
-        free_words = structs.FREE_WORDS
+        free_words = structs.FREE_WORDS.copy()
         if free_words_db is not None:
             free_words.update(**free_words_db.data)
         message_text = self.message.text.lower().strip()
