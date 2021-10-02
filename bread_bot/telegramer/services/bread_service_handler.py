@@ -89,7 +89,10 @@ class BreadServiceHandler(BreadService):
 
     async def who_is(self) -> str:
         params = self.params.replace('?', '')
-        member = random.choice(await self.get_members())
+        if self.chat_id > 0:
+            member = self.message.source
+        else:
+            member = random.choice(await self.get_members())
         username = await self.get_username(member)
 
         if params.strip().lower().startswith('пидор'):
@@ -104,7 +107,10 @@ class BreadServiceHandler(BreadService):
 
     async def who_have_is(self) -> str:
         params = self.params.replace('?', '')
-        member = random.choice(await self.get_members())
+        if self.chat_id > 0:
+            member = self.message.source
+        else:
+            member = random.choice(await self.get_members())
         username = await self.get_username(member)
         return f'{random.choice(structs.DEFAULT_PREFIX)} {params} у {username}'
 
@@ -116,7 +122,10 @@ class BreadServiceHandler(BreadService):
                f'и {await self.get_username(members[1])}'
 
     async def top(self) -> str:
-        members = await self.get_members()
+        if self.chat_id > 0:
+            members = [self.message.source]
+        else:
+            members = await self.get_members()
         result = ''
         i = 1
         random.shuffle(members)
