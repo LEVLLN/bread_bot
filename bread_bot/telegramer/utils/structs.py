@@ -95,3 +95,7 @@ class LocalMemeTypesEnum(Enum):
     UNKNOWN_MESSAGE = 'Фразы на отсутствующие команды'
     FREE_WORDS = 'Триггеры'
     SUBSTRING_WORDS = 'Входящие значения'
+
+
+class PropertiesEnum(Enum):
+    BAD_VOICES = 'Плохие звуки'

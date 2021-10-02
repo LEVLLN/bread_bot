@@ -1,11 +1,12 @@
 import random
 from typing import Optional
 
-from bread_bot.telegramer.models import LocalMeme, Chat
+from bread_bot.telegramer.models import LocalMeme, Chat, Property
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils import structs
-from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
+from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum, \
+    PropertiesEnum
 
 
 class BreadServiceHandler(BreadService):
@@ -222,17 +223,16 @@ class BreadServiceHandler(BreadService):
         if self.message.voice is not None \
                 and self.message.voice.duration \
                 and self.message.voice.duration >= 1:
-            fart_list = [
-                'AwACAgQAAxkBAAIGn2FXtgnJpIVcj'
-                'KFOt5Vpf7-YRbijAALEAwACdfqQUxMQhhRNb6oOIQQ',
-                'AwACAgQAAxkBAAIGnmFXteOakKAx9P'
-                '_symT2inVqFeKWAALlAwACqichUMZPJkfYJY7AIQQ',
-                'AwACAgIAAxkDAAIGkmFXs8C5kVAfd'
-                'VRyDYihQ2lK3P6XAAJlDwACX2fBSupxaJ2gaICYIQQ',
-            ]
+            fart_list: Property = await Property.async_first(
+                session=self.db,
+                filter_expression=
+                Property.slug == PropertiesEnum.BAD_VOICES.name
+            )
+            if not fart_list:
+                return False
             await self.client.send_voice(
                 chat_id=self.chat_id,
-                voice_file_id=random.choice(fart_list),
+                voice_file_id=random.choice(fart_list.data),
                 reply_to=self.message.message_id,
             )
             return True
