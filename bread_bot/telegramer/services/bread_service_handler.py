@@ -239,10 +239,10 @@ class BreadServiceHandler(BreadService):
         if self.message.voice is not None \
                 and self.message.voice.duration \
                 and self.message.voice.duration >= 1:
+            condition = Property.slug == PropertiesEnum.BAD_VOICES.name
             fart_list: Property = await Property.async_first(
                 session=self.db,
-                filter_expression=
-                Property.slug == PropertiesEnum.BAD_VOICES.name
+                filter_expression=condition,
             )
             if not fart_list or not fart_list.data:
                 return False

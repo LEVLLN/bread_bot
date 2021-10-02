@@ -4,6 +4,7 @@ import re
 from collections import defaultdict
 from typing import List, Union, Dict, Optional
 
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.telegramer.models import Stats, Member, LocalMeme, Chat
@@ -85,9 +86,11 @@ class BreadService:
             stats_enum: StatsEnum) -> Stats:
         stats = await Stats.async_first(
             session=self.db,
-            filter_expression=(Stats.member_id == member_db.id) &
-                              (Stats.slug == stats_enum.name) &
-                              (Stats.chat_id == self.chat_id),
+            filter_expression=and_(
+                Stats.member_id == member_db.id,
+                Stats.slug == stats_enum.name,
+                Stats.chat_id == self.chat_id
+            )
         )
         if stats is None:
             stats = await Stats.async_add(
@@ -405,16 +408,17 @@ class BreadService:
 
         destination_local_memes = await LocalMeme.async_filter(
             session=self.db,
-            filter_expression=
-            (LocalMeme.chat_id == destination_chat.chat_id)
-            & (LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name),
-
+            filter_expression=and_(
+                LocalMeme.chat_id == destination_chat.chat_id,
+                LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name
+            )
         )
         source_local_memes = await LocalMeme.async_filter(
             session=self.db,
-            filter_expression=
-            (LocalMeme.chat_id == self.chat_id)
-            & (LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name),
+            filter_expression=and_(
+                LocalMeme.chat_id == self.chat_id,
+                LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+            )
         )
         if not source_local_memes or not destination_local_memes:
             return 'Не найдено данных для копирования'
