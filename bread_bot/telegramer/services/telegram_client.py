@@ -7,6 +7,7 @@ from bread_bot.telegramer.schemas.telegram_messages import \
 class TelegramClient(BaseHTTPClient):
     def __init__(self):
         self.send_message_method = 'sendMessage'
+        self.send_voice_method = 'sendVoice'
         self.set_webhook_method = 'setWebhook'
         self.get_webhook_info_method = 'getWebhookInfo'
         self.get_chat_method = 'getChatAdministrators'
@@ -73,3 +74,19 @@ class TelegramClient(BaseHTTPClient):
                 or 'result' not in result:
             raise ValueError('Ошибка получения админов чата')
         return ChatMemberBodySchema(**result)
+
+    async def send_voice(self, chat_id: int, voice_file_id: str,
+                         reply_to: int = None) -> bool:
+        data = {
+            'chat_id': chat_id,
+            'voice': voice_file_id,
+        }
+        if reply_to is not None:
+            data['reply_to_message_id'] = reply_to
+        await self.request(
+            method='POST',
+            url=f'{self.base_url}/{self.send_voice_method}',
+            data=data,
+            headers=self.headers,
+        )
+        return True

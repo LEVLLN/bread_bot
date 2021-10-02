@@ -19,6 +19,10 @@ class BreadServiceHandler(BreadService):
         self.chat_db = await self.handle_chat()
         await self.handle_chats_to_members(self.member_db.id, self.chat_db.id)
 
+        has_voice_sent = await self.send_fart_voice()
+        if has_voice_sent:
+            return None
+
         if self.is_edited:
             if self.chat_db.is_edited_trigger:
                 await self.count_stats(
@@ -213,3 +217,23 @@ class BreadServiceHandler(BreadService):
         )
         message = 'Включено' if self.chat_db.is_edited_trigger else 'Выключено'
         return f'{message} реагирование на редактирование сообщений'
+
+    async def send_fart_voice(self):
+        if self.message.voice is not None \
+                and self.message.voice.duration \
+                and self.message.voice.duration >= 1:
+            fart_list = [
+                'AwACAgQAAxkBAAIGn2FXtgnJpIVcj'
+                'KFOt5Vpf7-YRbijAALEAwACdfqQUxMQhhRNb6oOIQQ',
+                'AwACAgQAAxkBAAIGnmFXteOakKAx9P'
+                '_symT2inVqFeKWAALlAwACqichUMZPJkfYJY7AIQQ',
+                'AwACAgIAAxkDAAIGkmFXs8C5kVAfd'
+                'VRyDYihQ2lK3P6XAAJlDwACX2fBSupxaJ2gaICYIQQ',
+            ]
+            await self.client.send_voice(
+                chat_id=self.chat_id,
+                voice_file_id=random.choice(fart_list),
+                reply_to=self.message.message_id,
+            )
+            return True
+        return False

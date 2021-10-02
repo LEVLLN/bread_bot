@@ -17,12 +17,19 @@ class ChatSchema(BaseModel):
     type: Optional[str] = None
 
 
+class VoiceSchema(BaseModel):
+    duration: Optional[int]
+    mime_type: Optional[str]
+    file_id: Optional[str]
+
+
 class MessageSchema(BaseModel):
     message_id: int
     source: MemberSchema = Field(..., alias='from')
     chat: ChatSchema
     date: Optional[int] = None
     text: Optional[str] = ''
+    voice: Optional[VoiceSchema] = None
 
     class Config:
         allow_population_by_field_name = True
