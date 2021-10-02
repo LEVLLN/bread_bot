@@ -26,11 +26,18 @@ class BreadServiceHandler(BreadService):
 
         if self.is_edited:
             if self.chat_db.is_edited_trigger:
+                condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
+                editor_messages: Property = await Property.async_first(
+                    session=self.db,
+                    filter_expression=condition,
+                )
+                if editor_messages is None or not editor_messages.data:
+                    return
                 await self.count_stats(
                     member_db=self.member_db,
                     stats_enum=StatsEnum.EDITOR,
                 )
-                return random.choice(structs.FAGGOT_EDITOR_MESSAGES)
+                return random.choice(editor_messages.data)
             else:
                 return None
 
@@ -228,7 +235,7 @@ class BreadServiceHandler(BreadService):
                 filter_expression=
                 Property.slug == PropertiesEnum.BAD_VOICES.name
             )
-            if not fart_list:
+            if not fart_list or fart_list.data:
                 return False
             await self.client.send_voice(
                 chat_id=self.chat_id,

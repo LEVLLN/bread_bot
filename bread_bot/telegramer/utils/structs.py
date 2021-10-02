@@ -10,14 +10,6 @@ FREE_WORDS = {
     'помянем': ['F', 'помянем'],
 }
 
-FAGGOT_EDITOR_MESSAGES = [
-    'Редачер пидор!',
-    'Редачер - нехороший человек',
-    'редачер эт самое',
-    'ха, поiмав редачера',
-    'Пусть все видят, как ты редактируешь сообщения',
-]
-
 DEFAULT_PREFIX = [
     '',
     'тупа',
@@ -99,3 +91,4 @@ class LocalMemeTypesEnum(Enum):
 
 class PropertiesEnum(Enum):
     BAD_VOICES = 'Плохие звуки'
+    ANSWER_TO_EDIT = 'Ответ на редактирование'

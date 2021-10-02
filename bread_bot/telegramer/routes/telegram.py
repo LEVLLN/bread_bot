@@ -10,7 +10,8 @@ from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.telegramer.models import LocalMeme, Chat, Member
 from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
     SendMessageSchema, ChatSchema, MemberDBSchema
-from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
+from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema, \
+    MemberSchema
 from bread_bot.telegramer.services.message_handler import MessageHandler
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.utils.dependencies import get_async_session
@@ -119,3 +120,13 @@ async def delete_members(
             session=db,
             filter_expression=Member.id == object_id)
     }
+
+
+@router.get('/members_of_chat/{chat_id}',
+            response_model=MemberSchema,
+            dependencies=[Depends(get_current_active_admin_user)])
+async def get_members_of_chat(
+        chat_id: int,
+):
+    chat_info = await TelegramClient.get_chat(chat_id=chat_id)
+    return chat_info.result
