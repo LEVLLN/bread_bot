@@ -359,6 +359,7 @@ class BreadService:
                 session=self.db,
                 filter_expression=Stats.chat_id == self.chat_id,
                 select_in_load=Stats.member,
+                order_by=Stats.count.desc()
         ):
             member = MemberSchema(
                 first_name=stat.member.first_name,
