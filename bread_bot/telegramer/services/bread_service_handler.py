@@ -235,7 +235,7 @@ class BreadServiceHandler(BreadService):
                 filter_expression=
                 Property.slug == PropertiesEnum.BAD_VOICES.name
             )
-            if not fart_list or fart_list.data:
+            if not fart_list or not fart_list.data:
                 return False
             await self.client.send_voice(
                 chat_id=self.chat_id,
