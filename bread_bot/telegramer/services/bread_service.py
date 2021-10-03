@@ -39,10 +39,7 @@ class BreadService:
 
     @staticmethod
     def composite_mask(collection, split=True) -> str:
-        if split:
-            mask_part = '\\b{}\\b'
-        else:
-            mask_part = '{}'
+        mask_part = '\\b{}\\b' if split else '{}'
         return '|'.join(
             map(
                 lambda x: mask_part.format(x),
@@ -62,8 +59,11 @@ class BreadService:
             command_collection += list(meme_name.data.keys())
 
         command_mask = self.composite_mask(command_collection)
-        regex = f'^({self.trigger_mask})\\s({command_mask})?'
-        groups = re.findall(regex, self.message.text, re.IGNORECASE)
+        groups = re.findall(
+            f'^({self.trigger_mask})\\s({command_mask})?',
+            self.message.text,
+            re.IGNORECASE
+        )
         has_trigger_word = False
 
         for trigger_word in structs.TRIGGER_WORDS:
@@ -76,9 +76,8 @@ class BreadService:
             self.command = groups[0][1].lower()
             self.params = self.message.text.replace(phrase, '').lstrip()
             return
-        if has_trigger_word:
-            return
-        raise ValueError('Is not Command')
+        if not has_trigger_word:
+            raise ValueError('Is not Command')
 
     async def count_stats(
             self,
