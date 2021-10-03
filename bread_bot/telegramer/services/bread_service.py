@@ -383,14 +383,18 @@ class BreadService:
         if self.chat_id < 0:
             return 'Нельзя из чата копировать в другой чат. ' \
                    'Только из личных сообщений с ботом!'
+
         destination_chat: Chat = await Chat.async_first(
             session=self.db,
             filter_expression=Chat.name == self.params.strip(),
         )
+
         if destination_chat is None:
             return 'Не найдено чата для отправки'
+
         if destination_chat.chat_id > 0:
             return 'Невозможно копировать другим людям свои данные'
+
         if destination_chat.chat_id == self.chat_id:
             return 'Нельзя распространять себе в личку'
 
@@ -399,6 +403,7 @@ class BreadService:
             filter_expression=Member.username == self.message.source.username,
             select_in_load=Member.chats
         )
+
         if not member:
             return 'Что-то пошло не так'
 
@@ -419,6 +424,7 @@ class BreadService:
                 LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
             )
         )
+
         if not source_local_memes or not destination_local_memes:
             return 'Не найдено данных для копирования'
 
@@ -441,6 +447,7 @@ class BreadService:
         for local_meme in destination_local_memes:
             data = local_meme.data.copy()
             has_updated = False
+
             for k, v_list in data_to_add[local_meme.type].items():
                 if k in data:
                     has_updated = True
@@ -448,6 +455,7 @@ class BreadService:
                 else:
                     has_updated = True
                     data[k] = v_list
+
             if has_updated:
                 local_meme.data = data
                 update_list.append(local_meme)
