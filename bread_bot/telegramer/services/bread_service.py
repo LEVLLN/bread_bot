@@ -425,6 +425,7 @@ class BreadService:
         data_to_add = defaultdict(lambda: defaultdict(list))
         local_memes_types = [d.type for d in destination_local_memes]
         update_list = []
+
         for source_meme in source_local_memes:
             for k, v in source_meme.data.items():
                 data_to_add[source_meme.type][k] = v
@@ -436,6 +437,7 @@ class BreadService:
                         chat_id=destination_chat.chat_id,
                     )
                 )
+
         for local_meme in destination_local_memes:
             data = local_meme.data.copy()
             has_updated = False
@@ -450,8 +452,8 @@ class BreadService:
                 local_meme.data = data
                 update_list.append(local_meme)
 
-        if update_list:
-            await LocalMeme.async_add_all(self.db, update_list)
-        else:
+        if not update_list:
             return 'Нечего обновлять'
+
+        await LocalMeme.async_add_all(self.db, update_list)
         return 'Сделал'
