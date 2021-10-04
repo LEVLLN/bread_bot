@@ -163,13 +163,7 @@ class BreadServiceHandler(BreadService):
 
     @staticmethod
     async def help() -> str:
-        try:
-            with open('About.md', 'r', encoding='utf-8') as file:
-                text = file.read()
-        except Exception:
-            return '... не найдено'
-        else:
-            return text
+        return 'https://telegra.ph/HlebushekBot-10-04-3'
 
     async def choose_variant(self) -> str:
         choose_list = self.params.split(' или ')
