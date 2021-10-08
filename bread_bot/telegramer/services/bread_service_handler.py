@@ -1,7 +1,7 @@
 import random
 from typing import Optional
 
-from bread_bot.telegramer.models import LocalMeme, Chat, Property
+from bread_bot.telegramer.models import LocalMeme, Chat, Property, Member
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils import structs
@@ -12,8 +12,8 @@ from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum, \
 class BreadServiceHandler(BreadService):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.member_db = None
-        self.chat_db = None
+        self.member_db: Optional[Member] = None
+        self.chat_db: Optional[Chat] = None
 
     async def build_message(self) -> Optional[str]:
         self.member_db = await self.handle_member(member=self.message.source)
@@ -229,10 +229,20 @@ class BreadServiceHandler(BreadService):
         message = 'Включено' if self.chat_db.is_edited_trigger else 'Выключено'
         return f'{message} реагирование на редактирование сообщений'
 
+    async def set_voice_trigger(self):
+        self.chat_db.is_voice_trigger = not self.chat_db.is_voice_trigger
+        self.chat_db = await Chat.async_add(
+            db=self.db,
+            instance=self.chat_db,
+        )
+        message = 'Включено' if self.chat_db.is_voice_trigger else 'Выключено'
+        return f'{message} реагирование на голосовые сообщения'
+
     async def send_fart_voice(self):
         if self.message.voice is not None \
                 and self.message.voice.duration \
-                and self.message.voice.duration >= 1:
+                and self.message.voice.duration >= 1\
+                and self.chat_db.is_voice_trigger:
             condition = Property.slug == PropertiesEnum.BAD_VOICES.name
             fart_list: Property = await Property.async_first(
                 session=self.db,

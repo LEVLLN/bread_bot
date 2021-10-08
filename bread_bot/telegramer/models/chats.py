@@ -12,6 +12,7 @@ class Chat(mixins.AbstractIsActiveBaseModel,
     chat_id = Column(BigInteger, nullable=False, unique=True)
     name = Column(String(255), nullable=True)
     is_edited_trigger = Column(Boolean, default=False, nullable=False)
+    is_voice_trigger = Column(Boolean, default=False, nullable=False)
 
     stats = relationship(
         'Stats',

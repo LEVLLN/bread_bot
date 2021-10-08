@@ -27,13 +27,9 @@ router = APIRouter(
 
 @router.post('/')
 async def handle_message(
-        request: Request,
         request_body: StandardBodySchema,
         db: AsyncSession = Depends(get_async_session)
 ):
-    import json
-    data = await request.body()
-    logger.debug(json.loads(data))
     try:
         await MessageHandler(request_body=request_body, db=db).handle_message()
     except Exception:
