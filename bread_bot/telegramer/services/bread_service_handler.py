@@ -104,7 +104,9 @@ class BreadServiceHandler(BreadService):
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.WHO_TO_STATS_KEYS.name,
         )
-        for key_word in who_stats_key_words.data:
+        who_stats_key_words_list = who_stats_key_words.data \
+            if who_stats_key_words else []
+        for key_word in who_stats_key_words_list:
             if key_word.strip().lower() == params.strip().lower():
                 member_db = await self.handle_member(member)
                 await self.count_stats(
