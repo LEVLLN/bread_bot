@@ -82,9 +82,7 @@ class BreadService:
     async def count_stats(
             self,
             member_db: Member,
-            stats_enum: StatsEnum,
-            value: str,
-    ) -> Stats:
+            stats_enum: StatsEnum) -> Stats:
         stats = await Stats.async_first(
             session=self.db,
             filter_expression=and_(
@@ -98,7 +96,7 @@ class BreadService:
                 db=self.db,
                 instance=Stats(
                     member_id=member_db.id,
-                    slug=value,
+                    slug=stats_enum.name,
                     count=1,
                     chat_id=self.chat_id,
                 ),
