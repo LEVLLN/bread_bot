@@ -28,7 +28,7 @@ class BreadServiceHandler(BreadService):
             if self.chat_db.is_edited_trigger:
                 condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
                 editor_messages: Property = await Property.async_first(
-                    session=self.db,
+                    db=self.db,
                     filter_expression=condition,
                 )
                 if editor_messages is None or not editor_messages.data:
@@ -245,7 +245,7 @@ class BreadServiceHandler(BreadService):
                 and self.chat_db.is_voice_trigger:
             condition = Property.slug == PropertiesEnum.BAD_VOICES.name
             fart_list: Property = await Property.async_first(
-                session=self.db,
+                db=self.db,
                 filter_expression=condition,
             )
             if not fart_list or not fart_list.data:

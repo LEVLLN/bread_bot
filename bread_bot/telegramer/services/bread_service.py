@@ -84,7 +84,7 @@ class BreadService:
             member_db: Member,
             stats_enum: StatsEnum) -> Stats:
         stats = await Stats.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=and_(
                 Stats.member_id == member_db.id,
                 Stats.slug == stats_enum.name,
@@ -107,7 +107,7 @@ class BreadService:
 
     async def handle_member(self, member: MemberSchema) -> Member:
         member_db = await Member.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=Member.username == member.username
         )
         if member_db is None:
@@ -142,7 +142,7 @@ class BreadService:
             else self.message.source.username
 
         chat_db: Chat = await Chat.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=Chat.chat_id == self.chat_id,
         )
         if chat_db is None:
@@ -164,12 +164,12 @@ class BreadService:
 
     async def handle_chats_to_members(self, member_id: int, chat_id: int):
         member: Member = await Member.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=Member.id == member_id,
             select_in_load=Member.chats
         )
         chat: Chat = await Chat.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=Chat.id == chat_id
         )
         if not member or not chat:
@@ -358,7 +358,7 @@ class BreadService:
     async def show_stats(self) -> str:
         statistics = defaultdict(str)
         for stat in await Stats.async_filter(
-                session=self.db,
+                db=self.db,
                 filter_expression=Stats.chat_id == self.chat_id,
                 select_in_load=Stats.member,
                 order_by=Stats.count.desc()
@@ -385,7 +385,7 @@ class BreadService:
                    'Только из личных сообщений с ботом!'
 
         destination_chat: Chat = await Chat.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=Chat.name == self.params.strip(),
         )
 
@@ -399,7 +399,7 @@ class BreadService:
             return 'Нельзя распространять себе в личку'
 
         member: Member = await Member.async_first(
-            session=self.db,
+            db=self.db,
             filter_expression=Member.username == self.message.source.username,
             select_in_load=Member.chats
         )
@@ -411,14 +411,14 @@ class BreadService:
             return 'Нет прав на указанный чат'
 
         destination_local_memes = await LocalMeme.async_filter(
-            session=self.db,
+            db=self.db,
             filter_expression=and_(
                 LocalMeme.chat_id == destination_chat.chat_id,
                 LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name
             )
         )
         source_local_memes = await LocalMeme.async_filter(
-            session=self.db,
+            db=self.db,
             filter_expression=and_(
                 LocalMeme.chat_id == self.chat_id,
                 LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,

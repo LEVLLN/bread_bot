@@ -29,7 +29,7 @@ class LocalMeme(mixins.AbstractIsActiveBaseModel,
             chat_id: Union[int, str],
             meme_type: str):
         return await cls.async_first(
-            session=db,
+            db=db,
             filter_expression=(cls.chat_id == chat_id) &
                               (cls.type == meme_type)
         )

@@ -85,7 +85,7 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
     user = await User.async_first(
-        session=db,
+        db=db,
         filter_expression=User.username == token_data.username,
     )
     if user is None:

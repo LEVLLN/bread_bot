@@ -64,7 +64,7 @@ class CRUDMixin(object):
     @classmethod
     async def _async_filter(
             cls,
-            session: AsyncSession,
+            db: AsyncSession,
             filter_expression,
             select_in_load,
             order_by,
@@ -73,7 +73,7 @@ class CRUDMixin(object):
         """
         Составление select запроса с фильтрами и ограничениями
 
-        :param session: Сессия Базы Данных
+        :param db: Сессия Базы Данных
         :param filter_expression: Выражение для where
         :param select_in_load: Загрузка связанных объектов по ключу
         :param order_by: Группировка по полю
@@ -97,19 +97,19 @@ class CRUDMixin(object):
                 limit
             )
         logger.debug(expression)
-        result = await session.execute(expression)
+        result = await db.execute(expression)
         return result.scalars()
 
     @classmethod
     async def async_delete(
             cls,
-            session: AsyncSession,
+            db: AsyncSession,
             filter_expression,
     ) -> bool:
         """
         Удаление объектов
 
-        :param session: Сессия Базы Данных
+        :param db: Сессия Базы Данных
         :param filter_expression: Выражение для where
         """
         expression = delete(cls)
@@ -119,53 +119,53 @@ class CRUDMixin(object):
             )
         logger.debug(expression)
 
-        result = await session.execute(expression)
+        result = await db.execute(expression)
         try:
-            await session.commit()
+            await db.commit()
         except Exception as exc:
-            await session.rollback()
+            await db.rollback()
             raise exc
         else:
-            await session.flush()
+            await db.flush()
         return result.rowcount > 0
 
     @classmethod
     async def async_filter(
             cls,
-            session: AsyncSession,
+            db: AsyncSession,
             filter_expression=None,
             select_in_load=None,
             order_by=None,
             limit=None,
     ):
         scalars = await cls._async_filter(
-            session,
+            db,
             filter_expression,
             select_in_load,
             order_by=order_by,
             limit=limit,
         )
         result = scalars.all()
-        await session.flush()
+        await db.flush()
         return result
 
     @classmethod
     async def async_first(
             cls,
-            session: AsyncSession,
+            db: AsyncSession,
             filter_expression=None,
             select_in_load=None,
             order_by=None,
     ):
         scalars = await cls._async_filter(
-            session,
+            db,
             filter_expression,
             select_in_load,
             order_by=order_by,
             limit=1
         )
         result = scalars.first()
-        await session.flush()
+        await db.flush()
         return result
 
     @classmethod
@@ -247,7 +247,7 @@ class CRUDMixin(object):
         """
         Async create/update by instance_schema
 
-        :param db: Db session
+        :param db: Db db
         :param instance_schema: Pydantic schema
         """
         instance = cls(**instance_schema.dict())

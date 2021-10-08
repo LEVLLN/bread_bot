@@ -1,3 +1,5 @@
+from httpx import Response
+
 from bread_bot.main import settings
 from bread_bot.main.base_client import BaseHTTPClient
 from bread_bot.telegramer.schemas.telegram_messages import \
@@ -19,7 +21,7 @@ class TelegramClient(BaseHTTPClient):
         }
 
     async def send_message(self, chat_id: int,
-                           message: str, reply_to: int = None):
+                           message: str, reply_to: int = None) -> Response:
         data = {
             'chat_id': chat_id,
             'text': message,
@@ -34,7 +36,7 @@ class TelegramClient(BaseHTTPClient):
             headers=self.headers,
         )
 
-    async def set_webhook(self):
+    async def set_webhook(self) -> bool:
         response = await self.request(
             method='POST',
             url=f'{self.base_url}/{self.set_webhook_method}',
@@ -45,7 +47,7 @@ class TelegramClient(BaseHTTPClient):
             return False
         return True
 
-    async def get_webhook_info(self):
+    async def get_webhook_info(self) -> GetWebHookInfoSchema:
         response = await self.request(
             method='POST',
             url=f'{self.base_url}/{self.get_webhook_info_method}',
@@ -61,7 +63,7 @@ class TelegramClient(BaseHTTPClient):
         webhook = await self.get_webhook_info()
         return settings.NGROK_HOST == webhook.result.url
 
-    async def get_chat(self, chat_id):
+    async def get_chat(self, chat_id) -> ChatMemberBodySchema:
         response = await self.request(
             method='POST',
             url=f'{self.base_url}/{self.get_chat_method}',
@@ -76,17 +78,16 @@ class TelegramClient(BaseHTTPClient):
         return ChatMemberBodySchema(**result)
 
     async def send_voice(self, chat_id: int, voice_file_id: str,
-                         reply_to: int = None) -> bool:
+                         reply_to: int = None) -> Response:
         data = {
             'chat_id': chat_id,
             'voice': voice_file_id,
         }
         if reply_to is not None:
             data['reply_to_message_id'] = reply_to
-        await self.request(
+        return await self.request(
             method='POST',
             url=f'{self.base_url}/{self.send_voice_method}',
             data=data,
             headers=self.headers,
         )
-        return True

@@ -44,7 +44,7 @@ async def set_local_meme(
         db: AsyncSession = Depends(get_async_session)
 ):
     local_meme = await LocalMeme.async_first(
-        session=db,
+        db=db,
         filter_expression=(LocalMeme.type == request_body.type) &
                           (LocalMeme.chat_id == request_body.chat_id),
     )
@@ -114,7 +114,7 @@ async def delete_members(
         db: AsyncSession = Depends(get_async_session)):
     return {
         'deleted': await Member.async_delete(
-            session=db,
+            db=db,
             filter_expression=Member.id == object_id)
     }
 
