@@ -37,19 +37,12 @@ COMMANDS_MAPPER = {
     'кто': 'who_is',
     'у кого': 'who_have_is',
     'топ': 'top',
-    'среда': 'wednesday',
-    'четверг': 'thursday',
-    'вторник': 'tuesday',
-    'баян': 'tuesday',
-    'f': 'f_func',
     'цифри': 'get_num',
     'цифры': 'get_num',
     'рандом': 'get_num',
     'шанс': 'get_chance',
     'вероятность': 'get_chance',
     'геи': 'gey_double',
-    'гей-парочка': 'gey_double',
-    'гей-пара': 'gey_double',
     'help': 'help',
     'hlep': 'help',
     'хелп': 'help',
@@ -62,6 +55,7 @@ COMMANDS_MAPPER = {
     'удали подстроку': 'delete_local_substring',
     'покажи подстроки': 'show_local_substrings',
     'добавь ответ': 'add_unknown_answer',
+    'считай кто': 'add_who_choose_key',
     'добавь триггер': 'add_local_free_word',
     'удали триггер': 'delete_local_free_word',
     'покажи триггеры': 'show_local_free_words',
@@ -88,6 +82,7 @@ class LocalMemeTypesEnum(Enum):
     UNKNOWN_MESSAGE = 'Фразы на отсутствующие команды'
     FREE_WORDS = 'Триггеры'
     SUBSTRING_WORDS = 'Входящие значения'
+    WHO_TO_STATS_KEYS = 'Слова подсчета пользователей из команды "кто"'
 
 
 class PropertiesEnum(Enum):

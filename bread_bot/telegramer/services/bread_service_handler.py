@@ -1,6 +1,8 @@
 import random
 from typing import Optional
 
+from sqlalchemy import and_
+
 from bread_bot.telegramer.models import LocalMeme, Chat, Property, Member
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
@@ -36,6 +38,7 @@ class BreadServiceHandler(BreadService):
                 await self.count_stats(
                     member_db=self.member_db,
                     stats_enum=StatsEnum.EDITOR,
+                    value=StatsEnum.EDITOR.value,
                 )
                 return random.choice(editor_messages.data)
             else:
@@ -55,12 +58,14 @@ class BreadServiceHandler(BreadService):
             await self.count_stats(
                 member_db=self.member_db,
                 stats_enum=StatsEnum.FLUDER,
+                value=StatsEnum.FLUDER.value,
             )
             return None
 
         await self.count_stats(
             member_db=self.member_db,
             stats_enum=StatsEnum.TOTAL_CALL_SLUG,
+            value=StatsEnum.TOTAL_CALL_SLUG.value,
         )
 
         unknown_messages = await self.get_unknown_messages()
@@ -94,13 +99,19 @@ class BreadServiceHandler(BreadService):
         else:
             member = random.choice(await self.get_members())
         username = await self.get_username(member)
-
-        if params.strip().lower().startswith('пидор'):
-            member_db = await self.handle_member(member)
-            await self.count_stats(
-                member_db=member_db,
-                stats_enum=StatsEnum.FAGGOTER,
-            )
+        who_stats_key_words = await LocalMeme.get_local_meme(
+            db=self.db,
+            chat_id=self.chat_id,
+            meme_type=LocalMemeTypesEnum.WHO_TO_STATS_KEYS.name,
+        )
+        for key_word in who_stats_key_words.data:
+            if key_word.strip().lower() == params.strip().lower():
+                member_db = await self.handle_member(member)
+                await self.count_stats(
+                    member_db=member_db,
+                    stats_enum=key_word,
+                    value=f'Сколько бот приравнивал к слову {key_word}',
+                )
 
         return f'{random.choice(structs.DEFAULT_PREFIX)} ' \
                f'{params} - это {username}'
@@ -135,22 +146,6 @@ class BreadServiceHandler(BreadService):
             result += f'{i}) {await self.get_username(user)}\n'
             i += 1
         return f'Топ {self.params}:\n{result}'
-
-    @staticmethod
-    async def wednesday() -> str:
-        return '*пикча жабы* Это среда мои чуваки'
-
-    @staticmethod
-    async def thursday() -> str:
-        return 'время лизнуть'
-
-    @staticmethod
-    async def tuesday() -> str:
-        return 'https://images.ru.prom.st/537418649_b9-bayan-romans.jpg'
-
-    @staticmethod
-    async def f_func() -> str:
-        return 'F'
 
     @staticmethod
     async def get_num() -> str:
@@ -212,11 +207,17 @@ class BreadServiceHandler(BreadService):
             meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
         )
 
+    async def add_who_choose_key(self) -> str:
+        return await self.add_list_value(
+            meme_type=LocalMemeTypesEnum.WHO_TO_STATS_KEYS.name,
+        )
+
     async def get_quote(self) -> str:
         quote = await ForismaticClient().get_quote_text()
         await self.count_stats(
             member_db=self.member_db,
             stats_enum=StatsEnum.QUOTER,
+            value=StatsEnum.QUOTER.value,
         )
         return f'{quote.text}\n\n© {quote.author}'
 
