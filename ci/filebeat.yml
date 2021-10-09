@@ -1,0 +1,25 @@
+filebeat.inputs:
+- type: container
+  paths:
+    - '/var/lib/docker/containers/*/*.log'
+  multiline.type: pattern
+  multiline.pattern: '^((\[20|20)[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3}(\]|))'
+  multiline.negate: true
+  multiline.match: after
+
+processors:
+- add_docker_metadata:
+    host: "unix:///var/run/docker.sock"
+- decode_json_fields:
+    fields: ["log"]
+    target: "json"
+    overwrite_keys: true
+
+output.elasticsearch:
+  hosts: [elasticsearch]
+
+setup.kibana:
+  host: "kibana"
+
+logging.json: true
+logging.metrics.enabled: false

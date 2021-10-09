@@ -11,7 +11,45 @@ services:
       - ../../environments.env
     networks:
       - bread_bot_net
+  pgbouncer:
+    image: edoburu/pgbouncer
+    env_file:
+      - ../../pgbouncer.env
+    ports:
+      - "5432:5432"
+    networks:
+      - bread_bot_net
 
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.2.0
+    command: -e --strict.perms=false
+    user: root
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - bread_bot_net
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.2.0"
+    environment:
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "discovery.type=single-node"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - bread_bot_net
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:7.2.0"
+    ports:
+      - "5601:5601"
+    networks:
+      - bread_bot_net
+
+volumes:
+  elasticsearch_data:
 networks:
   bread_bot_net:
     external: True
