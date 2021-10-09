@@ -26,8 +26,13 @@ async_engine = create_async_engine(
     max_overflow=DB_POOL_MAX_OVERFLOW,
 )
 
+async_null_pool_engine = create_async_engine(
+    ASYNC_DATABASE_URI,
+    poolclass=NullPool,
+)
+
 AsyncSessionLocal = sessionmaker(
-    bind=async_engine,
+    bind=async_null_pool_engine,
     class_=AsyncSession,
     expire_on_commit=False,
     autoflush=False,
