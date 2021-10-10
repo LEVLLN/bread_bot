@@ -1,5 +1,5 @@
 [coverage:run]
-source=test_project
+source=bread_bot
 omit=*/site-packages/*,*/.eggs/*,*/alembic/*,*/my_app/*,
 
 [report]

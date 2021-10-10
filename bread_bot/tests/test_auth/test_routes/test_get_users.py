@@ -16,6 +16,7 @@ class GetUsersTestCase(unittest.IsolatedAsyncioTestCase):
     def setUpClass(cls) -> None:
         cls.session = asyncio.run(init_async_session())
         cls.data = {
+            'is_admin': True,
             'username': 'test_get_user',
             'email': 'test_get_user@mail.ru',
             'hashed_password': get_password_hash('password'),
@@ -43,23 +44,4 @@ class GetUsersTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertListEqual(
             response.json(),
             [user_schema, ]
-        )
-
-    async def test_public_users(self):
-        async with AsyncClient(app=test_app, base_url=TEST_SERVER_URL) as ac:
-            await User.async_add(db=self.session, instance=self.user)
-            response = await ac.get('/users/public/')
-
-        self.assertListEqual(
-            response.json(),
-            [
-                {
-                    'email': 'test_get_user@mail.ru',
-                    'id': 1,
-                    'surname': None,
-                    'username': 'test_get_user',
-                    'is_active': True,
-                    'first_name': None
-                }
-            ]
         )

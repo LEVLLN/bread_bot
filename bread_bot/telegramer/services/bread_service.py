@@ -193,23 +193,22 @@ class BreadService:
         return unknown_messages
 
     async def handle_free_words(self) -> Optional[str]:
-        free_words_db = await LocalMeme.get_local_meme(
+        free_words_db: LocalMeme = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
         )
-        free_words = structs.FREE_WORDS.copy()
-        if free_words_db is not None:
-            free_words.update(**free_words_db.data)
-        message_text = self.message.text.lower().strip()
-        if message_text not in free_words:
+        if free_words_db is None:
             return None
-        value = free_words.get(message_text, 'упс!')
-        if value == 'F':
-            self.reply_to_message = False
+        message_text = self.message.text.lower().strip()
+        if message_text not in free_words_db.data:
+            return None
+        value = free_words_db.data.get(message_text, 'упс!')
         if isinstance(value, list):
             return random.choice(value)
-        return value
+        elif isinstance(value, str):
+            return value
+        return None
 
     async def handle_substring_words(self) -> Optional[str]:
         substring_words_db = await LocalMeme.get_local_meme(
@@ -234,7 +233,7 @@ class BreadService:
             value = substring_words.get(substring_word.lower().strip(), 'упс!')
             if isinstance(value, list):
                 return random.choice(value)
-            else:
+            elif isinstance(value, str):
                 return value
         return None
 

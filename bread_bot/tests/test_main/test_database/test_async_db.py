@@ -29,6 +29,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.default_user = await User.async_add(
             self.session,
             User(
+                is_admin=False,
                 username='default_user',
                 email='default_user@mail.ru',
                 hashed_password='12345',
@@ -64,6 +65,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
                 'surname': None,
                 'updated_at': self.default_user.updated_at,
                 'username': self.default_user.username,
+                'is_admin': self.default_user.is_admin,
             }
         )
 
