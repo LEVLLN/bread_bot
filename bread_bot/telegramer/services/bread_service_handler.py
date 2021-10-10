@@ -67,17 +67,9 @@ class BreadServiceHandler(BreadService):
         if self.command is None:
             return random.choice(unknown_messages)
 
-        meme_names_db = await LocalMeme.get_local_meme(
-            db=self.db,
-            chat_id=self.chat_id,
-            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
-        )
-        if meme_names_db is not None:
-            if self.command in meme_names_db.data.keys():
-                return await self.regular_phrases(
-                    meme_name=self.command,
-                    meme_name_data=meme_names_db.data
-                )
+        local_bind = await self.handle_binds()
+        if local_bind is not None:
+            return local_bind
 
         if self.command in structs.COMMANDS_MAPPER.keys():
             method = getattr(self, structs.COMMANDS_MAPPER[self.command])
@@ -241,7 +233,7 @@ class BreadServiceHandler(BreadService):
     async def send_fart_voice(self):
         if self.message.voice is not None \
                 and self.message.voice.duration \
-                and self.message.voice.duration >= 1\
+                and self.message.voice.duration >= 1 \
                 and self.chat_db.is_voice_trigger:
             condition = Property.slug == PropertiesEnum.BAD_VOICES.name
             fart_list: Property = await Property.async_first(

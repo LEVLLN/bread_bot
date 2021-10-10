@@ -172,9 +172,9 @@ class BreadService:
             db=self.db,
             filter_expression=Chat.id == chat_id
         )
-        if not member or not chat:
-            return
-        if chat.id in [chat.chat_id for chat in member.chats]:
+        if not member \
+                or not chat \
+                or chat.id in [chat.chat_id for chat in member.chats]:
             return
 
         member.chats.append(ChatToMember(chat_id=chat_id))
@@ -216,38 +216,47 @@ class BreadService:
             chat_id=self.chat_id,
             meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
         )
-        if substring_words_db is None:
-            return None
-        substring_words = substring_words_db.data
-        if not substring_words:
+
+        if substring_words_db is None or not substring_words_db.data:
             return None
 
+        substring_words = substring_words_db.data
         substring_words_mask = self.composite_mask(
             collection=substring_words.keys(),
             split=True,
         )
         regex = f'({substring_words_mask})'
         groups = re.findall(regex, self.message.text, re.IGNORECASE)
+
         if len(groups) > 0:
             substring_word = groups[0]
             value = substring_words.get(substring_word.lower().strip(), 'упс!')
+
             if isinstance(value, list):
                 return random.choice(value)
             elif isinstance(value, str):
                 return value
+
         return None
 
-    @staticmethod
-    async def regular_phrases(
-            meme_name: str,
-            meme_name_data: Union[Dict, List]
-    ) -> str:
-        meme_prefix = random.choice(
-            structs.DEFAULT_PREFIX + [meme_name.capitalize(), ])
-        meme_sequence = meme_name_data.get(meme_name, [])
-        meme_value = random.choice(meme_sequence)
+    async def handle_binds(self) -> Optional[str]:
+        if self.command is None:
+            return None
 
-        return meme_prefix + ' ' + meme_value
+        bind_db: LocalMeme = await LocalMeme.get_local_meme(
+            db=self.db,
+            chat_id=self.chat_id,
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
+        )
+
+        if bind_db is None \
+                or self.command not in bind_db.data:
+            return None
+
+        message_prefix = random.choice(
+            structs.DEFAULT_PREFIX + [self.command.capitalize(), ])
+        message_value = random.choice(bind_db.data.get(self.command, []))
+        return f'{message_prefix} {message_value}'
 
     @staticmethod
     async def get_username(member: MemberSchema) -> str:

@@ -2,12 +2,14 @@ import asyncio
 import json
 import unittest
 
+import respx
 from httpx import Response
 from sqlalchemy import and_
 
 from bread_bot.telegramer.models import Member, \
     LocalMeme, Chat, ChatToMember, Stats
-from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
+from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema, \
+    ChatMemberBodySchema, MemberListSchema
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
@@ -74,6 +76,20 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                     chat_id=cls.default_message.message.chat.id,
                 )
             )
+        )
+        local_meme_name_instance = LocalMeme(
+            type=LocalMemeTypesEnum.MEME_NAMES.name,
+            chat_id=cls.default_message.message.chat.id,
+            data={
+                'test_command': ['test_result'],
+            }
+        )
+        asyncio.run(
+            LocalMeme.async_add(
+                db=cls.session,
+                instance=local_meme_name_instance,
+            )
+
         )
 
     async def test_handle_chat_create(self):
@@ -266,15 +282,6 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_parse_incoming_message_local_meme(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Хлеб test_command params'
-        instance = LocalMeme(
-            type=LocalMemeTypesEnum.MEME_NAMES.name,
-            chat_id=message.message.chat.id,
-            data={'test_command': ['test_result']}
-        )
-        await LocalMeme.async_add(
-            db=self.session,
-            instance=instance,
-        )
         bread_service = BreadService(
             client=self.telegram_client,
             db=self.session,
@@ -338,6 +345,23 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertIsNotNone(chat_to_members)
         self.assertEqual(len(chat_to_members), 2)
+
+    async def test_handle_chats_to_members_empty(self):
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=self.default_message.message,
+        )
+        await bread_service.handle_chats_to_members(100500, 100500)
+        chat_to_members = await ChatToMember.async_filter(
+            db=self.session,
+            filter_expression=and_(
+                ChatToMember.chat_id == 100500,
+                ChatToMember.member_id == 100500,
+            )
+        )
+        self.assertListEqual(chat_to_members, [])
+        self.assertEqual(len(chat_to_members), 0)
 
     async def test_count_stats(self):
         member = await Member.async_add(self.session,
@@ -441,11 +465,15 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_free_words_not_found(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Some free word 1'
-        result = await BreadService(
+        bread_service = BreadService(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
-        ).handle_free_words()
+        )
+        result = await bread_service.handle_free_words()
+        self.assertIsNone(result)
+        bread_service.chat_id = 100500
+        result = await bread_service.handle_free_words()
         self.assertIsNone(result)
 
     async def test_handle_free_words_value_is_dict(self):
@@ -505,7 +533,90 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             message=message.message,
         )
+        self.assertIsNone(await bread_service.handle_substring_words())
+        bread_service.chat_id = 100500
+        self.assertIsNone(await bread_service.handle_substring_words())
+
+    async def test_handle_binds_is_not_command(self):
+        message = self.default_message.copy(deep=True)
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message.message,
+        )
+        self.assertIsNone(await bread_service.handle_binds())
+
+    async def test_handle_binds_command_not_matched(self):
+        message = self.default_message.copy(deep=True)
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message.message,
+        )
+        bread_service.command = 'wrong_bind_in_db'
+        self.assertIsNone(await bread_service.handle_binds())
+
+    async def test_handle_binds_success(self):
+        message = self.default_message.copy(deep=True)
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message.message,
+        )
+        bread_service.command = 'test_command'
         self.assertEqual(
-            await bread_service.handle_substring_words(),
-            None
+            bread_service.command,
+            'test_command',
+        )
+        self.assertIn(
+            'test_result',
+            await bread_service.handle_binds(),
+        )
+
+    async def test_get_member_username(self):
+        member = self.default_message.message.source.copy(deep=True)
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=self.default_message.message,
+        )
+        self.assertEqual(
+            await bread_service.get_username(member=member),
+            f'{member.first_name} {member.last_name}'
+        )
+        member.first_name = ''
+        member.last_name = ''
+        self.assertEqual(
+            await bread_service.get_username(member=member),
+            f'@{member.username}',
+        )
+
+    @respx.mock
+    async def test_get_members(self):
+        members = ChatMemberBodySchema(
+            **{'result': [
+                {'user': {'is_bot': False, 'user_name': 'uname1'}},
+                {'user': {'is_bot': False, 'user_name': 'uname2'}},
+                {'user': {'is_bot': False, 'user_name': 'uname3'}},
+            ]}
+        )
+        content = members.dict()
+        content['ok'] = True
+        response = respx. \
+            post('https://api.telegram.org/bot/getChatAdministrators'). \
+            mock(return_value=Response(
+                status_code=200,
+                content=json.dumps(content)
+            ))
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=self.default_message.message,
+        )
+        await bread_service.get_members()
+        self.assertTrue(response.called)
+        request = response.calls.last.request.read().decode(encoding='utf-8')
+        self.assertEqual(
+            json.loads(request),
+            {'chat_id': self.default_message.message.chat.id}
         )
