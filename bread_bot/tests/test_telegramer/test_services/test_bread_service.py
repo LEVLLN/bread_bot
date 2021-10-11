@@ -70,6 +70,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 data={
                     'my_substring': ['some_answer'],
                     'my_str': 'some_answer',
+                    'ch': 'two_char_answer',
                 },
                 chat_id=cls.default_message.message.chat.id,
             )
@@ -516,6 +517,18 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await bread_service.handle_substring_words(),
             'some_answer'
+        )
+
+    async def test_handle_substring_words_two_char_answer(self):
+        message = self.default_message.copy(deep=True)
+        message.message.text = 'I triggered ch in message'
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message.message,
+        )
+        self.assertIsNone(
+            await bread_service.handle_substring_words(),
         )
 
     async def test_handle_substring_words_as_str(self):

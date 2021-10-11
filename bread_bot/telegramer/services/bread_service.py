@@ -216,7 +216,7 @@ class BreadService:
 
         substring_words = substring_words_db.data
         substring_words_mask = self.composite_mask(
-            collection=substring_words.keys(),
+            collection=filter(lambda x: len(x) >= 3, substring_words.keys()),
             split=False,
         )
         regex = f'({substring_words_mask})'
