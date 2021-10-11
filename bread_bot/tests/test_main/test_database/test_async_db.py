@@ -210,7 +210,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await User.async_filter(
                 self.session,
-                filter_expression=(User.username == user1.username),
+                where=(User.username == user1.username),
                 order_by=User.id
             ),
             [user1]
@@ -218,7 +218,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await User.async_filter(
                 self.session,
-                filter_expression=(User.username == user2.username),
+                where=(User.username == user2.username),
                 order_by=User.id
             ),
             [user2]
@@ -227,7 +227,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await User.async_first(
                 self.session,
-                filter_expression=(User.username == user1.username),
+                where=(User.username == user1.username),
                 order_by=User.id
             ),
             user1
@@ -235,7 +235,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await User.async_first(
                 self.session,
-                filter_expression=(User.username == user2.username),
+                where=(User.username == user2.username),
                 order_by=User.id
             ),
             user2
@@ -244,7 +244,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await User.async_filter(
                 self.session,
-                filter_expression=(User.username.in_(
+                where=(User.username.in_(
                     [
                         user1.username,
                         user2.username,
@@ -259,7 +259,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await User.async_filter(
                 self.session,
-                filter_expression=(User.username.in_(
+                where=(User.username.in_(
                     [
                         user1.username,
                         user2.username,

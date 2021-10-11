@@ -29,7 +29,7 @@ class BreadServiceHandler(BreadService):
                 condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
                 editor_messages: Property = await Property.async_first(
                     db=self.db,
-                    filter_expression=condition,
+                    where=condition,
                 )
                 if editor_messages is None or not editor_messages.data:
                     return
@@ -238,7 +238,7 @@ class BreadServiceHandler(BreadService):
             condition = Property.slug == PropertiesEnum.BAD_VOICES.name
             fart_list: Property = await Property.async_first(
                 db=self.db,
-                filter_expression=condition,
+                where=condition,
             )
             if not fart_list or not fart_list.data:
                 return False

@@ -30,6 +30,6 @@ class LocalMeme(mixins.AbstractIsActiveBaseModel,
             meme_type: str):
         return await cls.async_first(
             db=db,
-            filter_expression=(cls.chat_id == chat_id) &
-                              (cls.type == meme_type)
+            where=(cls.chat_id == chat_id) &
+                  (cls.type == meme_type)
         )

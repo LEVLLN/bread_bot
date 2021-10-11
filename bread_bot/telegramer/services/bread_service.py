@@ -85,7 +85,7 @@ class BreadService:
             stats_enum: StatsEnum) -> Stats:
         stats = await Stats.async_first(
             db=self.db,
-            filter_expression=and_(
+            where=and_(
                 Stats.member_id == member_db.id,
                 Stats.slug == stats_enum.name,
                 Stats.chat_id == self.chat_id
@@ -108,7 +108,7 @@ class BreadService:
     async def handle_member(self, member: MemberSchema) -> Member:
         member_db = await Member.async_first(
             db=self.db,
-            filter_expression=Member.username == member.username
+            where=Member.username == member.username
         )
         if member_db is None:
             member_db: Member = await Member.async_add(
@@ -143,7 +143,7 @@ class BreadService:
 
         chat_db: Chat = await Chat.async_first(
             db=self.db,
-            filter_expression=Chat.chat_id == self.chat_id,
+            where=Chat.chat_id == self.chat_id,
         )
         if chat_db is None:
             chat_db: Chat = await Chat.async_add(
@@ -165,12 +165,12 @@ class BreadService:
     async def handle_chats_to_members(self, member_id: int, chat_id: int):
         member: Member = await Member.async_first(
             db=self.db,
-            filter_expression=Member.id == member_id,
+            where=Member.id == member_id,
             select_in_load=Member.chats
         )
         chat: Chat = await Chat.async_first(
             db=self.db,
-            filter_expression=Chat.id == chat_id
+            where=Chat.id == chat_id
         )
         if not member \
                 or not chat \
@@ -367,7 +367,7 @@ class BreadService:
         statistics = defaultdict(str)
         for stat in await Stats.async_filter(
                 db=self.db,
-                filter_expression=Stats.chat_id == self.chat_id,
+                where=Stats.chat_id == self.chat_id,
                 select_in_load=Stats.member,
                 order_by=Stats.count.desc()
         ):
@@ -394,7 +394,7 @@ class BreadService:
 
         destination_chat: Chat = await Chat.async_first(
             db=self.db,
-            filter_expression=Chat.name == self.params.strip(),
+            where=Chat.name == self.params.strip(),
         )
 
         if destination_chat is None:
@@ -408,7 +408,7 @@ class BreadService:
 
         member: Member = await Member.async_first(
             db=self.db,
-            filter_expression=Member.username == self.message.source.username,
+            where=Member.username == self.message.source.username,
             select_in_load=Member.chats
         )
 
@@ -420,14 +420,14 @@ class BreadService:
 
         destination_local_memes = await LocalMeme.async_filter(
             db=self.db,
-            filter_expression=and_(
+            where=and_(
                 LocalMeme.chat_id == destination_chat.chat_id,
                 LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name
             )
         )
         source_local_memes = await LocalMeme.async_filter(
             db=self.db,
-            filter_expression=and_(
+            where=and_(
                 LocalMeme.chat_id == self.chat_id,
                 LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
             )

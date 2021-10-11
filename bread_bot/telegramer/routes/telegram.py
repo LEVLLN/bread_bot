@@ -44,8 +44,8 @@ async def set_local_meme(
 ):
     local_meme = await LocalMeme.async_first(
         db=db,
-        filter_expression=(LocalMeme.type == request_body.type) &
-                          (LocalMeme.chat_id == request_body.chat_id),
+        where=(LocalMeme.type == request_body.type) &
+              (LocalMeme.chat_id == request_body.chat_id),
     )
     if not local_meme:
         await LocalMeme.async_add_by_schema(
@@ -115,7 +115,7 @@ async def delete_members(
     return {
         'deleted': await Member.async_delete(
             db=db,
-            filter_expression=Member.id == object_id)
+            where=Member.id == object_id)
     }
 
 

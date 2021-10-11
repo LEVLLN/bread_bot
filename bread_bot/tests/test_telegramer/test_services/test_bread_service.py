@@ -101,7 +101,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(
             await Chat.async_first(
                 db=self.session,
-                filter_expression=Chat.chat_id == message.message.chat.id)
+                where=Chat.chat_id == message.message.chat.id)
         )
         bread_service = BreadService(
             client=self.telegram_client,
@@ -113,7 +113,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await Chat.async_first(
                 db=self.session,
-                filter_expression=Chat.chat_id == message.message.chat.id
+                where=Chat.chat_id == message.message.chat.id
             ),
             chat
         )
@@ -137,7 +137,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(
             await Chat.async_first(
                 db=self.session,
-                filter_expression=Chat.chat_id == message.message.chat.id)
+                where=Chat.chat_id == message.message.chat.id)
         )
         bread_service = BreadService(
             client=self.telegram_client,
@@ -150,7 +150,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await Chat.async_first(
                 db=self.session,
-                filter_expression=Chat.chat_id == message.message.chat.id
+                where=Chat.chat_id == message.message.chat.id
             ),
             chat
         )
@@ -166,7 +166,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(
             await Member.async_first(
                 db=self.session,
-                filter_expression=filter_param
+                where=filter_param
             )
         )
         bread_service = BreadService(
@@ -179,8 +179,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await Member.async_first(
                 db=self.session,
-                filter_expression=filter_param
-
+                where=filter_param
             ),
             member
         )
@@ -194,11 +193,11 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 username=message.message.source.username,
             )
         )
+        filter_param = Member.username == message.message.source.username
         self.assertIsNotNone(
             await Member.async_first(
                 db=self.session,
-                filter_expression=
-                Member.username == message.message.source.username)
+                where=filter_param)
         )
         self.assertIsNone(
             member.member_id,
@@ -219,8 +218,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await Member.async_first(
                 db=self.session,
-                filter_expression=
-                Member.username == message.message.source.username
+                where=filter_param
             ),
             member
         )
@@ -328,7 +326,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         await bread_service.handle_chats_to_members(member.id, chat.id)
         chat_to_members = await ChatToMember.async_filter(
             db=self.session,
-            filter_expression=and_(
+            where=and_(
                 ChatToMember.chat_id == chat.id,
                 ChatToMember.member_id == member.id,
             )
@@ -340,7 +338,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         await bread_service.handle_chats_to_members(second_member.id, chat.id)
         chat_to_members = await ChatToMember.async_filter(
             db=self.session,
-            filter_expression=and_(
+            where=and_(
                 ChatToMember.chat_id == chat.id,
                 ChatToMember.member_id.in_([second_member.id, member.id])
             )
@@ -357,7 +355,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         await bread_service.handle_chats_to_members(100500, 100500)
         chat_to_members = await ChatToMember.async_filter(
             db=self.session,
-            filter_expression=and_(
+            where=and_(
                 ChatToMember.chat_id == 100500,
                 ChatToMember.member_id == 100500,
             )
@@ -376,7 +374,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(
             await Stats.async_first(
                 db=self.session,
-                filter_expression=and_(
+                where=and_(
                     Stats.member_id == member.id,
                     Stats.chat_id == chat.chat_id,
                     Stats.slug == StatsEnum.EDITOR.name,
@@ -392,7 +390,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                                         stats_enum=StatsEnum.EDITOR)
         stats = await Stats.async_first(
             db=self.session,
-            filter_expression=and_(
+            where=and_(
                 Stats.member_id == member.id,
                 Stats.chat_id == chat.chat_id,
                 Stats.slug == StatsEnum.EDITOR.name,
@@ -607,9 +605,9 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         response = respx. \
             post('https://api.telegram.org/bot/getChatAdministrators'). \
             mock(return_value=Response(
-            status_code=200,
-            content=json.dumps(content)
-        ))
+                status_code=200,
+                content=json.dumps(content)
+            ))
         bread_service = BreadService(
             client=self.telegram_client,
             db=self.session,

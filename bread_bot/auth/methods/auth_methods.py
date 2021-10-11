@@ -86,7 +86,7 @@ async def get_current_user(
         raise credentials_exception
     user = await User.async_first(
         db=db,
-        filter_expression=User.username == token_data.username,
+        where=User.username == token_data.username,
     )
     if user is None:
         raise credentials_exception

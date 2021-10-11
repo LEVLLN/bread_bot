@@ -37,4 +37,3 @@ exclude_lines =
 
 [html]
 title = BreadBot Coverage
-directory = coverage

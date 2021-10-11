@@ -65,7 +65,7 @@ class CRUDMixin(object):
     async def _async_filter(
             cls,
             db: AsyncSession,
-            filter_expression,
+            where,
             select_in_load,
             order_by,
             limit,
@@ -74,15 +74,15 @@ class CRUDMixin(object):
         Составление select запроса с фильтрами и ограничениями
 
         :param db: Сессия Базы Данных
-        :param filter_expression: Выражение для where
+        :param where: Выражение для where
         :param select_in_load: Загрузка связанных объектов по ключу
         :param order_by: Группировка по полю
         :param limit: Ограничение количества записей
         """
         expression = select(cls)
-        if filter_expression is not None:
+        if where is not None:
             expression = expression.where(
-                filter_expression
+                where
             )
         if select_in_load is not None:
             expression = expression.options(
@@ -104,18 +104,18 @@ class CRUDMixin(object):
     async def async_delete(
             cls,
             db: AsyncSession,
-            filter_expression,
+            where,
     ) -> bool:
         """
         Удаление объектов
 
         :param db: Сессия Базы Данных
-        :param filter_expression: Выражение для where
+        :param where: Выражение для where
         """
         expression = delete(cls)
-        if filter_expression is not None:
+        if where is not None:
             expression = expression.where(
-                filter_expression
+                where
             )
         logger.debug(expression)
 
@@ -133,14 +133,14 @@ class CRUDMixin(object):
     async def async_filter(
             cls,
             db: AsyncSession,
-            filter_expression=None,
+            where=None,
             select_in_load=None,
             order_by=None,
             limit=None,
     ):
         scalars = await cls._async_filter(
             db,
-            filter_expression,
+            where,
             select_in_load,
             order_by=order_by,
             limit=limit,
@@ -153,13 +153,13 @@ class CRUDMixin(object):
     async def async_first(
             cls,
             db: AsyncSession,
-            filter_expression=None,
+            where=None,
             select_in_load=None,
             order_by=None,
     ):
         scalars = await cls._async_filter(
             db,
-            filter_expression,
+            where,
             select_in_load,
             order_by=order_by,
             limit=1

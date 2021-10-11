@@ -61,7 +61,7 @@ class GetMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
         member: Member = await Member.async_first(
             db=self.session,
-            filter_expression=Member.username == 'Lev_key'
+            where=Member.username == 'Lev_key'
         )
         self.assertEqual(
             member.username,
