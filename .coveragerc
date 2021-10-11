@@ -1,14 +1,40 @@
 [coverage:run]
 source=bread_bot
-omit=*/site-packages/*,*/.eggs/*,*/alembic/*,*/my_app/*,
+
+omit =
+    tests.py
+    test_*.py
+    *_tests.py
+    */tests/*
+    */migrations/*
+    */site-packages/*
+    */alembic/*
+    *__init__.py
 
 [report]
+precision = 1
+include = *.py
+show_missing = False
+omit =
+    tests.py
+    *test_*.py
+    */tests/*
+    */alembic/*
+    */site-packages/*
+    */factories/*
+    *__init__.py
+
 exclude_lines =
     pragma: no cover
     def __repr__
+    def __str__
+    if __name__ == '__main__':
     if self.debug:
     if settings.DEBUG
     raise AssertionError
     raise NotImplementedError
     if 0:
-    if __name__ == .__main__.:
+
+[html]
+title = BreadBot Coverage
+directory = coverage
