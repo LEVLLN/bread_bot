@@ -52,43 +52,37 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 }
             }
         )
-        asyncio.run(LocalMeme.async_add(
+        asyncio.run(LocalMeme.async_add_by_kwargs(
             db=cls.session,
-            instance=LocalMeme(
-                type=LocalMemeTypesEnum.FREE_WORDS.name,
+            type=LocalMemeTypesEnum.FREE_WORDS.name,
+            data={
+                'some free word str': 'value',
+                'some_free_word': ['default answer'],
+                'some free word 3': {'default answer': 'value'},
+                'some free word 2': ['default answer']
+            },
+            chat_id=cls.default_message.message.chat.id,
+        ))
+        asyncio.run(
+            LocalMeme.async_add_by_kwargs(
+                db=cls.session,
+                type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
                 data={
-                    'some free word str': 'value',
-                    'some_free_word': ['default answer'],
-                    'some free word 3': {'default answer': 'value'},
-                    'some free word 2': ['default answer']
+                    'my_substring': ['some_answer'],
+                    'my_str': 'some_answer',
                 },
                 chat_id=cls.default_message.message.chat.id,
             )
-        ))
-        asyncio.run(
-            LocalMeme.async_add(
-                db=cls.session,
-                instance=LocalMeme(
-                    type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
-                    data={
-                        'my_substring': ['some_answer'],
-                        'my_str': 'some_answer',
-                    },
-                    chat_id=cls.default_message.message.chat.id,
-                )
-            )
         )
-        local_meme_name_instance = LocalMeme(
-            type=LocalMemeTypesEnum.MEME_NAMES.name,
-            chat_id=cls.default_message.message.chat.id,
-            data={
-                'test_command': ['test_result'],
-            }
-        )
+
         asyncio.run(
-            LocalMeme.async_add(
+            LocalMeme.async_add_by_kwargs(
                 db=cls.session,
-                instance=local_meme_name_instance,
+                type=LocalMemeTypesEnum.MEME_NAMES.name,
+                chat_id=cls.default_message.message.chat.id,
+                data={
+                    'test_command': ['test_result'],
+                }
             )
 
         )
@@ -187,11 +181,9 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_member_update(self):
         message = self.default_message.copy(deep=True)
         message.message.source.username = 'test_user'
-        member = await Member.async_add(
+        member = await Member.async_add_by_kwargs(
             db=self.session,
-            instance=Member(
-                username=message.message.source.username,
-            )
+            username=message.message.source.username,
         )
         filter_param = Member.username == message.message.source.username
         self.assertIsNotNone(
@@ -319,10 +311,10 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             message=message.message,
         )
-        member = Member(username='Binder')
-        chat = Chat(name='BinderGroup', chat_id=20000)
-        await Member.async_add(self.session, member)
-        await Chat.async_add(self.session, chat)
+        member = await Member.async_add_by_kwargs(
+            self.session, username='Binder')
+        chat = await Chat.async_add_by_kwargs(
+            self.session, name='BinderGroup', chat_id=20000)
         await bread_service.handle_chats_to_members(member.id, chat.id)
         chat_to_members = await ChatToMember.async_filter(
             db=self.session,
@@ -333,8 +325,8 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertIsNotNone(chat_to_members)
         self.assertEqual(len(chat_to_members), 1)
-        second_member = Member(username='Binder2')
-        await Member.async_add(self.session, second_member)
+        second_member = await Member.async_add_by_kwargs(
+            self.session, username='Binder2')
         await bread_service.handle_chats_to_members(second_member.id, chat.id)
         chat_to_members = await ChatToMember.async_filter(
             db=self.session,
@@ -364,10 +356,13 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(chat_to_members), 0)
 
     async def test_count_stats(self):
-        member = await Member.async_add(self.session,
-                                        Member(username='Statistic'))
-        chat = await Chat.async_add(self.session,
-                                    Chat(name='StatisticGroup', chat_id=20001))
+        member = await Member.async_add_by_kwargs(
+            self.session,
+            username='Statistic')
+        chat = await Chat.async_add_by_kwargs(
+            self.session,
+            name='StatisticGroup',
+            chat_id=20001)
         message = self.default_message.copy(deep=True)
         message.message.source.username = member.username
         message.message.chat.id = chat.chat_id
@@ -420,13 +415,11 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             result,
             structs.DEFAULT_UNKNOWN_MESSAGE,
         )
-        local_memes = await LocalMeme.async_add(
+        local_memes = await LocalMeme.async_add_by_kwargs(
             db=self.session,
-            instance=LocalMeme(
-                type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
-                data=['some', 'some test', 'test something'],
-                chat_id=message.message.chat.id,
-            )
+            type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+            data=['some', 'some test', 'test something'],
+            chat_id=message.message.chat.id,
         )
         result = await BreadService(
             client=self.telegram_client,
@@ -502,6 +495,19 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_substring_words_as_list(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'I triggered my_substring in message'
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message.message,
+        )
+        self.assertEqual(
+            await bread_service.handle_substring_words(),
+            'some_answer'
+        )
+
+    async def test_handle_substring_words_dirty(self):
+        message = self.default_message.copy(deep=True)
+        message.message.text = 'I triggered amy_substrings in message'
         bread_service = BreadService(
             client=self.telegram_client,
             db=self.session,

@@ -92,14 +92,12 @@ class BreadService:
             )
         )
         if stats is None:
-            stats = await Stats.async_add(
+            stats = await Stats.async_add_by_kwargs(
                 db=self.db,
-                instance=Stats(
-                    member_id=member_db.id,
-                    slug=stats_enum.name,
-                    count=1,
-                    chat_id=self.chat_id,
-                ),
+                member_id=member_db.id,
+                slug=stats_enum.name,
+                count=1,
+                chat_id=self.chat_id,
             )
         else:
             stats.count = stats.count + 1
@@ -111,14 +109,12 @@ class BreadService:
             where=Member.username == member.username
         )
         if member_db is None:
-            member_db: Member = await Member.async_add(
+            member_db: Member = await Member.async_add_by_kwargs(
                 db=self.db,
-                instance=Member(
-                    username=member.username,
-                    first_name=member.first_name,
-                    last_name=member.last_name,
-                    is_bot=member.is_bot,
-                )
+                username=member.username,
+                first_name=member.first_name,
+                last_name=member.last_name,
+                is_bot=member.is_bot,
             )
         else:
             is_updated = False
@@ -146,12 +142,10 @@ class BreadService:
             where=Chat.chat_id == self.chat_id,
         )
         if chat_db is None:
-            chat_db: Chat = await Chat.async_add(
+            chat_db: Chat = await Chat.async_add_by_kwargs(
                 db=self.db,
-                instance=Chat(
-                    name=title,
-                    chat_id=self.chat_id
-                )
+                name=title,
+                chat_id=self.chat_id
             )
         elif chat_db.name != title:
             chat_db.name = title
@@ -223,7 +217,7 @@ class BreadService:
         substring_words = substring_words_db.data
         substring_words_mask = self.composite_mask(
             collection=substring_words.keys(),
-            split=True,
+            split=False,
         )
         regex = f'({substring_words_mask})'
         groups = re.findall(regex, self.message.text, re.IGNORECASE)
@@ -283,13 +277,11 @@ class BreadService:
             meme_type=meme_type,
         )
         if local_meme is None:
-            await LocalMeme.async_add(
+            await LocalMeme.async_add_by_kwargs(
                 self.db,
-                LocalMeme(
-                    chat_id=self.chat_id,
-                    type=meme_type,
-                    data={meme_name: [value]}
-                )
+                chat_id=self.chat_id,
+                type=meme_type,
+                data={meme_name: [value]}
             )
             return f'Ура! У группы появились свои ключевые слова: {meme_type}'
 
@@ -347,13 +339,11 @@ class BreadService:
             meme_type=meme_type,
         )
         if local_meme is None:
-            await LocalMeme.async_add(
+            await LocalMeme.async_add_by_kwargs(
                 self.db,
-                LocalMeme(
-                    chat_id=self.chat_id,
-                    type=meme_type,
-                    data=[value]
-                )
+                chat_id=self.chat_id,
+                type=meme_type,
+                data=[value]
             )
             return 'Ура! У группы появились свои оригинальные ответы'
 

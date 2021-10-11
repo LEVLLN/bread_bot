@@ -243,6 +243,14 @@ class CRUDMixin(object):
             return instance
 
     @classmethod
+    async def async_add_by_kwargs(cls, db: AsyncSession, **kwargs):
+        """
+        Async Create/Update by kwargs
+        """
+        instance = cls(**kwargs)
+        return await cls.async_add(db, instance)
+
+    @classmethod
     async def async_add_by_schema(cls, db: AsyncSession, instance_schema):
         """
         Async create/update by instance_schema
@@ -251,8 +259,7 @@ class CRUDMixin(object):
         :param instance_schema: Pydantic schema
         """
         instance = cls(**instance_schema.dict())
-        await cls.async_add(db, instance)
-        return instance
+        return await cls.async_add(db, instance)
 
     @classmethod
     def offset_records(cls, db: Session, offset_params: OffsetQueryParams):
