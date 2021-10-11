@@ -1,7 +1,7 @@
 import random
 from typing import Optional
 
-from bread_bot.telegramer.models import LocalMeme, Chat, Property, Member
+from bread_bot.telegramer.models import Chat, Property, Member
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils import structs

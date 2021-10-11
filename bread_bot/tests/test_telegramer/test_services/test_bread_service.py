@@ -8,8 +8,9 @@ from sqlalchemy import and_
 
 from bread_bot.telegramer.models import Member, \
     LocalMeme, Chat, ChatToMember, Stats
-from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema, \
-    ChatMemberBodySchema, MemberListSchema
+from bread_bot.telegramer.schemas.telegram_messages import \
+    StandardBodySchema, \
+    ChatMemberBodySchema
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
@@ -161,11 +162,12 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_member_create(self):
         message = self.default_message.copy(deep=True)
         message.message.source.username = 'Toster'
+        filter_param = Member.username == message.message.source.username
         self.assertIsNone(
             await Member.async_first(
                 db=self.session,
-                filter_expression=
-                Member.username == message.message.source.username)
+                filter_expression=filter_param
+            )
         )
         bread_service = BreadService(
             client=self.telegram_client,
@@ -177,8 +179,8 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             await Member.async_first(
                 db=self.session,
-                filter_expression=
-                Member.username == message.message.source.username
+                filter_expression=filter_param
+
             ),
             member
         )
@@ -605,9 +607,9 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         response = respx. \
             post('https://api.telegram.org/bot/getChatAdministrators'). \
             mock(return_value=Response(
-                status_code=200,
-                content=json.dumps(content)
-            ))
+            status_code=200,
+            content=json.dumps(content)
+        ))
         bread_service = BreadService(
             client=self.telegram_client,
             db=self.session,

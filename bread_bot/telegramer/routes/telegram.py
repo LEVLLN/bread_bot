@@ -4,7 +4,6 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.requests import Request
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.telegramer.models import LocalMeme, Chat, Member
@@ -95,8 +94,9 @@ async def get_members(db: AsyncSession = Depends(get_async_session)):
 @router.get('/members/{object_id}',
             response_model=MemberDBSchema,
             dependencies=[Depends(get_current_active_admin_user)])
-async def get_member_by_id(object_id: int,
-                      db: AsyncSession = Depends(get_async_session)):
+async def get_member_by_id(
+        object_id: int,
+        db: AsyncSession = Depends(get_async_session)):
     member = await Member.async_first(db, Member.id == object_id)
     if member is None:
         raise HTTPException(

@@ -2,7 +2,7 @@ import logging
 import random
 import re
 from collections import defaultdict
-from typing import List, Union, Dict, Optional
+from typing import List, Optional
 
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
