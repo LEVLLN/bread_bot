@@ -639,3 +639,74 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             json.loads(request),
             {'chat_id': self.default_message.message.chat.id}
         )
+
+    async def test_add_local_meme(self):
+        message = self.default_message.message.copy(deep=True)
+        message.chat.id = 12321123
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        bread_service.params = 'param=value1'
+        # Create
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
+        )
+        self.assertIsNone(local_meme)
+        result = await bread_service.add_local_meme(
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name
+        )
+        self.assertEqual(
+            result,
+            f'Ура! У группы появились '
+            f'свои ключевые слова: {LocalMemeTypesEnum.MEME_NAMES.name}'
+        )
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
+        )
+        self.assertIsNotNone(local_meme)
+        self.assertEqual(
+            local_meme.data,
+            {'param': ['value1']}
+        )
+        # Add new value
+        bread_service.params = 'param=value2'
+        result = await bread_service.add_local_meme(
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name
+        )
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
+        )
+        self.assertEqual(
+            local_meme.data,
+            {'param': ['value1', 'value2']}
+        )
+        # Add new key
+        bread_service.params = 'param1=value1'
+        result = await bread_service.add_local_meme(
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name
+        )
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
+        )
+        self.assertEqual(
+            local_meme.data,
+            {'param': ['value1', 'value2'], 'param1': ['value1']}
+        )
