@@ -84,10 +84,10 @@ class StatsEnum(Enum):
 
 
 class LocalMemeTypesEnum(Enum):
-    MEME_NAMES = 'Локальные команды'
+    MEME_NAMES = 'Привязки'
     UNKNOWN_MESSAGE = 'Фразы на отсутствующие команды'
     FREE_WORDS = 'Триггеры'
-    SUBSTRING_WORDS = 'Входящие значения'
+    SUBSTRING_WORDS = 'Подстроки'
 
 
 class PropertiesEnum(Enum):

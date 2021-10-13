@@ -661,8 +661,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(
             result,
-            f'Ура! У группы появились '
-            f'свои ключевые слова: {LocalMemeTypesEnum.MEME_NAMES.name}'
+            'Ура! У группы появились Привязки'
         )
         local_meme = await LocalMeme.get_local_meme(
             db=self.session,
@@ -709,4 +708,391 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             local_meme.data,
             {'param': ['value1', 'value2'], 'param1': ['value1']}
+        )
+
+    async def test_delete_local_meme(self):
+        message = self.default_message.message.copy(deep=True)
+        message.chat.id = 12321122
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        bread_service.params = 'param4'
+        # Chat does not has local_memes
+        result = await bread_service.delete_local_meme(
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
+        self.assertEqual(
+            result,
+            'У чата отсутствуют Триггеры'
+        )
+        await LocalMeme.async_add_by_kwargs(
+            db=self.session,
+            type=LocalMemeTypesEnum.FREE_WORDS.name,
+            data={
+                'param1': ['value1'],
+                'param2': ['value2'],
+                'param3': ['value3'],
+            },
+            chat_id=message.chat.id,
+        )
+        # Delete not existed key
+        result = await bread_service.delete_local_meme(
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
+        )
+        self.assertEqual(
+            result,
+            'У чата отсутствуют Триггеры'
+        )
+        self.assertEqual(
+            len(local_meme.data.keys()),
+            3
+        )
+        # Delete
+        bread_service.params = 'param3'
+        result = await bread_service.delete_local_meme(
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
+        )
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+        self.assertDictEqual(
+            local_meme.data,
+            {'param1': ['value1'], 'param2': ['value2']}
+        )
+
+    async def test_show_local_memes(self):
+        message = self.default_message.message.copy(deep=True)
+        message.chat.id = 12321121
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        # local_memes does not exists
+        bread_service.params = 'param1'
+        result = await bread_service.show_local_memes(
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
+        )
+        self.assertEqual(
+            result,
+            'У группы отсутствуют Триггеры'
+        )
+        local_meme = await LocalMeme.async_add_by_kwargs(
+            db=self.session,
+            type=LocalMemeTypesEnum.FREE_WORDS.name,
+            data={},
+            chat_id=message.chat.id,
+        )
+        # local_meme does not have data
+        result = await bread_service.show_local_memes(
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
+        )
+        self.assertEqual(
+            local_meme.data,
+            {}
+        )
+        self.assertEqual(
+            result,
+            'У группы отсутствуют Триггеры'
+        )
+        # show local_memes
+        local_meme.data = {
+            'param1': ['value1'],
+            'param2': ['value2'],
+            'param3': ['value3'],
+        }
+        local_meme = await LocalMeme.async_add(
+            db=self.session,
+            instance=local_meme
+        )
+        result = await bread_service.show_local_memes(
+            meme_type=LocalMemeTypesEnum.FREE_WORDS.name,
+        )
+        self.assertDictEqual(
+            local_meme.data,
+            {
+                'param1': ['value1'],
+                'param2': ['value2'],
+                'param3': ['value3'],
+            }
+        )
+        self.assertEqual(
+            result,
+            '\n'.join(['param1', 'param2', 'param3'])
+        )
+
+    async def test_add_list_value(self):
+        message = self.default_message.message.copy(deep=True)
+        message.chat.id = 12321120
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        # Create local_meme object
+        bread_service.params = 'value1'
+        result = await bread_service.add_list_value(
+            LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+        )
+        result_name = LocalMemeTypesEnum[
+            str(LocalMemeTypesEnum.UNKNOWN_MESSAGE.name)]
+        local_meme = await LocalMeme.get_local_meme(
+            db=self.session,
+            chat_id=message.chat.id,
+            meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+        )
+        self.assertEqual(
+            result,
+            f'Ура! У группы появились {result_name.value}'
+        )
+        self.assertEqual(
+            len(local_meme.data),
+            1
+        )
+        self.assertIsInstance(local_meme.data, list)
+        # Add new value
+        bread_service.params = 'value2'
+        result = await bread_service.add_list_value(
+            LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+        )
+
+        self.assertEqual(
+            len(local_meme.data),
+            2
+        )
+        self.assertListEqual(
+            local_meme.data,
+            ['value1', 'value2']
+        )
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+        # Add already existed value
+        bread_service.params = 'value2'
+        result = await bread_service.add_list_value(
+            LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+        )
+        self.assertEqual(
+            len(local_meme.data),
+            2
+        )
+        self.assertListEqual(
+            local_meme.data,
+            ['value1', 'value2']
+        )
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+
+    async def test_show_stats(self):
+        message = self.default_message.message.copy(deep=True)
+        message.chat.id = 12321155
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        # Stats does not exists
+        result = await bread_service.show_stats()
+        self.assertEqual(
+            result,
+            'Пока не набрал статистики'
+        )
+        # Show stats
+        member = await bread_service.handle_member(member=message.source)
+        chat = await bread_service.handle_chat()
+        await bread_service.handle_chats_to_members(member.id, chat.id)
+        stats = []
+        for stat_name in [StatsEnum.QUOTER.name,
+                          StatsEnum.TOTAL_CALL_SLUG.name]:
+            stats.append(
+                Stats(
+                    member_id=member.id,
+                    chat_id=chat.chat_id,
+                    slug=stat_name,
+                    count=1,
+                )
+            )
+        await Stats.async_add_all(
+            db=self.session,
+            instances=stats,
+        )
+        result = await bread_service.show_stats()
+        self.assertEqual(
+            result,
+            'Сколько раз просил цитату:\n'
+            'Tester Testerov - 1\n\n\nСколько раз вызвал бота:\n'
+            'Tester Testerov - 1\n\n\n'
+        )
+        # Sorting with other members in same stats slug
+        new_member = message.source.copy(deep=True)
+        new_member.id = 4040
+        new_member.username = 'clicker'
+        new_member.first_name = 'Click'
+        new_member.last_name = 'Clickovich'
+        member = await bread_service.handle_member(member=new_member)
+        await Stats.async_add_by_kwargs(
+            db=self.session,
+            member_id=member.id,
+            chat_id=chat.chat_id,
+            slug=StatsEnum.QUOTER.name,
+            count=9,
+        )
+        result = await bread_service.show_stats()
+        self.assertEqual(
+            result,
+            'Сколько раз просил цитату:\n'
+            'Click Clickovich - 9\nTester Testerov - 1\n\n\n'
+            'Сколько раз вызвал бота:\n'
+            'Tester Testerov - 1\n\n\n'
+        )
+
+    async def test_propagate_members_memes(self):
+        message = self.default_message.message.copy(deep=True)
+        source_chat = await Chat.async_add_by_kwargs(
+            db=self.session,
+            chat_id=5555,
+            name='SourceChat'
+        )
+        member_schema = message.source
+        member_schema.id = 5555
+        member_schema.first_name = 'Source Name'
+        member_schema.last_name = 'LastName'
+        member = await Member.async_add_by_kwargs(
+            db=self.session,
+            username=member_schema.username,
+            first_name=member_schema.first_name,
+            last_name=member_schema.last_name,
+            member_id=member_schema.id,
+        )
+        message.chat.id = source_chat.id
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        bread_service.params = 'DestinationChat'
+        # Without destination chat in DB
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Не найдено чата для отправки'
+        )
+        # Member to member sending
+        destination_chat = await Chat.async_add_by_kwargs(
+            db=self.session,
+            chat_id=6666,
+            name='DestinationChat'
+        )
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Невозможно копировать другим людям свои данные'
+        )
+        # Member to group without permission to chat
+        destination_chat.chat_id = -6666
+        destination_chat = await Chat.async_add(
+            db=self.session,
+            instance=destination_chat,
+        )
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Нет прав на указанный чат'
+        )
+        # Source chat is not a member
+        bread_service.chat_id = -5555
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Нельзя из чата копировать в другой чат. '
+            'Только из личных сообщений с ботом!'
+        )
+        # member not exists
+        bread_service.chat_id = 5555
+        member.username = 'ChangedUsername'
+        await Member.async_add(
+            db=self.session,
+            instance=member,
+        )
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Что-то пошло не так'
+        )
+        # LocalMemes not found
+        member.username = 'Source Name'
+        member = await Member.async_add(
+            db=self.session,
+            instance=member,
+        )
+        message.source.username = 'Source Name'
+        bread_service = BreadService(
+            client=self.telegram_client,
+            db=self.session,
+            message=message,
+        )
+        bread_service.params = 'DestinationChat'
+        await bread_service.handle_chats_to_members(
+            member_id=member.id,
+            chat_id=destination_chat.id,
+        )
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Не найдено данных для копирования'
+        )
+        # Create key
+        source_local_meme = await LocalMeme.async_add_by_kwargs(
+            self.session,
+            chat_id=bread_service.chat_id,
+            type=LocalMemeTypesEnum.MEME_NAMES.name,
+            data={
+                'param1': ['value1']
+            }
+        )
+        destination_local_meme = await LocalMeme.async_add_by_kwargs(
+            self.session,
+            chat_id=destination_chat.chat_id,
+            type=LocalMemeTypesEnum.MEME_NAMES.name,
+            data={}
+        )
+
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+        await self.session.refresh(destination_local_meme)
+        self.assertEqual(
+            destination_local_meme.data,
+            {'param1': ['value1']}
+        )
+        # Add value to same key
+        data = {'param1': ['value1', 'value2']}
+        source_local_meme.data = data
+        await LocalMeme.async_add(
+            db=self.session,
+            instance=source_local_meme,
+        )
+        result = await bread_service.propagate_members_memes()
+        self.assertEqual(
+            result,
+            'Сделал'
+        )
+        self.assertEqual(
+            destination_local_meme.data,
+            {'param1': ['value1', 'value1', 'value2']}
         )

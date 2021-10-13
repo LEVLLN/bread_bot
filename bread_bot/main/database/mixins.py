@@ -224,7 +224,7 @@ class CRUDMixin(object):
             cls,
             db: AsyncSession,
             instance: 'CRUDMixin',
-    ):
+    ) -> 'CRUDMixin':
         """
         Async Create/Update by instance
         """
@@ -239,6 +239,7 @@ class CRUDMixin(object):
                 await db.refresh(instance)
             except Exception:
                 logger.debug(f'Невозможно обновить объект: {instance}')
+                return instance
             logger.info(f'Создан/Обновлён {cls.__name__}: {instance}')
             return instance
 

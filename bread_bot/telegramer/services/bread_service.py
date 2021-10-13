@@ -283,7 +283,8 @@ class BreadService:
                 type=meme_type,
                 data={meme_name: [value]}
             )
-            return f'Ура! У группы появились свои ключевые слова: {meme_type}'
+            return f'Ура! У группы появились' \
+                   f' {LocalMemeTypesEnum[meme_type].value}'
 
         data = local_meme.data.copy()
 
@@ -307,13 +308,13 @@ class BreadService:
             meme_type=meme_type,
         )
         if local_meme is None:
-            return 'У чата нет своих ключевых слов'
+            return f'У чата отсутствуют {LocalMemeTypesEnum[meme_type].value}'
 
         data = local_meme.data.copy()
         if value in data.keys():
             del data[value]
         else:
-            return 'Ключевого слова и не было'
+            return f'У чата отсутствуют {LocalMemeTypesEnum[meme_type].value}'
 
         local_meme.data = data
         await LocalMeme.async_add(self.db, local_meme)
@@ -325,10 +326,9 @@ class BreadService:
             chat_id=self.chat_id,
             meme_type=meme_type,
         )
-        if local_meme is None:
-            return 'У группы еще нет локальных ключевых слов'
-        if not local_meme.data:
-            return 'У группы еще нет локальных ключевых слов'
+        if local_meme is None or not local_meme.data:
+            return f'У группы отсутствуют ' \
+                   f'{LocalMemeTypesEnum[meme_type].value}'
         return '\n'.join(local_meme.data.keys())
 
     async def add_list_value(self, meme_type: str) -> str:
@@ -345,12 +345,17 @@ class BreadService:
                 type=meme_type,
                 data=[value]
             )
-            return 'Ура! У группы появились свои оригинальные ответы'
+            return f'Ура! У группы появились ' \
+                   f'{LocalMemeTypesEnum[meme_type].value}'
+
+        if value in local_meme.data:
+            return 'Сделал'
 
         data = local_meme.data.copy()
         data.append(value)
         local_meme.data = data
         await LocalMeme.async_add(self.db, local_meme)
+
         return 'Сделал'
 
     async def show_stats(self) -> str:
@@ -390,11 +395,9 @@ class BreadService:
         if destination_chat is None:
             return 'Не найдено чата для отправки'
 
-        if destination_chat.chat_id > 0:
+        if destination_chat.chat_id > 0 \
+                or destination_chat.chat_id == self.chat_id:
             return 'Невозможно копировать другим людям свои данные'
-
-        if destination_chat.chat_id == self.chat_id:
-            return 'Нельзя распространять себе в личку'
 
         member: Member = await Member.async_first(
             db=self.db,
@@ -423,7 +426,7 @@ class BreadService:
             )
         )
 
-        if not source_local_memes or not destination_local_memes:
+        if not source_local_memes and not destination_local_memes:
             return 'Не найдено данных для копирования'
 
         data_to_add = defaultdict(lambda: defaultdict(list))
