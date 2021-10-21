@@ -1,7 +1,7 @@
 import random
 from typing import Optional
 
-from bread_bot.telegramer.models import Chat, Property, Member
+from bread_bot.telegramer.models import Chat, Property
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils import structs
@@ -12,98 +12,41 @@ from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum, \
 class BreadServiceHandler(BreadService):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.member_db: Optional[Member] = None
-        self.chat_db: Optional[Chat] = None
 
     async def build_message(self) -> Optional[str]:
-        self.member_db = await self.handle_member(member=self.message.source)
-        self.chat_db = await self.handle_chat()
-        await self.handle_chats_to_members(self.member_db.id, self.chat_db.id)
+        await self.init_handler()
 
-        has_voice_sent = await self.send_fart_voice()
-        if has_voice_sent:
-            return None
-
-        if self.is_edited:
-            if self.chat_db.is_edited_trigger:
-                condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
-                editor_messages: Property = await Property.async_first(
-                    db=self.db,
-                    where=condition,
-                )
-                if editor_messages is None or not editor_messages.data:
-                    return
-                await self.count_stats(
-                    member_db=self.member_db,
-                    stats_enum=StatsEnum.EDITOR,
-                )
-                return random.choice(editor_messages.data)
-            else:
-                return None
-
-        free_word = await self.handle_free_words()
-        if free_word is not None:
-            return free_word
-
-        substring_word = await self.handle_substring_words()
-
-        try:
-            await self.parse_incoming_message()
-        except Exception:
-            if substring_word is not None:
-                return substring_word
+        if self.trigger_word:
             await self.count_stats(
                 member_db=self.member_db,
-                stats_enum=StatsEnum.FLUDER,
+                stats_enum=StatsEnum.TOTAL_CALL_SLUG,
             )
-            return None
 
-        await self.count_stats(
-            member_db=self.member_db,
-            stats_enum=StatsEnum.TOTAL_CALL_SLUG,
-        )
+        for handler in [
+            self.send_fart_voice,
+            self.handle_edited_words,
+            self.handle_command_words,
+            self.handle_free_words,
+            self.handle_bind_words,
+            self.handle_substring_words,
+            self.handle_unknown_words
+        ]:
+            result = await handler()
 
-        unknown_messages = await self.get_unknown_messages()
-        if self.command is None:
-            return random.choice(unknown_messages)
+            if result:
+                return result
 
-        local_bind = await self.handle_binds()
-        if local_bind is not None:
-            return local_bind
-
-        if self.command in structs.COMMANDS_MAPPER.keys():
-            method = getattr(self, structs.COMMANDS_MAPPER[self.command])
-            return await method()
-
-        if substring_word is not None:
-            return substring_word
-        return random.choice(unknown_messages)
+        return None
 
     async def who_is(self) -> str:
         params = self.params.replace('?', '')
-        if self.chat_id > 0:
-            member = self.message.source
-        else:
-            member = random.choice(await self.get_members())
-        username = await self.get_username(member)
-
-        if params.strip().lower().startswith('пидор'):
-            member_db = await self.handle_member(member)
-            await self.count_stats(
-                member_db=member_db,
-                stats_enum=StatsEnum.FAGGOTER,
-            )
-
+        username = await self.get_one_of_group()
         return f'{random.choice(structs.DEFAULT_PREFIX)} ' \
                f'{params} - это {username}'
 
     async def who_have_is(self) -> str:
         params = self.params.replace('?', '')
-        if self.chat_id > 0:
-            member = self.message.source
-        else:
-            member = random.choice(await self.get_members())
-        username = await self.get_username(member)
+        username = await self.get_one_of_group()
         return f'{random.choice(structs.DEFAULT_PREFIX)} {params} у {username}'
 
     async def gey_double(self) -> str:
@@ -127,22 +70,6 @@ class BreadServiceHandler(BreadService):
             result += f'{i}) {await self.get_username(user)}\n'
             i += 1
         return f'Топ {self.params}:\n{result}'
-
-    @staticmethod
-    async def wednesday() -> str:
-        return '*пикча жабы* Это среда мои чуваки'
-
-    @staticmethod
-    async def thursday() -> str:
-        return 'время лизнуть'
-
-    @staticmethod
-    async def tuesday() -> str:
-        return 'https://images.ru.prom.st/537418649_b9-bayan-romans.jpg'
-
-    @staticmethod
-    async def f_func() -> str:
-        return 'F'
 
     @staticmethod
     async def get_num() -> str:

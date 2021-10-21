@@ -41,14 +41,14 @@ class MessageHandler:
     async def handle_message(self):
         if not await self.validate_command():
             return
-        bread_service = BreadServiceHandler(
+        bread_service_handler = BreadServiceHandler(
             client=self.client,
             message=self.message,
             db=self.db,
             is_edited=self.has_edited_message,
         )
         try:
-            result_text = await bread_service.build_message()
+            result_text = await bread_service_handler.build_message()
         except Exception as e:
             logger.error(str(e))
             await self.client.send_message(
@@ -64,5 +64,5 @@ class MessageHandler:
                 chat_id=self.message.chat.id,
                 message=result_text,
                 reply_to=self.message.message_id
-                if bread_service.reply_to_message else None,
+                if bread_service_handler.reply_to_message else None,
             )

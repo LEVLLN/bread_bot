@@ -5,11 +5,6 @@ TRIGGER_WORDS = [
     'хлеб',
 ]
 
-FREE_WORDS = {
-    'f': ['F', 'помянем'],
-    'помянем': ['F', 'помянем'],
-}
-
 DEFAULT_PREFIX = [
     '',
     'тупа',
@@ -37,19 +32,12 @@ COMMANDS_MAPPER = {
     'кто': 'who_is',
     'у кого': 'who_have_is',
     'топ': 'top',
-    'среда': 'wednesday',
-    'четверг': 'thursday',
-    'вторник': 'tuesday',
-    'баян': 'tuesday',
-    'f': 'f_func',
     'цифри': 'get_num',
     'цифры': 'get_num',
     'рандом': 'get_num',
     'шанс': 'get_chance',
     'вероятность': 'get_chance',
     'геи': 'gey_double',
-    'гей-парочка': 'gey_double',
-    'гей-пара': 'gey_double',
     'help': 'help',
     'hlep': 'help',
     'хелп': 'help',

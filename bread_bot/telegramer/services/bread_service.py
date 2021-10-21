@@ -7,13 +7,15 @@ from typing import List, Optional
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bread_bot.telegramer.models import Stats, Member, LocalMeme, Chat
+from bread_bot.telegramer.models import Stats, Member, LocalMeme, Chat, \
+    Property
 from bread_bot.telegramer.models.chats_to_members import ChatToMember
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema, \
     MemberSchema
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
-from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
+from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum, \
+    PropertiesEnum
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +38,14 @@ class BreadService:
         self.params: Optional[str] = None
         self.trigger_word: Optional[str] = None
         self.reply_to_message: bool = True
+        self.member_db: Optional[Member] = None
+        self.chat_db: Optional[Chat] = None
+
+    async def init_handler(self):
+        self.member_db = await self.handle_member(member=self.message.source)
+        self.chat_db = await self.handle_chat()
+        await self.handle_chats_to_members(self.member_db.id, self.chat_db.id)
+        await self.parse_incoming_message()
 
     @staticmethod
     def composite_mask(collection, split=True) -> str:
@@ -64,20 +74,12 @@ class BreadService:
             self.message.text,
             re.IGNORECASE
         )
-        has_trigger_word = False
 
-        for trigger_word in structs.TRIGGER_WORDS:
-            if self.message.text.lower().startswith(trigger_word):
-                has_trigger_word = True
-                break
         if len(groups) > 0:
             phrase = ' '.join(groups[0])
             self.trigger_word = groups[0][0]
             self.command = groups[0][1].lower()
             self.params = self.message.text.replace(phrase, '').lstrip()
-            return
-        if not has_trigger_word:
-            raise ValueError('Is not Command')
 
     async def count_stats(
             self,
@@ -233,7 +235,7 @@ class BreadService:
 
         return None
 
-    async def handle_binds(self) -> Optional[str]:
+    async def handle_bind_words(self) -> Optional[str]:
         if self.command is None:
             return None
 
@@ -252,6 +254,34 @@ class BreadService:
         message_value = random.choice(bind_db.data.get(self.command, []))
         return f'{message_prefix} {message_value}'
 
+    async def handle_command_words(self) -> Optional[str]:
+        if self.trigger_word and \
+                self.command in structs.COMMANDS_MAPPER.keys():
+            method = getattr(self, structs.COMMANDS_MAPPER[self.command])
+            return await method()
+
+    async def handle_unknown_words(self) -> Optional[str]:
+        if self.trigger_word:
+            unknown_messages = await self.get_unknown_messages()
+            return random.choice(unknown_messages)
+        return None
+
+    async def handle_edited_words(self) -> Optional[str]:
+        if self.is_edited and self.chat_db.is_edited_trigger:
+            condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
+            editor_messages: Property = await Property.async_first(
+                db=self.db,
+                where=condition,
+            )
+            if editor_messages is None or not editor_messages.data:
+                return None
+            await self.count_stats(
+                member_db=self.member_db,
+                stats_enum=StatsEnum.EDITOR,
+            )
+            return random.choice(editor_messages.data)
+        return None
+
     @staticmethod
     async def get_username(member: MemberSchema) -> str:
         user_name = ''
@@ -267,6 +297,13 @@ class BreadService:
         response = await self.client.get_chat(self.chat_id)
         chats = response.result
         return [chat.user for chat in chats if not chat.user.is_bot]
+
+    async def get_one_of_group(self) -> str:
+        if self.chat_id > 0:
+            member = self.message.source
+        else:
+            member = random.choice(await self.get_members())
+        return await self.get_username(member)
 
     async def add_local_meme(self, meme_type: str) -> str:
         meme_name, value = self.params.strip().split('=', 1)

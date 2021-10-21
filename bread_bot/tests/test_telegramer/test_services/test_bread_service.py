@@ -1,6 +1,7 @@
 import asyncio
 import json
 import unittest
+from unittest import mock
 
 import respx
 from httpx import Response
@@ -10,7 +11,7 @@ from bread_bot.telegramer.models import Member, \
     LocalMeme, Chat, ChatToMember, Stats
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
-    ChatMemberBodySchema
+    ChatMemberBodySchema, MemberSchema
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
@@ -299,8 +300,8 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(bread_service.trigger_word)
         self.assertIsNone(bread_service.params)
         self.assertIsNone(bread_service.command)
-        with self.assertRaises(ValueError):
-            await bread_service.parse_incoming_message()
+        result = await bread_service.parse_incoming_message()
+        self.assertIsNone(result)
         self.assertIsNone(bread_service.trigger_word)
         self.assertIsNone(bread_service.params)
         self.assertIsNone(bread_service.command)
@@ -563,7 +564,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             message=message.message,
         )
-        self.assertIsNone(await bread_service.handle_binds())
+        self.assertIsNone(await bread_service.handle_bind_words())
 
     async def test_handle_binds_command_not_matched(self):
         message = self.default_message.copy(deep=True)
@@ -573,7 +574,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             message=message.message,
         )
         bread_service.command = 'wrong_bind_in_db'
-        self.assertIsNone(await bread_service.handle_binds())
+        self.assertIsNone(await bread_service.handle_bind_words())
 
     async def test_handle_binds_success(self):
         message = self.default_message.copy(deep=True)
@@ -589,7 +590,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertIn(
             'test_result',
-            await bread_service.handle_binds(),
+            await bread_service.handle_bind_words(),
         )
 
     async def test_get_member_username(self):
@@ -1095,4 +1096,37 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             destination_local_meme.data,
             {'param1': ['value1', 'value1', 'value2']}
+        )
+
+    @mock.patch('bread_bot.telegramer.services.'
+                'bread_service.BreadService.get_members')
+    async def test_get_one_of_group(self, get_members_mock: mock.Mock):
+        test_member = MemberSchema(
+            id=1,
+            is_bot=False,
+            first_name='Alex',
+            last_name='Malex',
+            username='somealex'
+        )
+        get_members_mock.return_value = [test_member, ]
+        message = self.default_message.message.copy(deep=True)
+        handler = BreadService(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+            is_edited=False,
+        )
+        handler.params = 'Some param'
+        # Test self chat
+        result = await handler.get_one_of_group()
+        self.assertIn(
+            f'{message.source.first_name} {message.source.last_name}',
+            result,
+        )
+        # Test group chat
+        handler.chat_id = -111111
+        result = await handler.get_one_of_group()
+        self.assertIn(
+            f'{test_member.first_name} {test_member.last_name}',
+            result,
         )

@@ -156,7 +156,7 @@ class CRUDMixin(object):
             where=None,
             select_in_load=None,
             order_by=None,
-    ):
+    ) -> 'CRUDMixin':
         scalars = await cls._async_filter(
             db,
             where,
