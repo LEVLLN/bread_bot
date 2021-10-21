@@ -65,7 +65,6 @@ COMMANDS_MAPPER = {
 
 class StatsEnum(Enum):
     TOTAL_CALL_SLUG = 'Сколько раз вызвал бота'
-    FAGGOTER = 'Сколько раз стал пидором'
     EDITOR = 'Сколько раз редактировал сообщения'
     FLUDER = 'Сколько раз написал сообщение'
     QUOTER = 'Сколько раз просил цитату'
