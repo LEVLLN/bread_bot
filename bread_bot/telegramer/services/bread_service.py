@@ -479,6 +479,8 @@ class BreadService:
             where=and_(
                 LocalMeme.chat_id == self.chat_id,
                 LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+                LocalMeme.type != LocalMemeTypesEnum.RUDE_WORDS.name,
+                LocalMeme.type != LocalMemeTypesEnum.REMEMBER_PHRASE.name,
             )
         )
 
