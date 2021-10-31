@@ -68,7 +68,7 @@ async def get_local_meme(
 ):
     local_memes = await LocalMeme.async_filter(
         db=db,
-        where=LocalMeme.type == chat_id
+        where=LocalMeme.chat_id == chat_id
     )
     if not local_memes:
         raise HTTPException(
