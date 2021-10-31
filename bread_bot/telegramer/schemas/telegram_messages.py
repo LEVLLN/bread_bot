@@ -23,14 +23,17 @@ class VoiceSchema(BaseModel):
     file_id: Optional[str]
 
 
-class MessageSchema(BaseModel):
+class BaseMessageSchema(BaseModel):
     message_id: int
     source: MemberSchema = Field(..., alias='from')
     chat: ChatSchema
     date: Optional[int] = None
     text: Optional[str] = ''
     voice: Optional[VoiceSchema] = None
-    # reply: Optional['MessageSchema'] = Field(None, alias='reply_to_message')
+
+
+class MessageSchema(BaseMessageSchema):
+    reply: Optional[BaseMessageSchema] = Field(None, alias='reply_to_message')
 
     class Config:
         allow_population_by_field_name = True

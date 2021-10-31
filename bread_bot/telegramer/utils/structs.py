@@ -60,7 +60,7 @@ COMMANDS_MAPPER = {
     'редактирование': 'set_edited_trigger',
     'распространи в': 'propagate_members_memes',
     'голосовые': 'set_voice_trigger',
-    # 'запомни': 'add_remember_phrase',
+    'запомни': 'add_remember_phrase',
 }
 
 
