@@ -66,7 +66,7 @@ async def get_local_meme(
         chat_id: int,
         db: AsyncSession = Depends(get_async_session)
 ):
-    local_memes = await LocalMeme.async_first(
+    local_memes = await LocalMeme.async_filter(
         db=db,
         where=LocalMeme.type == chat_id
     )
