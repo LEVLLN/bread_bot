@@ -483,7 +483,7 @@ class BreadService:
         if not source_local_memes and not destination_local_memes:
             return 'Не найдено данных для копирования'
 
-        data_to_add = defaultdict(lambda: defaultdict(list))
+        data_to_add = defaultdict(lambda: defaultdict(set))
         local_memes_types = [d.type for d in destination_local_memes]
         update_list = []
 
@@ -503,13 +503,14 @@ class BreadService:
             data = local_meme.data.copy()
             has_updated = False
 
-            for k, v_list in data_to_add[local_meme.type].items():
+            for k, v_set in data_to_add[local_meme.type].items():
                 if k in data:
                     has_updated = True
-                    data[k] += v_list
+                    result = set(data[k]).union(v_set)
+                    data[k] = list(result)
                 else:
                     has_updated = True
-                    data[k] = v_list
+                    data[k] = list(v_set)
 
             if has_updated:
                 local_meme.data = data

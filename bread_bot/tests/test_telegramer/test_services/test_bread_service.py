@@ -1139,8 +1139,12 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             'Сделал'
         )
         self.assertEqual(
-            destination_local_meme.data,
-            {'param1': ['value1', 'value1', 'value2']}
+            len(destination_local_meme.data['param1']),
+            2
+        )
+        self.assertSetEqual(
+            set(destination_local_meme.data['param1']),
+            {'value1', 'value2'}
         )
 
     @mock.patch('bread_bot.telegramer.services.'
