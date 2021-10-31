@@ -177,13 +177,18 @@ class BreadService:
         await member.commit(db=self.db)
         return
 
-    async def get_unknown_messages(self) -> list:
+    async def get_list_messages(
+            self,
+            meme_type: str = LocalMemeTypesEnum.UNKNOWN_MESSAGE.name) -> list:
         unknown_message_db = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat_id,
-            meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+            meme_type=meme_type,
         )
-        unknown_messages = structs.DEFAULT_UNKNOWN_MESSAGE.copy()
+        if meme_type == LocalMemeTypesEnum.UNKNOWN_MESSAGE.name:
+            unknown_messages = structs.DEFAULT_UNKNOWN_MESSAGE.copy()
+        else:
+            unknown_messages = list()
         if unknown_message_db is not None:
             unknown_messages.extend(unknown_message_db.data)
         return unknown_messages
@@ -205,6 +210,18 @@ class BreadService:
         elif isinstance(value, str):
             return value
         return None
+
+    async def handle_rude_words(self):
+        username = None
+        if self.message.reply:
+            username = f'@{self.message.reply.source.username}'
+        rude_messages = await self.get_list_messages(
+            meme_type=LocalMemeTypesEnum.RUDE_WORDS.name)
+        if not rude_messages:
+            return random.choice(structs.DEFAULT_UNKNOWN_MESSAGE)
+        if username is not None:
+            return f'{username}\n{random.choice(rude_messages)}'
+        return random.choice(rude_messages)
 
     async def handle_substring_words(self) -> Optional[str]:
         substring_words_db = await LocalMeme.get_local_meme(
@@ -262,7 +279,7 @@ class BreadService:
 
     async def handle_unknown_words(self) -> Optional[str]:
         if self.trigger_word:
-            unknown_messages = await self.get_unknown_messages()
+            unknown_messages = await self.get_list_messages()
             return random.choice(unknown_messages)
         return None
 

@@ -555,6 +555,32 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             ['value1', ]
         )
 
+    async def test_change_rude_answer(self):
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=self.default_message.message,
+            db=self.session,
+            is_edited=False,
+        )
+        # ADD
+        handler.params = 'value1'
+        result = await handler.add_rude_phrase()
+        self.assertEqual(
+            result,
+            'Ура! У группы появились Грубые фразы'
+        )
+        local_meme = await LocalMeme.async_first(
+            db=self.session,
+            where=and_(
+                LocalMeme.chat_id == handler.chat_id,
+                LocalMeme.type == LocalMemeTypesEnum.RUDE_WORDS.name,
+            ),
+        )
+        self.assertEqual(
+            local_meme.data,
+            ['value1', ]
+        )
+
     async def test_change_free_word(self):
         handler = BreadServiceHandler(
             client=self.telegram_client,

@@ -11,7 +11,7 @@ from bread_bot.telegramer.models import Member, \
     LocalMeme, Chat, ChatToMember, Stats
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
-    ChatMemberBodySchema, MemberSchema
+    ChatMemberBodySchema, MemberSchema, MessageSchema
 from bread_bot.telegramer.services.bread_service import BreadService
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
@@ -412,7 +412,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             message=message.message,
         )
-        result = await bread_service.get_unknown_messages()
+        result = await bread_service.get_list_messages()
         self.assertListEqual(
             result,
             structs.DEFAULT_UNKNOWN_MESSAGE,
@@ -427,10 +427,56 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             client=self.telegram_client,
             db=self.session,
             message=message.message,
-        ).get_unknown_messages()
+        ).get_list_messages()
         self.assertListEqual(
             result,
             structs.DEFAULT_UNKNOWN_MESSAGE + local_memes.data
+        )
+
+    async def test_handle_rude_words(self):
+        message = self.default_message.message.copy(deep=True)
+        message.chat.id = 12122221
+        # Message without reply
+        handler = BreadService(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+        )
+        handler.chat_id = message.chat.id
+        # Without LOCAL_MEME
+        result = await handler.handle_rude_words()
+        self.assertIn(
+            result,
+            structs.DEFAULT_UNKNOWN_MESSAGE
+        )
+        # With LOCAL_MEME, Without REPLY
+        local_meme = await LocalMeme.async_add_by_kwargs(
+            db=self.session,
+            chat_id=handler.chat_id,
+            type=LocalMemeTypesEnum.RUDE_WORDS.name,
+            data=['some_rude_word', 'some_rude_word']
+        )
+        result = await handler.handle_rude_words()
+        self.assertEqual(
+            result,
+            'some_rude_word'
+        )
+        # With LOCAL_MEME, With REPLY
+        message.reply = MessageSchema(
+            message_id=11110,
+            chat=message.chat,
+            source=message.source,
+            text='Foo',
+        )
+        handler = BreadService(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+        )
+        result = await handler.handle_rude_words()
+        self.assertEqual(
+            result,
+            f'@{message.source.username}\nsome_rude_word'
         )
 
     async def test_handle_free_words_empty(self):
@@ -445,7 +491,6 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_handle_free_words_success(self):
         message = self.default_message.copy(deep=True)
-        print(message.message.chat.id)
         message.message.text = 'Some_free_word'
         result = await BreadService(
             client=self.telegram_client,

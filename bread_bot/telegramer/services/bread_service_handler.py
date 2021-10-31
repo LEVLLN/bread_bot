@@ -131,6 +131,11 @@ class BreadServiceHandler(BreadService):
             meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
         )
 
+    async def add_rude_phrase(self) -> str:
+        return await self.add_list_value(
+            meme_type=LocalMemeTypesEnum.RUDE_WORDS.name,
+        )
+
     async def add_remember_phrase(self) -> str:
         if not self.message.reply or not self.params:
             return 'Выбери сообщение, которое запомнить'

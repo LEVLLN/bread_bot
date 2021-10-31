@@ -61,6 +61,8 @@ COMMANDS_MAPPER = {
     'распространи в': 'propagate_members_memes',
     'голосовые': 'set_voice_trigger',
     'запомни': 'add_remember_phrase',
+    'оскорби': 'get_rude',
+    'добавь оскорбление': 'handle_rude_words',
 }
 
 
@@ -77,6 +79,7 @@ class LocalMemeTypesEnum(Enum):
     FREE_WORDS = 'Триггеры'
     SUBSTRING_WORDS = 'Подстроки'
     REMEMBER_PHRASE = 'Ключевые фразы'
+    RUDE_WORDS = 'Грубые фразы'
 
 
 class PropertiesEnum(Enum):
