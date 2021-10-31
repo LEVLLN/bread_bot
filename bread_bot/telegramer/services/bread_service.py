@@ -52,7 +52,7 @@ class BreadService:
         mask_part = '\\b{}\\b' if split else '{}'
         return '|'.join(
             map(
-                lambda x: re.escape(mask_part.format(x)),
+                lambda x: mask_part.format(re.escape(x)),
                 collection,
             )
         )
