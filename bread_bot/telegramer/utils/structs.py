@@ -61,8 +61,8 @@ COMMANDS_MAPPER = {
     'распространи в': 'propagate_members_memes',
     'голосовые': 'set_voice_trigger',
     'запомни': 'add_remember_phrase',
-    'оскорби': 'get_rude',
-    'добавь оскорбление': 'handle_rude_words',
+    'оскорби': 'handle_rude_words',
+    'добавь оскорбление': 'add_rude_phrase',
 }
 
 
