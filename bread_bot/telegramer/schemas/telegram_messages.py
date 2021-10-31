@@ -30,6 +30,7 @@ class MessageSchema(BaseModel):
     date: Optional[int] = None
     text: Optional[str] = ''
     voice: Optional[VoiceSchema] = None
+    reply: Optional['MessageSchema'] = Field(None, alias='reply_to_message')
 
     class Config:
         allow_population_by_field_name = True

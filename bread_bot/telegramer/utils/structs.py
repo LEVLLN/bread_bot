@@ -60,6 +60,7 @@ COMMANDS_MAPPER = {
     'редактирование': 'set_edited_trigger',
     'распространи в': 'propagate_members_memes',
     'голосовые': 'set_voice_trigger',
+    'запомни': 'add_remember_phrase',
 }
 
 
@@ -75,6 +76,7 @@ class LocalMemeTypesEnum(Enum):
     UNKNOWN_MESSAGE = 'Фразы на отсутствующие команды'
     FREE_WORDS = 'Триггеры'
     SUBSTRING_WORDS = 'Подстроки'
+    REMEMBER_PHRASE = 'Ключевые фразы'
 
 
 class PropertiesEnum(Enum):

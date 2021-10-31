@@ -10,7 +10,7 @@ from bread_bot.telegramer.models import LocalMeme, Chat, Property, Member, \
     Stats
 from bread_bot.telegramer.schemas.api_models import ForismaticQuote
 from bread_bot.telegramer.schemas.telegram_messages import \
-    StandardBodySchema, MemberSchema, VoiceSchema
+    StandardBodySchema, MemberSchema, VoiceSchema, MessageSchema
 from bread_bot.telegramer.services.bread_service_handler import \
     BreadServiceHandler
 from bread_bot.telegramer.services.telegram_client import TelegramClient
@@ -779,3 +779,48 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             where=Chat.id == chat.id,
         )
         self.assertFalse(chat.is_voice_trigger)
+
+    async def test_remember_message(self):
+        message = self.default_message.message.copy(deep=True)
+        # Message without reply
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+            is_edited=False,
+        )
+        result = await handler.add_remember_phrase()
+        self.assertEqual(
+            result,
+            'Выбери сообщение, которое запомнить'
+        )
+        # Message with reply and params
+        message.reply = MessageSchema(
+            message_id=11110,
+            chat=message.chat,
+            source=message.source,
+            text='Foo',
+        )
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+            is_edited=False,
+        )
+        handler.params = 'value1'
+        result = await handler.add_remember_phrase()
+        local_meme = await LocalMeme.async_first(
+            db=self.session,
+            where=and_(
+                LocalMeme.chat_id == handler.chat_id,
+                LocalMeme.type == LocalMemeTypesEnum.REMEMBER_PHRASE.name,
+            ),
+        )
+        self.assertEqual(
+            result,
+            'Ура! У группы появились Ключевые фразы',
+        )
+        self.assertDictEqual(
+            local_meme.data,
+            {'foo': ['value1']}
+        )
