@@ -469,7 +469,9 @@ class BreadService:
             db=self.db,
             where=and_(
                 LocalMeme.chat_id == destination_chat.chat_id,
-                LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name
+                LocalMeme.type != LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
+                LocalMeme.type != LocalMemeTypesEnum.RUDE_WORDS.name,
+                LocalMeme.type != LocalMemeTypesEnum.REMEMBER_PHRASE.name,
             )
         )
         source_local_memes = await LocalMeme.async_filter(
