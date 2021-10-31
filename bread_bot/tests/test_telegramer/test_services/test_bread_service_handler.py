@@ -813,14 +813,18 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             where=and_(
                 LocalMeme.chat_id == handler.chat_id,
-                LocalMeme.type == LocalMemeTypesEnum.REMEMBER_PHRASE.name,
+                LocalMeme.type == LocalMemeTypesEnum.SUBSTRING_WORDS.name,
             ),
         )
         self.assertEqual(
             result,
-            'Ура! У группы появились Ключевые фразы',
+            'Сделал',
         )
-        self.assertDictEqual(
+        self.assertIn(
+            'foo',
             local_meme.data,
-            {'foo': ['value1']}
+        )
+        self.assertEqual(
+            local_meme.data['foo'],
+            ['value1', ]
         )

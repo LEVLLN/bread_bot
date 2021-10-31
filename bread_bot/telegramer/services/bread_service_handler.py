@@ -135,9 +135,7 @@ class BreadServiceHandler(BreadService):
         if not self.message.reply or not self.params:
             return 'Выбери сообщение, которое запомнить'
         self.params = f'{self.message.reply.text}={self.params}'
-        return await self.add_local_meme(
-            meme_type=LocalMemeTypesEnum.REMEMBER_PHRASE.name,
-        )
+        return await self.add_local_substring()
 
     async def get_quote(self) -> str:
         quote = await ForismaticClient().get_quote_text()
