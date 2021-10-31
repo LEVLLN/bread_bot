@@ -10,6 +10,9 @@ class LocalMemeSchema(BaseModel):
     chat_id: int
     data: Union[Dict, List]
 
+    class Config:
+        orm_mode = True
+
 
 class SendMessageSchema(BaseModel):
     chat_id: int

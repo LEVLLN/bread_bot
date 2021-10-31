@@ -58,6 +58,26 @@ async def set_local_meme(
     return 'OK'
 
 
+@router.get('/get_local_memes/{chat_id}',
+            dependencies=[Depends(get_current_active_admin_user)],
+            response_model=List[LocalMemeSchema]
+            )
+async def get_local_meme(
+        chat_id: int,
+        db: AsyncSession = Depends(get_async_session)
+):
+    local_memes = await LocalMeme.async_first(
+        db=db,
+        where=LocalMeme.type == chat_id
+    )
+    if not local_memes:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Не найдено данных'
+        )
+    return local_memes
+
+
 @router.post('/send_message',
              dependencies=[Depends(get_current_active_admin_user)])
 async def send_message_to_chat(
