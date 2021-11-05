@@ -711,7 +711,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         handler.chat_db = chat
         self.assertTrue(chat.is_voice_trigger)
         result = await handler.send_fart_voice()
-        self.assertFalse(result)
+        self.assertIsNone(result)
         send_voice_mock.assert_not_called()
         # Success with property
         await Property.async_add_by_kwargs(
@@ -720,7 +720,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             data=['Some_file_id']
         )
         result = await handler.send_fart_voice()
-        self.assertTrue(result)
+        self.assertIsNone(result)
         send_voice_mock.assert_called_once()
         send_voice_mock.assert_called_once_with(
             chat_id=handler.chat_id,

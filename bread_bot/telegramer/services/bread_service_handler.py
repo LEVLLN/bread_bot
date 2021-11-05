@@ -179,11 +179,10 @@ class BreadServiceHandler(BreadService):
                 where=condition,
             )
             if not fart_list or not fart_list.data:
-                return False
+                return None
             await self.client.send_voice(
                 chat_id=self.chat_id,
                 voice_file_id=random.choice(fart_list.data),
                 reply_to=self.message.message_id,
             )
-            return True
-        return False
+        return None
