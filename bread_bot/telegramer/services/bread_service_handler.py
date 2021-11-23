@@ -76,9 +76,8 @@ class BreadServiceHandler(BreadService):
         return str(random.randint(0, 100000000))
 
     async def get_chance(self) -> str:
-        chances = structs.DEFAULT_CHANCE + \
-                  [str(random.randint(0, 100)) + '%', ]
-        return f'Есть вероятность {self.params} - {random.choice(chances)}'
+        return f'Есть вероятность {self.params} - ' \
+               f'{str(random.randint(0, 100))}%'
 
     @staticmethod
     async def help() -> str:
