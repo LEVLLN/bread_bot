@@ -806,7 +806,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertFalse(chat.is_voice_trigger)
 
-    async def test_remember_message(self):
+    async def test_remember_message_as_key(self):
         message = self.default_message.message.copy(deep=True)
         # Message without reply
         handler = BreadServiceHandler(
@@ -815,7 +815,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             is_edited=False,
         )
-        result = await handler.add_remember_phrase()
+        result = await handler.add_remember_phrase_as_key()
         self.assertEqual(
             result,
             'Выбери сообщение, которое запомнить'
@@ -834,7 +834,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             is_edited=False,
         )
         handler.params = 'value1'
-        result = await handler.add_remember_phrase()
+        result = await handler.add_remember_phrase_as_key()
         local_meme = await LocalMeme.async_first(
             db=self.session,
             where=and_(
@@ -853,4 +853,53 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             local_meme.data['foo'],
             ['value1', ]
+        )
+
+    async def test_remember_message_as_value(self):
+        message = self.default_message.message.copy(deep=True)
+        # Message without reply
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+            is_edited=False,
+        )
+        result = await handler.add_remember_phrase_as_value()
+        self.assertEqual(
+            result,
+            'Выбери сообщение, которое запомнить'
+        )
+        # Message with reply and params
+        message.reply = MessageSchema(
+            message_id=11110,
+            chat=message.chat,
+            source=message.source,
+            text='my_value',
+        )
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=message,
+            db=self.session,
+            is_edited=False,
+        )
+        handler.params = 'my_key'
+        result = await handler.add_remember_phrase_as_value()
+        local_meme = await LocalMeme.async_first(
+            db=self.session,
+            where=and_(
+                LocalMeme.chat_id == handler.chat_id,
+                LocalMeme.type == LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+            ),
+        )
+        self.assertEqual(
+            result,
+            'Сделал',
+        )
+        self.assertIn(
+            'my_key',
+            local_meme.data,
+        )
+        self.assertEqual(
+            local_meme.data['my_key'],
+            ['my_value', ]
         )

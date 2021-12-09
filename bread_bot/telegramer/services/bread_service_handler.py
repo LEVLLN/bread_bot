@@ -135,10 +135,16 @@ class BreadServiceHandler(BreadService):
             meme_type=LocalMemeTypesEnum.RUDE_WORDS.name,
         )
 
-    async def add_remember_phrase(self) -> str:
+    async def add_remember_phrase_as_key(self) -> str:
         if not self.message.reply or not self.params:
             return 'Выбери сообщение, которое запомнить'
         self.params = f'{self.message.reply.text}={self.params}'
+        return await self.add_local_substring()
+
+    async def add_remember_phrase_as_value(self) -> str:
+        if not self.message.reply or not self.params:
+            return 'Выбери сообщение, которое запомнить'
+        self.params = f'{self.params}={self.message.reply.text}'
         return await self.add_local_substring()
 
     async def get_quote(self) -> str:
