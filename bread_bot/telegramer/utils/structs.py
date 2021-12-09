@@ -56,8 +56,8 @@ COMMANDS_MAPPER = {
     'редактирование': 'set_edited_trigger',
     'распространи в': 'propagate_members_memes',
     'голосовые': 'set_voice_trigger',
-    'запомни ключ': 'add_remember_phrase_as_key',
-    'запомни значение': 'add_remember_phrase_as_value',
+    'запомни как ключ': 'add_remember_phrase_as_key',
+    'запомни как значение': 'add_remember_phrase_as_value',
     'оскорби': 'handle_rude_words',
     'добавь оскорбление': 'add_rude_phrase',
 }
