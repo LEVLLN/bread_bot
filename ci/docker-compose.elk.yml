@@ -9,7 +9,7 @@ services:
       - /var/lib/docker:/var/lib/docker:ro
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - bread_bot_net
+      - bread_bot_elk
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:7.2.0"
     environment:
@@ -20,16 +20,16 @@ services:
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
-      - bread_bot_net
+      - bread_bot_elk
   kibana:
     image: "docker.elastic.co/kibana/kibana:7.2.0"
     ports:
       - "5601:5601"
     networks:
-      - bread_bot_net
+      - bread_bot_elk
 
 volumes:
   elasticsearch_data:
 networks:
-  bread_bot_net:
+  bread_bot_elk:
     external: True
