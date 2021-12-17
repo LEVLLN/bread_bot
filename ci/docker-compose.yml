@@ -1,20 +1,37 @@
-version: "3.9"
+version: "3.3"
 services:
-  bread_bot:
-    image: bread_bot:base
-    command: bash -c "alembic upgrade head && python server.py"
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "80:80"
+      - "443:443"
     volumes:
-      - ../.:/code/:ro
-    env_file:
-      - ../../environments.env
+      - /root/nginx.conf:/etc/nginx/nginx.conf
+      - /root/nginx.key:/ssl/nginx.key
+      - /root/nginx.crt:/ssl/nginx.crt
+    depends_on:
+      - bread_bot
     networks:
       - bread_bot_net
-  pgbouncer:
-    image: edoburu/pgbouncer
+  bread_bot:
+    image: levkey/bread_bot:app
+    restart: unless-stopped
+    command: bash -c "alembic upgrade head && python server.py"
+    ports:
+      - "9090:9090"
     env_file:
-      - ../../pgbouncer.env
+      - /root/environments.env
+    networks:
+      - bread_bot_net
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:13.3
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - /root/postgres.env
     ports:
       - "5432:5432"
     networks:
@@ -22,3 +39,5 @@ services:
 networks:
   bread_bot_net:
     external: True
+volumes:
+    pgdata:

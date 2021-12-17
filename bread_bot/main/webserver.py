@@ -39,20 +39,3 @@ if ENABLE_TELEMETRY:
 app.include_router(auth.router)
 app.include_router(root.router)
 app.include_router(telegram.router)
-
-
-@app.on_event("startup")
-async def startup_event():
-    telegram_client = TelegramClient()
-
-    if await telegram_client.compare_webhooks():
-        logger.info('Текущий webhook актуален в Телеграме')
-        return
-
-    logger.info('Установка нового webhook')
-    success = await telegram_client.set_webhook()
-
-    if success:
-        logger.info('Успешно установлен webhook')
-    else:
-        logger.error('webhook не удалось установить')
