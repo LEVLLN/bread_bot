@@ -4,6 +4,8 @@ services:
     image: docker.elastic.co/beats/filebeat:7.2.0
     command: -e --strict.perms=false
     user: root
+    env_file:
+      - /root/filebeat.env
     volumes:
       - /root/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - /var/lib/docker:/var/lib/docker:ro
@@ -12,9 +14,8 @@ services:
       - bread_bot_elk
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:7.2.0"
-    environment:
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - "discovery.type=single-node"
+    env_file:
+      - /root/elastic.env
     ports:
       - "9200:9200"
     volumes:
@@ -23,6 +24,8 @@ services:
       - bread_bot_elk
   kibana:
     image: "docker.elastic.co/kibana/kibana:7.2.0"
+    env_file:
+      - /root/kibana.env
     ports:
       - "5601:5601"
     networks:

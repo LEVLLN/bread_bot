@@ -13,6 +13,8 @@ processors:
 
 output.elasticsearch:
   hosts: [elasticsearch]
+  username: "${ELASTICSEARCH_USERNAME}"
+  password: "${ELASTICSEARCH_PASSWORD}"
 
 setup.kibana:
   host: "kibana"
