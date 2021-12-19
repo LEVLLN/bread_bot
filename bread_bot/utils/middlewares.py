@@ -102,8 +102,14 @@ class LoggingMiddleware:
             await self.set_body(request, raw_request_body)
             raw_request_body = await self.get_body(request)
             request_body = raw_request_body.decode()
-        except Exception:
+        except AttributeError:
             request_body = EMPTY_VALUE
+
+        try:
+            if request_body != EMPTY_VALUE:
+                request_body = json.loads(request_body)
+        except json.decoder.JSONDecodeError:
+            pass
 
         server: tuple = request.get('server', ('localhost', PORT))
         request_headers: dict = dict(request.headers.items())
@@ -133,6 +139,11 @@ class LoggingMiddleware:
             )
         duration: int = math.ceil((time.time() - start_time) * 1000)
 
+        try:
+            response_body = json.loads(response_body)
+        except json.decoder.JSONDecodeError:
+            response_body = response_body.decode()
+
         request_json_fields = RequestJsonLogSchema(
             request_uri=str(request.url),
             request_referer=request_headers.get('referer', EMPTY_VALUE),
@@ -151,7 +162,7 @@ class LoggingMiddleware:
             response_status_code=response.status_code,
             response_size=int(response_headers.get('content-length', 0)),
             response_headers=json.dumps(response_headers, ensure_ascii=False),
-            response_body=response_body.decode(),
+            response_body=response_body,
             duration=duration
         ).dict()
         message = f'{"Ошибка" if exception_object else "Ответ"} ' \

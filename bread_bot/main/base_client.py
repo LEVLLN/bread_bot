@@ -87,12 +87,23 @@ class BaseHTTPClient:
         :param exception_object: Ошибки
         :return:
         """
-        response_content = response.content
-        request_content = request.content
+        request_raw = request.content
+        response_raw = response.content
+
+        try:
+            response_content = json.loads(response_raw)
+        except json.decoder.JSONDecodeError:
+            response_content = response_raw.decode()
+
+        try:
+            request_content = json.loads(request_raw)
+        except json.decoder.JSONDecodeError:
+            request_content = request_raw.decode()
+
         request_json_fields = RequestJsonLogSchema(
             request_method=request.method,
             request_uri=str(request.url),
-            request_body=request_content.decode(),
+            request_body=request_content,
             request_referer=EMPTY_VALUE,
             request_path=request.url.path,
             request_direction='out',
@@ -100,10 +111,10 @@ class BaseHTTPClient:
             request_protocol='HTTP/1.1',
             request_host=request.url.host,
             request_content_type=EMPTY_VALUE,
-            request_size=len(request_content),
-            response_size=len(response_content),
+            request_size=len(request_raw),
+            response_size=len(response_raw),
             response_headers=await self._headers_json(response.headers),
-            response_body=response_content.decode(),
+            response_body=response_content,
             response_status_code=response.status_code,
             remote_ip=EMPTY_VALUE,
             remote_port=EMPTY_VALUE,

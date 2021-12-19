@@ -2,6 +2,7 @@ import datetime
 import json
 import logging
 import traceback
+from typing import Union
 
 from opencensus.trace import execution_context, Span
 
@@ -26,7 +27,9 @@ class JSONLogFormatter(logging.Formatter):
     Кастомизированный класс-форматер для логов в формате json
     """
 
-    def format(self, record: logging.LogRecord, *args, **kwargs) -> str:
+    def format(self,
+               record: logging.LogRecord,
+               *args, **kwargs) -> Union[dict, str]:
         """
         Преобразование объект журнала в json
 
@@ -35,11 +38,10 @@ class JSONLogFormatter(logging.Formatter):
         """
         to_mask: bool = getattr(record, 'to_mask', False)
         log_object: dict = self._format_log_object(record)
-        json_log: str = json.dumps(log_object, ensure_ascii=False)
 
         if AUTO_MASK_LOGS and to_mask:
             return mask_string(
-                source_string=json_log,
+                source_string=json.dumps(log_object, ensure_ascii=False),
                 additional_mask_keys=getattr(
                     record,
                     'sensitive_keys',
@@ -52,7 +54,7 @@ class JSONLogFormatter(logging.Formatter):
                 )
             )
         else:
-            return json_log
+            return log_object
 
     @staticmethod
     def _format_log_object(record: logging.LogRecord) -> dict:
