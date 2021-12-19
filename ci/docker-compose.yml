@@ -30,6 +30,7 @@ services:
     image: postgres:13.3
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - /root/pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf
     env_file:
       - /root/postgres.env
     ports:
