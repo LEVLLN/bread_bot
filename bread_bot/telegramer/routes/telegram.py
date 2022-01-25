@@ -1,7 +1,8 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -14,6 +15,7 @@ from bread_bot.telegramer.schemas.telegram_messages import \
     ChatMemberBodySchema
 from bread_bot.telegramer.services.message_handler import MessageHandler
 from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 from bread_bot.utils.dependencies import get_async_session
 
 logger = logging.getLogger(__name__)
@@ -64,11 +66,17 @@ async def set_local_meme(
             )
 async def get_local_meme(
         chat_id: int,
+        meme_type: Optional[str] = None,
         db: AsyncSession = Depends(get_async_session)
 ):
+    condition = [LocalMeme.chat_id == chat_id, ]
+    if meme_type is not None \
+            and getattr(LocalMemeTypesEnum, meme_type, None):
+        condition.append(LocalMeme.type == meme_type)
+
     local_memes = await LocalMeme.async_filter(
         db=db,
-        where=LocalMeme.chat_id == chat_id
+        where=and_(*condition)
     )
     if not local_memes:
         raise HTTPException(

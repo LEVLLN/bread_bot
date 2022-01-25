@@ -74,7 +74,7 @@ class TelegramClient(BaseHTTPClient):
         if response.status_code != 200 \
                 or not result.get('ok') \
                 or 'result' not in result:
-            raise ValueError('Ошибка получения админов чата')
+            raise ValueError('Ошибка получения администраторов чата')
         return ChatMemberBodySchema(**result)
 
     async def send_voice(self, chat_id: int, voice_file_id: str,

@@ -57,6 +57,9 @@ class BreadService:
             )
         )
 
+    async def set_event(self):
+        return
+
     async def parse_incoming_message(self):
         meme_name = await LocalMeme.get_local_meme(
             db=self.db,
