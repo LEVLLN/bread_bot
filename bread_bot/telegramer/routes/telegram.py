@@ -109,7 +109,7 @@ async def send_message_to_chat(
             response_model=List[ChatSchema],
             dependencies=[Depends(get_current_active_admin_user)])
 async def get_chats(db: AsyncSession = Depends(get_async_session)):
-    return await Chat.async_all(db)
+    return await Chat.async_filter(db, where=Chat.chat_id < 0)
 
 
 @router.get('/members',
@@ -147,10 +147,10 @@ async def delete_members(
     }
 
 
-@router.get('/members_of_chat/{chat_id}',
+@router.get('/admins_of_chat/{chat_id}',
             response_model=ChatMemberBodySchema,
             dependencies=[Depends(get_current_active_admin_user)])
-async def get_members_of_chat(
+async def admins_of_chat(
         chat_id: int,
 ):
     try:

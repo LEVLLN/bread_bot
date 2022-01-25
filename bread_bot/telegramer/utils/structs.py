@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List
 
 TRIGGER_WORDS = [
     'хлебушек',

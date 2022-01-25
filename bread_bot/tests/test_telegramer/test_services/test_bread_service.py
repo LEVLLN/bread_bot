@@ -450,7 +450,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             structs.DEFAULT_UNKNOWN_MESSAGE
         )
         # With LOCAL_MEME, Without REPLY
-        local_meme = await LocalMeme.async_add_by_kwargs(
+        await LocalMeme.async_add_by_kwargs(
             db=self.session,
             chat_id=handler.chat_id,
             type=LocalMemeTypesEnum.RUDE_WORDS.name,
