@@ -42,12 +42,7 @@ class BreadServiceHandler(BreadService):
         params = self.params.replace('?', '')
         username = await self.get_one_of_group()
         return f'{random.choice(structs.DEFAULT_PREFIX)} ' \
-               f'{params} - это {username}'
-
-    async def who_have_is(self) -> str:
-        params = self.params.replace('?', '')
-        username = await self.get_one_of_group()
-        return f'{random.choice(structs.DEFAULT_PREFIX)} {params} у {username}'
+               f'{params} {username}'
 
     async def gey_double(self) -> str:
         members = await self.get_members()

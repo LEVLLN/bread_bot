@@ -26,7 +26,9 @@ DEFAULT_UNKNOWN_MESSAGE = [
 
 COMMANDS_MAPPER = {
     'кто': 'who_is',
-    'у кого': 'who_have_is',
+    'у кого': 'who_is',
+    'кем': 'who_is',
+    'кому': 'who_is',
     'топ': 'top',
     'цифри': 'get_num',
     'цифры': 'get_num',

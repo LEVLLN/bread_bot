@@ -258,39 +258,6 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
 
     @mock.patch('bread_bot.telegramer.services.'
                 'bread_service.BreadService.get_members')
-    async def test_have_is(self, get_members_mock: mock.Mock):
-        test_member = MemberSchema(
-            id=1,
-            is_bot=False,
-            first_name='Alex',
-            last_name='Malex',
-            username='somealex'
-        )
-        get_members_mock.return_value = [test_member, ]
-        message = self.default_message.message.copy(deep=True)
-        handler = BreadServiceHandler(
-            client=self.telegram_client,
-            message=message,
-            db=self.session,
-            is_edited=False,
-        )
-        handler.params = 'Some param'
-        # Test self chat
-        result = await handler.who_have_is()
-        self.assertIn(
-            f'{message.source.first_name} {message.source.last_name}',
-            result,
-        )
-        # Test group chat
-        handler.chat_id = -111111
-        result = await handler.who_have_is()
-        self.assertIn(
-            f'{test_member.first_name} {test_member.last_name}',
-            result,
-        )
-
-    @mock.patch('bread_bot.telegramer.services.'
-                'bread_service.BreadService.get_members')
     async def test_gey_double(self, get_members_mock: mock.Mock):
         test_member = MemberSchema(
             id=1,
