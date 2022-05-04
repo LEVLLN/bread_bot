@@ -1,17 +1,58 @@
+import logging
 import random
+import re
 from typing import Optional
 
-from bread_bot.telegramer.models import Chat, Property
-from bread_bot.telegramer.services.bread_service import BreadService
-from bread_bot.telegramer.services.forismatic_client import ForismaticClient
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from bread_bot.telegramer.models import Member, LocalMeme, Chat
+from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
+from bread_bot.telegramer.services.chat_service import ChatServiceMixin
+from bread_bot.telegramer.services.member_service import MemberServiceMixin
+from bread_bot.telegramer.services.phrases_service import PhrasesServiceMixin, PhrasesServiceHandlerMixin
+from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.services.utils_service import UtilsServiceMixin
 from bread_bot.telegramer.utils import structs
-from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum, \
-    PropertiesEnum
+from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
+
+logger = logging.getLogger(__name__)
 
 
-class BreadServiceHandler(BreadService):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+class BreadServiceHandler(
+    ChatServiceMixin,
+    PhrasesServiceMixin,
+    PhrasesServiceHandlerMixin,
+    UtilsServiceMixin,
+    MemberServiceMixin,
+):
+    COMPLETE_MESSAGE = "Сделал"
+
+    def __init__(
+            self,
+            client: TelegramClient,
+            message: MessageSchema,
+            db: AsyncSession,
+            is_edited: bool = False,
+    ):
+        self.client = client
+        self.message = message
+        self.chat_id = self.message.chat.id
+        self.is_edited = is_edited
+        self.db = db
+        self.trigger_mask = self.composite_mask(structs.TRIGGER_WORDS)
+        self.command: Optional[str] = None
+        self.params: Optional[str] = None
+        self.trigger_word: Optional[str] = None
+        self.reply_to_message: bool = True
+        self.member_db: Optional[Member] = None
+        self.chat_db: Optional[Chat] = None
+        self.answer_chance: int = 100
+
+    async def init_handler(self):
+        self.member_db = await self.handle_member(member=self.message.source)
+        self.chat_db = await self.handle_chat()
+        await self.handle_chats_to_members(self.member_db.id, self.chat_db.id)
+        await self.parse_incoming_message()
 
     async def build_message(self) -> Optional[str]:
         await self.init_handler()
@@ -40,151 +81,36 @@ class BreadServiceHandler(BreadService):
 
         return None
 
-    async def who_is(self) -> str:
-        params = self.params.replace('?', '')
-        username = await self.get_one_of_group()
-        return f'{random.choice(structs.DEFAULT_PREFIX)} ' \
-               f'{params} {username}'
-
-    async def gey_double(self) -> str:
-        members = await self.get_members()
-        random.shuffle(members)
-        return f'Гей-парочку образовали: ' \
-               f'{await self.get_username(members[0])} ' \
-               f'и {await self.get_username(members[1])}'
-
-    async def top(self) -> str:
-        if self.chat_id > 0:
-            members = [self.message.source]
-        else:
-            members = await self.get_members()
-        result = ''
-        i = 1
-        random.shuffle(members)
-        for user in members:
-            if not user:
-                continue
-            result += f'{i}) {await self.get_username(user)}\n'
-            i += 1
-        return f'Топ {self.params}:\n{result}'
-
     @staticmethod
-    async def get_num() -> str:
-        return str(random.randint(0, 100000000))
-
-    async def get_chance(self) -> str:
-        return f'Есть вероятность {self.params} - ' \
-               f'{str(random.randint(0, 100))}%'
-
-    @staticmethod
-    async def help() -> str:
-        return 'https://telegra.ph/HlebushekBot-10-04-3'
-
-    async def choose_variant(self) -> str:
-        choose_list = self.params.split(' или ')
-        if len(choose_list) <= 1:
-            choose_list = self.params.split(',')
-        return random.choice(choose_list).strip()
-
-    async def add_local_meme_name(self):
-        return await self.add_local_meme(
-            meme_type=LocalMemeTypesEnum.MEME_NAMES.name)
-
-    async def add_local_substring(self):
-        return await self.add_local_meme(
-            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name)
-
-    async def add_local_free_word(self):
-        return await self.add_local_meme(
-            meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
-
-    async def delete_local_meme_name(self):
-        return await self.delete_local_meme(
-            meme_type=LocalMemeTypesEnum.MEME_NAMES.name)
-
-    async def delete_local_substring(self):
-        return await self.delete_local_meme(
-            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name)
-
-    async def delete_local_free_word(self):
-        return await self.delete_local_meme(
-            meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
-
-    async def show_local_meme_names(self):
-        return await self.show_local_memes(
-            meme_type=LocalMemeTypesEnum.MEME_NAMES.name)
-
-    async def show_local_substrings(self):
-        return await self.show_local_memes(
-            meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name)
-
-    async def show_local_free_words(self):
-        return await self.show_local_memes(
-            meme_type=LocalMemeTypesEnum.FREE_WORDS.name)
-
-    async def add_unknown_answer(self) -> str:
-        return await self.add_list_value(
-            meme_type=LocalMemeTypesEnum.UNKNOWN_MESSAGE.name,
-        )
-
-    async def add_rude_phrase(self) -> str:
-        return await self.add_list_value(
-            meme_type=LocalMemeTypesEnum.RUDE_WORDS.name,
-        )
-
-    async def add_remember_phrase_as_key(self) -> str:
-        if not self.message.reply or not self.params:
-            return 'Выбери сообщение, которое запомнить'
-        self.params = f'{self.message.reply.text}={self.params}'
-        return await self.add_local_substring()
-
-    async def add_remember_phrase_as_value(self) -> str:
-        if not self.message.reply or not self.params:
-            return 'Выбери сообщение, которое запомнить'
-        self.params = f'{self.params}={self.message.reply.text}'
-        return await self.add_local_substring()
-
-    async def get_quote(self) -> str:
-        quote = await ForismaticClient().get_quote_text()
-        await self.count_stats(
-            member_db=self.member_db,
-            stats_enum=StatsEnum.QUOTER,
-        )
-        return f'{quote.text}\n\n© {quote.author}'
-
-    async def set_edited_trigger(self):
-        self.chat_db.is_edited_trigger = not self.chat_db.is_edited_trigger
-        self.chat_db = await Chat.async_add(
-            db=self.db,
-            instance=self.chat_db,
-        )
-        message = 'Включено' if self.chat_db.is_edited_trigger else 'Выключено'
-        return f'{message} реагирование на редактирование сообщений'
-
-    async def set_voice_trigger(self):
-        self.chat_db.is_voice_trigger = not self.chat_db.is_voice_trigger
-        self.chat_db = await Chat.async_add(
-            db=self.db,
-            instance=self.chat_db,
-        )
-        message = 'Включено' if self.chat_db.is_voice_trigger else 'Выключено'
-        return f'{message} реагирование на голосовые сообщения'
-
-    async def send_fart_voice(self):
-        if self.message.voice is not None \
-                and self.message.voice.duration \
-                and self.message.voice.duration >= 1 \
-                and self.chat_db.is_voice_trigger:
-            condition = Property.slug == PropertiesEnum.BAD_VOICES.name
-            fart_list: Property = await Property.async_first(
-                db=self.db,
-                where=condition,
+    def composite_mask(collection, split=True) -> str:
+        mask_part = "\\b{}\\b" if split else "{}"
+        return '|'.join(
+            map(
+                lambda x: mask_part.format(re.escape(x)),
+                collection,
             )
-            if not fart_list or not fart_list.data:
-                return None
-            await self.client.send_voice(
-                chat_id=self.chat_id,
-                voice_file_id=random.choice(fart_list.data),
-                reply_to=self.message.message_id,
-            )
-        return None
+        )
+
+    async def parse_incoming_message(self):
+        meme_name = await LocalMeme.get_local_meme(
+            db=self.db,
+            chat_id=self.chat_id,
+            meme_type=LocalMemeTypesEnum.MEME_NAMES.name,
+        )
+        command_collection = list(structs.COMMANDS_MAPPER.keys())
+
+        if meme_name is not None:
+            command_collection += list(meme_name.data.keys())
+
+        command_mask = self.composite_mask(command_collection)
+        groups = re.findall(
+            f"^({self.trigger_mask})\\s({command_mask})?",
+            self.message.text,
+            re.IGNORECASE
+        )
+
+        if len(groups) > 0:
+            phrase = " ".join(groups[0])
+            self.trigger_word = groups[0][0]
+            self.command = groups[0][1].lower()
+            self.params = self.message.text.replace(phrase, "").lstrip()

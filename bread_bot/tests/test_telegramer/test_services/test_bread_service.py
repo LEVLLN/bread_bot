@@ -12,7 +12,7 @@ from bread_bot.telegramer.models import Member, \
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
     ChatMemberBodySchema, MemberSchema, MessageSchema
-from bread_bot.telegramer.services.bread_service import BreadService
+from bread_bot.telegramer.services.bread_service_handler import BreadServiceHandler
 from bread_bot.telegramer.services.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
@@ -99,7 +99,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 db=self.session,
                 where=Chat.chat_id == message.message.chat.id)
         )
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -135,7 +135,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 db=self.session,
                 where=Chat.chat_id == message.message.chat.id)
         )
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -165,7 +165,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 where=filter_param
             )
         )
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -202,7 +202,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(
             member.last_name,
         )
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -229,7 +229,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_parse_incoming_message_trigger(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Хлеб привет'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -245,7 +245,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_parse_incoming_message_command(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Хлеб help'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -260,7 +260,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         # with params
         message = self.default_message.copy(deep=True)
         message.message.text = 'Хлеб help any'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -276,7 +276,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_parse_incoming_message_local_meme(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Хлеб test_command params'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -292,7 +292,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_parse_incoming_message_without_triggers(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'привет'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -308,7 +308,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_handle_chats_to_members_success(self):
         message = self.default_message.copy(deep=True)
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -341,7 +341,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(chat_to_members), 2)
 
     async def test_handle_chats_to_members_empty(self):
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=self.default_message.message,
@@ -378,7 +378,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 )
             )
         )
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -407,7 +407,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_unknown_messages(self):
         message = self.default_message.copy(deep=True)
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -423,7 +423,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             data=['some', 'some test', 'test something'],
             chat_id=message.message.chat.id,
         )
-        result = await BreadService(
+        result = await BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -437,7 +437,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         message = self.default_message.message.copy(deep=True)
         message.chat.id = 12122221
         # Message without reply
-        handler = BreadService(
+        handler = BreadServiceHandler(
             client=self.telegram_client,
             message=message,
             db=self.session,
@@ -468,7 +468,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             source=message.source,
             text='Foo',
         )
-        handler = BreadService(
+        handler = BreadServiceHandler(
             client=self.telegram_client,
             message=message,
             db=self.session,
@@ -482,7 +482,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_free_words_empty(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Some free word'
-        result = await BreadService(
+        result = await BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -492,7 +492,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_free_words_success(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Some_free_word'
-        result = await BreadService(
+        result = await BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -505,7 +505,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_free_words_not_found(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Some free word 1'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -519,7 +519,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_free_words_value_is_dict(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Some free word 3'
-        result = await BreadService(
+        result = await BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -529,7 +529,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_free_words_value_is_str(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'Some free word str'
-        result = await BreadService(
+        result = await BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -542,7 +542,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_substring_words_as_list(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'I triggered my_substring in message'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -555,7 +555,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_substring_words_dirty(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'I triggered amy_substrings in message'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -568,7 +568,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_substring_words_two_char_answer(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'I triggered ch in message'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -580,7 +580,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_substring_words_as_str(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'I triggered my_str in message'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -593,7 +593,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_handle_substring_words_not_found(self):
         message = self.default_message.copy(deep=True)
         message.message.text = 'I triggered in message'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -604,7 +604,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_handle_binds_is_not_command(self):
         message = self.default_message.copy(deep=True)
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -613,7 +613,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_handle_binds_command_not_matched(self):
         message = self.default_message.copy(deep=True)
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -623,7 +623,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_handle_binds_success(self):
         message = self.default_message.copy(deep=True)
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message.message,
@@ -640,7 +640,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_member_username(self):
         member = self.default_message.message.source.copy(deep=True)
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=self.default_message.message,
@@ -673,7 +673,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 status_code=200,
                 content=json.dumps(content)
             ))
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=self.default_message.message,
@@ -689,7 +689,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_add_local_meme(self):
         message = self.default_message.message.copy(deep=True)
         message.chat.id = 12321123
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -759,7 +759,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_delete_local_meme(self):
         message = self.default_message.message.copy(deep=True)
         message.chat.id = 12321122
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -819,7 +819,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_show_local_memes(self):
         message = self.default_message.message.copy(deep=True)
         message.chat.id = 12321121
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -880,7 +880,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_add_list_value(self):
         message = self.default_message.message.copy(deep=True)
         message.chat.id = 12321120
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -945,7 +945,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_show_stats(self):
         message = self.default_message.message.copy(deep=True)
         message.chat.id = 12321155
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -1024,7 +1024,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             member_id=member_schema.id,
         )
         message.chat.id = source_chat.id
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -1085,7 +1085,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             instance=member,
         )
         message.source.username = 'Source Name'
-        bread_service = BreadService(
+        bread_service = BreadServiceHandler(
             client=self.telegram_client,
             db=self.session,
             message=message,
@@ -1148,7 +1148,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         )
 
     @mock.patch('bread_bot.telegramer.services.'
-                'bread_service.BreadService.get_members')
+                'member_service.MemberServiceMixin.get_members')
     async def test_get_one_of_group(self, get_members_mock: mock.Mock):
         test_member = MemberSchema(
             id=1,
@@ -1159,7 +1159,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         )
         get_members_mock.return_value = [test_member, ]
         message = self.default_message.message.copy(deep=True)
-        handler = BreadService(
+        handler = BreadServiceHandler(
             client=self.telegram_client,
             message=message,
             db=self.session,

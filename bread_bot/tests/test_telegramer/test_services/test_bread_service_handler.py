@@ -257,7 +257,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
 
     @mock.patch('bread_bot.telegramer.services.'
-                'bread_service.BreadService.get_members')
+                'member_service.MemberServiceMixin.get_members')
     async def test_gey_double(self, get_members_mock: mock.Mock):
         test_member = MemberSchema(
             id=1,
@@ -293,7 +293,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
 
     @mock.patch('bread_bot.telegramer.services.'
-                'bread_service.BreadService.get_members')
+                'member_service.MemberServiceMixin.get_members')
     async def test_top(self, get_members_mock: mock.Mock):
         test_member = MemberSchema(
             id=1,
@@ -599,7 +599,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             local_meme.data,
         )
 
-    @mock.patch('bread_bot.telegramer.services.bread_service_handler.'
+    @mock.patch('bread_bot.telegramer.services.utils_service.'
                 'ForismaticClient.get_quote_text')
     async def test_get_quote(self, get_quote_mock: mock.Mock):
         get_quote_mock.return_value = ForismaticQuote(
