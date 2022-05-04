@@ -33,10 +33,9 @@ class BreadServiceHandler(BreadService):
         ]:
             result = await handler()
 
-            if random.random() > self.chat_db.answer_chance / 100:
-                return None
-
             if result:
+                if random.random() > self.answer_chance / 100:
+                    return None
                 return result
 
         return None

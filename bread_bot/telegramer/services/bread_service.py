@@ -42,6 +42,7 @@ class BreadService:
         self.reply_to_message: bool = True
         self.member_db: Optional[Member] = None
         self.chat_db: Optional[Chat] = None
+        self.answer_chance: int = 100
 
     async def init_handler(self):
         self.member_db = await self.handle_member(member=self.message.source)
@@ -161,6 +162,8 @@ class BreadService:
                 instance=chat_db,
             )
             logger.info(f'Чат {self.chat_id} обновил название на {title}')
+        if chat_db:
+            self.answer_chance = chat_db.answer_chance
         return chat_db
 
     async def handle_chats_to_members(self, member_id: int, chat_id: int):
