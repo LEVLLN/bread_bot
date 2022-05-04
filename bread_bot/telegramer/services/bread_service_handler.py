@@ -16,6 +16,9 @@ class BreadServiceHandler(BreadService):
     async def build_message(self) -> Optional[str]:
         await self.init_handler()
 
+        if random.random() > self.chat_db.answer_chance / 100:
+            return None
+
         if self.trigger_word:
             await self.count_stats(
                 member_db=self.member_db,

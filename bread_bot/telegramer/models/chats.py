@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, BigInteger, Boolean
+from sqlalchemy import Column, String, BigInteger, Boolean, SmallInteger
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
@@ -13,6 +13,7 @@ class Chat(mixins.AbstractIsActiveBaseModel,
     name = Column(String(255), nullable=True)
     is_edited_trigger = Column(Boolean, default=False, nullable=False)
     is_voice_trigger = Column(Boolean, default=False, nullable=False)
+    answer_chance = Column(SmallInteger, default=100, nullable=False)
 
     stats = relationship(
         'Stats',

@@ -773,6 +773,60 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertFalse(chat.is_voice_trigger)
 
+    async def test_set_answer_chance(self):
+        chat = await Chat.async_add_by_kwargs(
+            db=self.session,
+            chat_id=-5555111,
+            name='Some chat',
+        )
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=self.default_message.message,
+            db=self.session,
+            is_edited=False,
+        )
+        handler.chat_db = chat
+        self.assertEqual(
+            chat.answer_chance,
+            100
+        )
+        # Set value
+        handler.params = '99'
+        result = await handler.set_answer_chance()
+        self.assertEqual(
+            result,
+            handler.COMPLETE_MESSAGE
+        )
+        chat = await Chat.async_first(
+            db=self.session,
+            where=Chat.id == chat.id,
+        )
+        self.assertEqual(
+            chat.answer_chance,
+            99,
+        )
+        # Set great then 100 value
+        handler.params = '123'
+        result = await handler.set_answer_chance()
+        self.assertEqual(
+            result,
+            "Некорректное значение. Необходимо ввести число от 0 до 100",
+        )
+        # Set less then 0 value
+        handler.params = '-1123'
+        result = await handler.set_answer_chance()
+        self.assertEqual(
+            result,
+            "Некорректное значение. Необходимо ввести число от 0 до 100",
+        )
+        # Set less string value
+        handler.params = '-1123'
+        result = await handler.set_answer_chance()
+        self.assertEqual(
+            result,
+            "Некорректное значение. Необходимо ввести число от 0 до 100",
+        )
+
     async def test_remember_message_as_key(self):
         message = self.default_message.message.copy(deep=True)
         # Message without reply

@@ -62,6 +62,7 @@ COMMANDS_MAPPER = {
     'запомни как значение': 'add_remember_phrase_as_value',
     'оскорби': 'handle_rude_words',
     'добавь оскорбление': 'add_rude_phrase',
+    'процент срабатывания': 'set_answer_chance',
 }
 
 

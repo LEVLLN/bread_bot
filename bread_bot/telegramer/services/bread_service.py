@@ -21,6 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class BreadService:
+    COMPLETE_MESSAGE = "Сделал"
+
     def __init__(
             self,
             client: TelegramClient,
@@ -355,7 +357,7 @@ class BreadService:
         local_meme.data = data
         await LocalMeme.async_add(self.db, local_meme)
 
-        return 'Сделал'
+        return self.COMPLETE_MESSAGE
 
     async def delete_local_meme(self, meme_type: str) -> str:
         value = self.params.strip().lower()
@@ -375,7 +377,7 @@ class BreadService:
 
         local_meme.data = data
         await LocalMeme.async_add(self.db, local_meme)
-        return 'Сделал'
+        return self.COMPLETE_MESSAGE
 
     async def show_local_memes(self, meme_type: str) -> str:
         local_meme = await LocalMeme.get_local_meme(
@@ -406,14 +408,31 @@ class BreadService:
                    f'{LocalMemeTypesEnum[meme_type].value}'
 
         if value in local_meme.data:
-            return 'Сделал'
+            return self.COMPLETE_MESSAGE
 
         data = local_meme.data.copy()
         data.append(value)
         local_meme.data = data
         await LocalMeme.async_add(self.db, local_meme)
 
-        return 'Сделал'
+        return self.COMPLETE_MESSAGE
+
+    async def set_answer_chance(self):
+        error_message = "Некорректное значение. Необходимо ввести число от 0 до 100"
+        try:
+            value = int(self.params.strip())
+        except ValueError:
+            return error_message
+
+        if value < 0 or value > 100:
+            return error_message
+
+        self.chat_db.answer_chance = value
+        self.chat_db = await Chat.async_add(
+            db=self.db,
+            instance=self.chat_db,
+        )
+        return self.COMPLETE_MESSAGE
 
     async def show_stats(self) -> str:
         statistics = defaultdict(str)
@@ -527,4 +546,4 @@ class BreadService:
             return 'Нечего обновлять'
 
         await LocalMeme.async_add_all(self.db, update_list)
-        return 'Сделал'
+        return self.COMPLETE_MESSAGE
