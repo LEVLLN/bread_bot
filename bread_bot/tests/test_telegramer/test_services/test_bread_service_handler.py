@@ -13,7 +13,7 @@ from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, MemberSchema, VoiceSchema, MessageSchema
 from bread_bot.telegramer.services.bread_service_handler import \
     BreadServiceHandler
-from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, \
     PropertiesEnum
 from bread_bot.utils.testing_tools import init_async_session
@@ -644,7 +644,7 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
         get_quote_mock.assert_called_once()
 
-    @mock.patch('bread_bot.telegramer.services.telegram_client.'
+    @mock.patch('bread_bot.telegramer.clients.telegram_client.'
                 'TelegramClient.send_voice')
     async def test_send_to_voice(self, send_voice_mock: mock.Mock):
         send_voice_mock.return_value = True

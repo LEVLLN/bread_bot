@@ -1,5 +1,4 @@
 import logging
-import random
 import re
 from typing import Optional
 
@@ -10,7 +9,7 @@ from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
 from bread_bot.telegramer.services.chat_service import ChatServiceMixin
 from bread_bot.telegramer.services.member_service import MemberServiceMixin
 from bread_bot.telegramer.services.phrases_service import PhrasesServiceMixin, PhrasesServiceHandlerMixin
-from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.services.utils_service import UtilsServiceMixin
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum

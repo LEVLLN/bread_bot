@@ -6,7 +6,7 @@ import respx
 from httpx import AsyncClient, Response
 
 from bread_bot.telegramer.models import Member
-from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.utils.testing_tools import test_app, \
     TEST_SERVER_URL, init_async_session
 

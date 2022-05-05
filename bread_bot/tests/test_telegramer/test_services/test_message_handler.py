@@ -8,7 +8,7 @@ from httpx import Response
 
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
 from bread_bot.telegramer.services.message_handler import MessageHandler
-from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
 from bread_bot.utils.testing_tools import init_async_session
 

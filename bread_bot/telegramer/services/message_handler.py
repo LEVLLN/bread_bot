@@ -8,7 +8,7 @@ from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, MessageSchema
 from bread_bot.telegramer.services.bread_service_handler import \
     BreadServiceHandler
-from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
 
 logger = logging.getLogger(__name__)

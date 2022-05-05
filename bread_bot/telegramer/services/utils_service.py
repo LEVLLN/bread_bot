@@ -1,6 +1,6 @@
 import random
 
-from bread_bot.telegramer.services.forismatic_client import ForismaticClient
+from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
 from bread_bot.telegramer.utils.structs import StatsEnum
 
 

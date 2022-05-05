@@ -13,7 +13,7 @@ from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
     ChatMemberBodySchema, MemberSchema, MessageSchema
 from bread_bot.telegramer.services.bread_service_handler import BreadServiceHandler
-from bread_bot.telegramer.services.telegram_client import TelegramClient
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
 from bread_bot.utils.testing_tools import init_async_session
