@@ -25,6 +25,8 @@ class PhrasesServiceHandlerMixin:
         return unknown_messages
 
     async def handle_free_words(self) -> Optional[str]:
+        if random.random() > self.answer_chance / 100:
+            return None
         free_words_db: LocalMeme = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat_id,
@@ -55,6 +57,9 @@ class PhrasesServiceHandlerMixin:
         return random.choice(rude_messages)
 
     async def handle_substring_words(self) -> Optional[str]:
+        if random.random() > self.answer_chance / 100:
+            return None
+
         substring_words_db = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat_id,
@@ -84,6 +89,9 @@ class PhrasesServiceHandlerMixin:
         return None
 
     async def handle_bind_words(self) -> Optional[str]:
+        if random.random() > self.answer_chance / 100:
+            return None
+
         if self.command is None:
             return None
 
@@ -109,12 +117,17 @@ class PhrasesServiceHandlerMixin:
             return await method()
 
     async def handle_unknown_words(self) -> Optional[str]:
+        if random.random() > self.answer_chance / 100:
+            return None
+
         if self.trigger_word:
             unknown_messages = await self.get_list_messages()
             return random.choice(unknown_messages)
         return None
 
     async def handle_edited_words(self) -> Optional[str]:
+        if random.random() > self.answer_chance / 100:
+            return None
         if self.is_edited and self.chat_db.is_edited_trigger:
             condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
             editor_messages: Property = await Property.async_first(

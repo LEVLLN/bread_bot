@@ -75,8 +75,6 @@ class BreadServiceHandler(
             result = await handler()
 
             if result:
-                if random.random() > self.answer_chance / 100:
-                    return None
                 return result
 
         return None
