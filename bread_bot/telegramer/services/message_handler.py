@@ -20,17 +20,17 @@ class MessageHandler:
             request_body: StandardBodySchema = None,
             db: AsyncSession = None
     ):
-        self.request_body = request_body
-        self.has_message = \
+        self.request_body: StandardBodySchema = request_body
+        self.has_message: bool = \
             hasattr(self.request_body, 'message') \
             and self.request_body.message is not None
-        self.has_edited_message = \
+        self.has_edited_message: bool = \
             hasattr(self.request_body, 'edited_message') \
             and self.request_body.edited_message is not None
         self.message: Optional[MessageSchema] = \
             self.request_body.edited_message \
             if self.has_edited_message else self.request_body.message
-        self.client = TelegramClient()
+        self.client: TelegramClient = TelegramClient()
         self.db = db
 
     async def validate_command(self):

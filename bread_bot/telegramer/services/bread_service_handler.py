@@ -25,7 +25,7 @@ class BreadServiceHandler(
     UtilsServiceMixin,
     MemberServiceMixin,
 ):
-    COMPLETE_MESSAGE = "Сделал"
+    COMPLETE_MESSAGE: str = "Сделал"
 
     def __init__(
             self,
@@ -34,12 +34,12 @@ class BreadServiceHandler(
             db: AsyncSession,
             is_edited: bool = False,
     ):
-        self.client = client
-        self.message = message
-        self.chat_id = self.message.chat.id
-        self.is_edited = is_edited
-        self.db = db
-        self.trigger_mask = self.composite_mask(structs.TRIGGER_WORDS)
+        self.client: TelegramClient = client
+        self.message: Optional[MessageSchema] = message
+        self.chat_id: int = self.message.chat.id
+        self.is_edited: bool = is_edited
+        self.db: AsyncSession = db
+        self.trigger_mask: str = self.composite_mask(structs.TRIGGER_WORDS)
         self.command: Optional[str] = None
         self.params: Optional[str] = None
         self.trigger_word: Optional[str] = None
