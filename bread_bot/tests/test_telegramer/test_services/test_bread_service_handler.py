@@ -6,9 +6,10 @@ from unittest import mock
 from httpx import Response
 from sqlalchemy import and_
 
+from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.models import LocalMeme, Chat, Property, Member, \
     Stats
-from bread_bot.telegramer.schemas.api_models import ForismaticQuote
+from bread_bot.telegramer.schemas.api_models import ForismaticQuote, EvilInsultResponse
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, MemberSchema, VoiceSchema, MessageSchema
 from bread_bot.telegramer.services.bread_service_handler import \
@@ -627,6 +628,51 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         handler.member_db = member
         handler.chat_id = chat.chat_id
         result = await handler.get_quote()
+        self.assertEqual(
+            result,
+            'Some text\n\n© Some author'
+        )
+        stats = await Stats.async_first(
+            db=self.session,
+            where=and_(
+                Stats.member_id == member.id,
+                Stats.chat_id == chat.chat_id,
+            )
+        )
+        self.assertEqual(
+            stats.count,
+            1
+        )
+        get_quote_mock.assert_called_once()
+
+    @mock.patch('bread_bot.telegramer.services.utils_service.'
+                'EvilInsultClient.get_evil_insult')
+    async def test_get_quote(self, get_quote_mock: mock.Mock):
+        get_quote_mock.return_value = EvilInsultResponse(
+            insult='Some text',
+            comment='Some author'
+        )
+        member = await Member.async_add_by_kwargs(
+            db=self.session,
+            username='user21',
+            first_name='first_name_test',
+            last_name='last_name_test'
+        )
+        chat = await Chat.async_add_by_kwargs(
+            db=self.session,
+            chat_id=555512,
+            name='Some chat'
+        )
+        handler = BreadServiceHandler(
+            client=self.telegram_client,
+            message=self.default_message.message,
+            db=self.session,
+            is_edited=False,
+        )
+        handler.chat_db = chat
+        handler.member_db = member
+        handler.chat_id = chat.chat_id
+        result = await handler.get_insult()
         self.assertEqual(
             result,
             'Some text\n\n© Some author'

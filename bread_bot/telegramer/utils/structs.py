@@ -71,6 +71,7 @@ class StatsEnum(Enum):
     EDITOR = 'Сколько раз редактировал сообщения'
     FLUDER = 'Сколько раз написал сообщение'
     QUOTER = 'Сколько раз просил цитату'
+    EVIL_INSULT = 'Сколько раз просил оскорбить на английском'
 
 
 class LocalMemeTypesEnum(Enum):

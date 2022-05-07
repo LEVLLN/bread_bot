@@ -8,3 +8,8 @@ freezegun==1.1.0
 # common
 python-dateutil==2.8.2
 respx==0.17.1
+pytest==6.2.4
+pytest-cov==2.12.1
+pytest-mock~=3.6.1
+pytest-freezegun~=0.4.2
+asynctest==0.13.0
