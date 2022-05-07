@@ -31,7 +31,7 @@ class MemberServiceMixin:
                 continue
             result[chat.user.id] = chat.user
         for chat_to_member in chat_to_members:
-            if chat_to_member.member:
+            if chat_to_member.member and not chat_to_member.member.is_bot:
                 member = chat_to_member.member
                 member_schema = MemberSchema(
                     is_bot=member.is_bot,
@@ -72,7 +72,9 @@ class MemberServiceMixin:
         result = ''
         i = 1
         random.shuffle(members)
-        for user in members[:10]:
+        if len(members) > 20:
+            members = members[:20]
+        for user in members:
             if not user:
                 continue
             result += f'{i}) {await self.get_username(user)}\n'
