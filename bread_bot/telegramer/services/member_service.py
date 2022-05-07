@@ -33,6 +33,8 @@ class MemberServiceMixin:
         for chat_to_member in chat_to_members:
             if chat_to_member.member and not chat_to_member.member.is_bot:
                 member = chat_to_member.member
+                if member.member_id in result.keys():
+                    continue
                 member_schema = MemberSchema(
                     is_bot=member.is_bot,
                     username=member.username,

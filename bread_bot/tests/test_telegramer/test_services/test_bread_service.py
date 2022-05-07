@@ -664,7 +664,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
                 {'user': {'id': 1235, 'is_bot': False, 'username': 'uname2'}},
                 {'user': {'id': 1237, 'is_bot': False, 'username': 'uname3'}},
                 {'user': {'id': 1237, 'is_bot': False, 'username': 'lol kek'}},
-                {'user': {'id': 7777111, 'is_bot': False, 'username': 'OLD NAME'}},
+                {'user': {'id': 7777111, 'is_bot': False, 'username': 'ACTUAL'}},
             ]}
         )
         content = members.dict()
@@ -717,13 +717,7 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             MemberSchema(**{'id': 1234, 'is_bot': False, 'username': 'uname1'}),
             MemberSchema(**{'id': 1235, 'is_bot': False, 'username': 'uname2'}),
             MemberSchema(**{'id': 1237, 'is_bot': False, 'username': 'lol kek'}),
-            MemberSchema(
-                is_bot=ex_member.is_bot,
-                username=ex_member.username,
-                first_name=ex_member.first_name,
-                last_name=ex_member.last_name,
-                id=ex_member.member_id,
-            ),
+            MemberSchema(**{'id': 7777111, 'is_bot': False, 'username': 'ACTUAL'}),
             MemberSchema(
                 is_bot=bread_service.member_db.is_bot,
                 username=bread_service.member_db.username,
