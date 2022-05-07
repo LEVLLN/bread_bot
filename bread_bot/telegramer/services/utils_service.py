@@ -25,12 +25,18 @@ class UtilsServiceMixin:
         return f'{quote.text}\n\n© {quote.author}'
 
     async def get_insult(self) -> str:
+        username = None
+        if self.message.reply:
+            username = f'@{self.message.reply.source.username}'
         evil_insult = await EvilInsultClient().get_evil_insult()
         await self.count_stats(
             member_db=self.member_db,
             stats_enum=StatsEnum.EVIL_INSULT,
         )
-        return f"{evil_insult.insult}\n\n© {evil_insult.comment}"
+        insult = f"{evil_insult.insult}\n\n© {evil_insult.comment}"
+        if username:
+            return f"{username}\n{insult}"
+        return insult
 
     @staticmethod
     async def get_num() -> str:

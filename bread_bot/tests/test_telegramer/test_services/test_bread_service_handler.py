@@ -647,8 +647,9 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
 
     @mock.patch('bread_bot.telegramer.services.utils_service.'
                 'EvilInsultClient.get_evil_insult')
-    async def test_get_quote(self, get_quote_mock: mock.Mock):
-        get_quote_mock.return_value = EvilInsultResponse(
+    async def test_get_quote(self, get_insult_mock: mock.Mock):
+        message: StandardBodySchema = self.default_message.copy(deep=True)
+        get_insult_mock.return_value = EvilInsultResponse(
             insult='Some text',
             comment='Some author'
         )
@@ -665,13 +666,14 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
         )
         handler = BreadServiceHandler(
             client=self.telegram_client,
-            message=self.default_message.message,
+            message=message.message,
             db=self.session,
             is_edited=False,
         )
         handler.chat_db = chat
         handler.member_db = member
         handler.chat_id = chat.chat_id
+
         result = await handler.get_insult()
         self.assertEqual(
             result,
@@ -688,7 +690,19 @@ class BuildMessageTestCase(unittest.IsolatedAsyncioTestCase):
             stats.count,
             1
         )
-        get_quote_mock.assert_called_once()
+        get_insult_mock.assert_called_once()
+        # WITH REPLY
+        message.message.reply = MessageSchema(
+            message_id=11110,
+            chat=message.message.chat,
+            source=message.message.source,
+            text='Foo',
+        )
+        result = await handler.get_insult()
+        self.assertEqual(
+            result,
+            f'@{message.message.source.username}\nSome text\n\n© Some author'
+        )
 
     @mock.patch('bread_bot.telegramer.clients.telegram_client.'
                 'TelegramClient.send_voice')
