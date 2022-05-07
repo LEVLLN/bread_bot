@@ -63,6 +63,7 @@ COMMANDS_MAPPER = {
     'оскорби': 'handle_rude_words',
     'добавь оскорбление': 'add_rude_phrase',
     'процент срабатывания': 'set_answer_chance',
+    'insult': 'get_insult',
 }
 
 
