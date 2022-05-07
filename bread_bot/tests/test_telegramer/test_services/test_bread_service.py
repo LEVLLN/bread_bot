@@ -678,12 +678,43 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             db=self.session,
             message=self.default_message.message,
         )
-        await bread_service.get_members()
+        bread_service.member_db = await bread_service.handle_member(self.default_message.message.source)
+        bread_service.chat_id = self.default_message.message.chat.id
+        bread_service.chat_db = await bread_service.handle_chat()
+        await bread_service.handle_chats_to_members(bread_service.member_db.id, bread_service.chat_db.id)
+        chat = await Chat.async_first(
+            db=self.session,
+            where=Chat.id == bread_service.chat_db.id,
+            select_in_load=Chat.members)
+        ex_member = await Member.async_add_by_kwargs(
+            db=self.session,
+            username="username4",
+            member_id="7777111",
+        )
+        chat.members.append(ChatToMember(chat_id=chat.id, member_id=ex_member.id))
+        await chat.commit(db=self.session)
+        members = await bread_service.get_members()
+
         self.assertTrue(response.called)
         request = response.calls.last.request.read().decode(encoding='utf-8')
         self.assertEqual(
             json.loads(request),
             {'chat_id': self.default_message.message.chat.id}
+        )
+        self.assertIn(
+            MemberSchema.from_orm(bread_service.member_db),
+            members
+        )
+        member_schemas_expected = [
+            MemberSchema(**{'is_bot': False, 'user_name': 'uname1'}),
+            MemberSchema(**{'is_bot': False, 'user_name': 'uname2'}),
+            MemberSchema(**{'is_bot': False, 'user_name': 'uname3'}),
+            MemberSchema.from_orm(bread_service.member_db),
+            MemberSchema.from_orm(ex_member)
+        ]
+        self.assertListEqual(
+            member_schemas_expected,
+            members,
         )
 
     async def test_add_local_meme(self):
@@ -1009,13 +1040,14 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
         message = self.default_message.message.copy(deep=True)
         source_chat = await Chat.async_add_by_kwargs(
             db=self.session,
-            chat_id=5555,
+            chat_id=555599,
             name='SourceChat'
         )
         member_schema = message.source
-        member_schema.id = 5555
+        member_schema.id = 555599
         member_schema.first_name = 'Source Name'
         member_schema.last_name = 'LastName'
+        member_schema.username = "NewUserName"
         member = await Member.async_add_by_kwargs(
             db=self.session,
             username=member_schema.username,

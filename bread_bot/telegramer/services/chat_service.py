@@ -77,9 +77,9 @@ class ChatServiceMixin:
                 or not chat \
                 or chat.id in [chat.chat_id for chat in member.chats]:
             return
-
-        member.chats.append(ChatToMember(chat_id=chat_id))
+        member.chats.append(ChatToMember(chat_id=chat_id, member_id=member_id))
         await member.commit(db=self.db)
+        logger.info("Member %s bind with chat %s", member_id, chat_id)
         return
 
     async def set_edited_trigger(self):

@@ -1,7 +1,7 @@
 import random
 from typing import List
 
-from bread_bot.telegramer.models import Member
+from bread_bot.telegramer.models import Member, Chat, ChatToMember
 from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
 from bread_bot.telegramer.utils import structs
 
@@ -21,7 +21,17 @@ class MemberServiceMixin:
     async def get_members(self) -> List[MemberSchema]:
         response = await self.client.get_chat(self.chat_id)
         chats = response.result
-        return [chat.user for chat in chats if not chat.user.is_bot]
+        chat_to_members = await ChatToMember.async_filter(
+            db=self.db,
+            where=ChatToMember.chat_id == self.chat_db.id,
+            select_in_load=ChatToMember.member)
+        result = [chat.user for chat in chats if not chat.user.is_bot]
+        for chat_to_member in chat_to_members:
+            member = MemberSchema.from_orm(chat_to_member.member)
+            if member in result:
+                continue
+            result.append(member)
+        return result
 
     async def get_one_of_group(self) -> str:
         if self.chat_id > 0:
@@ -51,7 +61,7 @@ class MemberServiceMixin:
         result = ''
         i = 1
         random.shuffle(members)
-        for user in members:
+        for user in members[:10]:
             if not user:
                 continue
             result += f'{i}) {await self.get_username(user)}\n'
