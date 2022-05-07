@@ -25,13 +25,24 @@ class MemberServiceMixin:
             db=self.db,
             where=ChatToMember.chat_id == self.chat_db.id,
             select_in_load=ChatToMember.member)
-        result = [chat.user for chat in chats if not chat.user.is_bot]
-        for chat_to_member in chat_to_members:
-            member = MemberSchema.from_orm(chat_to_member.member)
-            if member in result:
+        result = {}
+        for chat in chats:
+            if chat.user.is_bot:
                 continue
-            result.append(member)
-        return result
+            result[chat.user.id] = chat.user
+        for chat_to_member in chat_to_members:
+            if chat_to_member.member:
+                member = chat_to_member.member
+                member_schema = MemberSchema(
+                    is_bot=member.is_bot,
+                    username=member.username,
+                    first_name=member.first_name,
+                    last_name=member.last_name,
+                    id=member.member_id,
+                )
+                result[member_schema.id] = member_schema
+
+        return list(result.values())
 
     async def get_one_of_group(self) -> str:
         if self.chat_id > 0:
@@ -80,6 +91,7 @@ class MemberServiceMixin:
                 first_name=member.first_name,
                 last_name=member.last_name,
                 is_bot=member.is_bot,
+                member_id=member.id
             )
         else:
             is_updated = False

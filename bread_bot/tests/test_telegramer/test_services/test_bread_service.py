@@ -660,9 +660,11 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
     async def test_get_members(self):
         members = ChatMemberBodySchema(
             **{'result': [
-                {'user': {'is_bot': False, 'user_name': 'uname1'}},
-                {'user': {'is_bot': False, 'user_name': 'uname2'}},
-                {'user': {'is_bot': False, 'user_name': 'uname3'}},
+                {'user': {'id': 1234, 'is_bot': False, 'username': 'uname1'}},
+                {'user': {'id': 1235, 'is_bot': False, 'username': 'uname2'}},
+                {'user': {'id': 1237, 'is_bot': False, 'username': 'uname3'}},
+                {'user': {'id': 1237, 'is_bot': False, 'username': 'lol kek'}},
+                {'user': {'id': 7777111, 'is_bot': False, 'username': 'OLD NAME'}},
             ]}
         )
         content = members.dict()
@@ -702,15 +704,34 @@ class BreadServiceTestCase(unittest.IsolatedAsyncioTestCase):
             {'chat_id': self.default_message.message.chat.id}
         )
         self.assertIn(
-            MemberSchema.from_orm(bread_service.member_db),
+            MemberSchema(
+                is_bot=bread_service.member_db.is_bot,
+                username=bread_service.member_db.username,
+                first_name=bread_service.member_db.first_name,
+                last_name=bread_service.member_db.last_name,
+                id=bread_service.member_db.member_id,
+            ),
             members
         )
         member_schemas_expected = [
-            MemberSchema(**{'is_bot': False, 'user_name': 'uname1'}),
-            MemberSchema(**{'is_bot': False, 'user_name': 'uname2'}),
-            MemberSchema(**{'is_bot': False, 'user_name': 'uname3'}),
-            MemberSchema.from_orm(bread_service.member_db),
-            MemberSchema.from_orm(ex_member)
+            MemberSchema(**{'id': 1234, 'is_bot': False, 'username': 'uname1'}),
+            MemberSchema(**{'id': 1235, 'is_bot': False, 'username': 'uname2'}),
+            MemberSchema(**{'id': 1237, 'is_bot': False, 'username': 'lol kek'}),
+            MemberSchema(
+                is_bot=ex_member.is_bot,
+                username=ex_member.username,
+                first_name=ex_member.first_name,
+                last_name=ex_member.last_name,
+                id=ex_member.member_id,
+            ),
+            MemberSchema(
+                is_bot=bread_service.member_db.is_bot,
+                username=bread_service.member_db.username,
+                first_name=bread_service.member_db.first_name,
+                last_name=bread_service.member_db.last_name,
+                id=bread_service.member_db.member_id,
+            ),
+
         ]
         self.assertListEqual(
             member_schemas_expected,

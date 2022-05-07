@@ -10,9 +10,6 @@ class MemberSchema(BaseModel):
     last_name: Optional[str] = ''
     first_name: Optional[str] = ''
 
-    class Config:
-        orm_mode = True
-
 
 class ChatSchema(BaseModel):
     id: int
