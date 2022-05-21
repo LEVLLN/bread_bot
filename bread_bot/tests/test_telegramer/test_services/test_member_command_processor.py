@@ -120,7 +120,7 @@ class TestMemberCommandProcessor:
         result = await processor.process()
         assert f"{test_member.first_name} {test_member.last_name}" in result.text
 
-    async def test_double_members(self, mocker, processor):
+    async def test_couple_members(self, mocker, processor):
         test_member = MemberSchema(
             id=1,
             is_bot=False,
@@ -136,7 +136,7 @@ class TestMemberCommandProcessor:
             username='somebill'
         )
         mocker.patch.object(MemberCommandMessageProcessor, "get_members", return_value=[test_member, test_member_two])
-        processor.message.text = "Хлеб геи"
+        processor.message.text = "Хлеб парочка"
 
         processor.chat.chat_id = -1111
         result = await processor.process()

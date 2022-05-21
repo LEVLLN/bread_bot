@@ -288,7 +288,7 @@ class TestAdminMessageProcessor:
         [
             (
                     {"key": ["value", "value1"], "key2": ["value2"]},
-                    "key = [value, value1]\nkey2 = [value2]"
+                    "key = [value; value1]\nkey2 = [value2]"
             ),
             (
                     {"key": ["value"]},
@@ -304,7 +304,7 @@ class TestAdminMessageProcessor:
             ),
             (
                     ["value1", "value2", "value3"],
-                    "[value1, value2, value3]"
+                    "[value1; value2; value3]"
             ),
             (
                     [],

@@ -128,3 +128,5 @@ DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = '|'.join(
 # Telegramer
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 NGROK_HOST = os.getenv('NGROK_HOST', 'localhost:8080')
+SHOW_STR_LIMIT = int(os.getenv("SHOW_STR_LIMIT", 100))
+MESSAGE_LEN_LIMIT = int(os.getenv("MESSAGE_LEN_LIMIT", 2500))

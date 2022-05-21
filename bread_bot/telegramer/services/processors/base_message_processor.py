@@ -8,7 +8,7 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.telegramer.models import Member, Chat, Stats, LocalMeme
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.utils import structs
@@ -29,11 +29,11 @@ class MessageProcessor(ABC):
         self.command: str = ""
         self.command_params: str = ""
 
-    async def _process(self):
+    async def _process(self) -> Optional[BaseAnswerSchema]:
         """Контекст процессора"""
         pass
 
-    async def process(self):
+    async def process(self) -> Optional[BaseAnswerSchema]:
         """Основная функция процессора"""
         try:
             if not await self.condition:

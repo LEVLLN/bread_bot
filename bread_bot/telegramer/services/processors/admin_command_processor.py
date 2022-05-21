@@ -4,6 +4,7 @@ from typing import Optional
 
 from sqlalchemy import and_
 
+from bread_bot.main.settings import SHOW_STR_LIMIT
 from bread_bot.telegramer.models import LocalMeme, Chat, Member
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
@@ -146,10 +147,10 @@ class AdminMessageProcessor(CommandMessageProcessor):
         if isinstance(local_meme.data, dict):
             result_list = []
             for key, value in local_meme.data.items():
-                result_list.append(f"{key} = [{', '.join([item for item in value])}]")
+                result_list.append(f"{key} = [{'; '.join([item[:SHOW_STR_LIMIT] for item in value])}]")
             result = "\n".join(result_list)
         elif isinstance(local_meme.data, list):
-            result = f"[{', '.join([item for item in local_meme.data])}]"
+            result = f"[{'; '.join([item for item in local_meme.data])}]"
         else:
             return await self.get_text_answer(
                 answer_text=f"У группы отсутствуют {LocalMemeTypesEnum[meme_type].value}"

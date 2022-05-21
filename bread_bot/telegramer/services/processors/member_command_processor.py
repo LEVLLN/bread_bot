@@ -7,7 +7,6 @@ from bread_bot.telegramer.models import ChatToMember, Stats
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
-from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.structs import StatsEnum
 
 
@@ -16,7 +15,7 @@ class MemberCommandMessageProcessor(CommandMessageProcessor):
         "топ": "top",
         "top": "top",
         "кто": "who_is",
-        "геи": "gey_double",
+        "парочка": "get_love_couple",
         "стата": "show_stats",
         "статистика": "show_stats",
     }
@@ -71,16 +70,15 @@ class MemberCommandMessageProcessor(CommandMessageProcessor):
         params = self.command_params.replace('?', '')
         username = await self.get_one_of_group()
         return await self.get_text_answer(
-            answer_text=f"{random.choice(structs.DEFAULT_PREFIX)} "
-                        f"{params} {username}"
+            answer_text=f"{params} - это {username}"
         )
 
-    async def gey_double(self) -> Optional[TextAnswerSchema]:
+    async def get_love_couple(self) -> Optional[TextAnswerSchema]:
         await self.count_stats(stats_enum=StatsEnum.CALLED_WHO)
         members = await self.get_members()
         random.shuffle(members)
         return await self.get_text_answer(
-            answer_text=f"Гей-парочку образовали: "
+            answer_text=f"Любовную парочку образовали: "
                         f"{await self.get_username(members[0])} и {await self.get_username(members[1])}"
         )
 
