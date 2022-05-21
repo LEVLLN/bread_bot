@@ -7,14 +7,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
+from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.models import LocalMeme, Chat, Member
 from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
     SendMessageSchema, ChatSchema, MemberDBSchema
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
     ChatMemberBodySchema
-from bread_bot.telegramer.services.message_handler import MessageHandler
-from bread_bot.telegramer.clients.telegram_client import TelegramClient
+from bread_bot.telegramer.services.message_handler import process_telegram_message
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 from bread_bot.utils.dependencies import get_async_session
 
@@ -25,17 +25,16 @@ router = APIRouter(
     responses={404: {'description': 'Not found'}},
 )
 
+RESPONSE_OK = "OK"
 
-@router.post('/')
+
+@router.post("/")
 async def handle_message(
         request_body: StandardBodySchema,
         db: AsyncSession = Depends(get_async_session)
 ):
-    try:
-        await MessageHandler(request_body=request_body, db=db).handle_message()
-    except Exception:
-        pass
-    return 'OK'
+    await process_telegram_message(db=db, request_body=request_body)
+    return RESPONSE_OK
 
 
 @router.post('/set_local_meme',
@@ -57,7 +56,7 @@ async def set_local_meme(
     else:
         local_meme.data = request_body.data
         await LocalMeme.async_add(db, local_meme)
-    return 'OK'
+    return RESPONSE_OK
 
 
 @router.get('/get_local_memes/{chat_id}',
@@ -102,7 +101,7 @@ async def send_message_to_chat(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='Произошла ошибка отправки сообщения'
         )
-    return 'OK'
+    return RESPONSE_OK
 
 
 @router.get('/chats',

@@ -68,11 +68,19 @@ COMMANDS_MAPPER = {
 
 
 class StatsEnum(Enum):
-    TOTAL_CALL_SLUG = 'Сколько раз вызвал бота'
-    EDITOR = 'Сколько раз редактировал сообщения'
-    FLUDER = 'Сколько раз написал сообщение'
-    QUOTER = 'Сколько раз просил цитату'
-    EVIL_INSULT = 'Сколько раз просил оскорбить на английском'
+    TOTAL_CALL_SLUG = 'Вызвал бота'
+    EDITOR = 'Редактировал сообщения'
+    FLUDER = 'Написал сообщение'
+    QUOTER = 'Просил цитату'
+    EVIL_INSULT = 'Просил оскорбить на английском'
+    INSULTER = 'Просил оскорбить'
+    VOICER = 'Прислал голосовых'
+    ADD_CONTENT = 'Добавил контент'
+    DELETE_CONTENT = 'Удалил контент'
+    CALLED_WHO = 'Вызвал команду "кто"'
+    CALLED_TOP = 'Вызвал команду "топ"'
+    CATCH_TRIGGER = 'Попался на триггер'
+    CATCH_SUBSTRING = 'Попался на подстроку'
 
 
 class LocalMemeTypesEnum(Enum):

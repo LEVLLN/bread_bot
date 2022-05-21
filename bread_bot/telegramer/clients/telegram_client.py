@@ -2,6 +2,7 @@ from httpx import Response
 
 from bread_bot.main import settings
 from bread_bot.main.base_client import BaseHTTPClient
+from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import \
     ChatMemberBodySchema, GetWebHookInfoSchema
 
@@ -33,6 +34,14 @@ class TelegramClient(BaseHTTPClient):
             method='POST',
             url=f'{self.base_url}/{self.send_message_method}',
             data=data,
+            headers=self.headers,
+        )
+
+    async def send_message_by_schema(self, schema: BaseAnswerSchema):
+        return await self.request(
+            method="POST",
+            url=f"{self.base_url}/{self.send_message_method}",
+            data=schema.send_body(),
             headers=self.headers,
         )
 

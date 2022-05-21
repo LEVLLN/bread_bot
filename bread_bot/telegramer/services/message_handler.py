@@ -1,68 +1,50 @@
 import logging
-import random
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bread_bot.telegramer.schemas.telegram_messages import \
-    StandardBodySchema, MessageSchema
-from bread_bot.telegramer.services.bread_service_handler import \
-    BreadServiceHandler
 from bread_bot.telegramer.clients.telegram_client import TelegramClient
-from bread_bot.telegramer.utils import structs
+from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
+from bread_bot.telegramer.services.message_service import MessageService
+from bread_bot.telegramer.services.processors import (
+    AdminMessageProcessor,
+    EditedMessageProcessor,
+    MemberCommandMessageProcessor,
+    PhrasesMessageProcessor,
+    UtilsCommandMessageProcessor,
+    VoiceMessageProcessor,
+
+)
 
 logger = logging.getLogger(__name__)
 
 
-class MessageHandler:
-    def __init__(
-            self,
-            request_body: StandardBodySchema = None,
-            db: AsyncSession = None
-    ):
-        self.request_body: StandardBodySchema = request_body
-        self.has_message: bool = \
-            hasattr(self.request_body, 'message') \
-            and self.request_body.message is not None
-        self.has_edited_message: bool = \
-            hasattr(self.request_body, 'edited_message') \
-            and self.request_body.edited_message is not None
-        self.message: Optional[MessageSchema] = \
-            self.request_body.edited_message \
-            if self.has_edited_message else self.request_body.message
-        self.client: TelegramClient = TelegramClient()
-        self.db = db
-
-    async def validate_command(self):
-        if not self.has_message and not self.has_edited_message:
+async def process_telegram_message(db: AsyncSession, request_body: StandardBodySchema):
+    try:
+        message_service = MessageService(db=db, request_body=request_body)
+        if not await message_service.has_message and not await message_service.has_edited_message:
             return False
-        return True
+        await message_service.init()
+    except Exception as e:
+        logger.error("Error while handle message_service process", exc_info=e)
+        return
 
-    async def handle_message(self):
-        if not await self.validate_command():
-            return
-        bread_service_handler = BreadServiceHandler(
-            client=self.client,
-            message=self.message,
-            db=self.db,
-            is_edited=self.has_edited_message,
-        )
-        try:
-            result_text = await bread_service_handler.build_message()
-        except Exception as e:
-            logger.error(str(e))
-            await self.client.send_message(
-                chat_id=self.message.chat.id,
-                message=random.choice(structs.ERROR_CHAT_MESSAGES),
-                reply_to=self.message.message_id,
-            )
-            raise e
-        else:
-            if result_text is None:
-                return
-            await self.client.send_message(
-                chat_id=self.message.chat.id,
-                message=result_text,
-                reply_to=self.message.message_id
-                if bread_service_handler.reply_to_message else None,
-            )
+    for Processor in [
+        EditedMessageProcessor,
+        VoiceMessageProcessor,
+        AdminMessageProcessor,
+        MemberCommandMessageProcessor,
+        UtilsCommandMessageProcessor,
+        PhrasesMessageProcessor,
+    ]:
+        result = await Processor(message_service=message_service).process()
+        if result is not None:
+            break
+
+    if result is None:
+        logger.error("Result answer schema is None: %s", request_body.dict())
+        return
+
+    try:
+        await TelegramClient().send_message_by_schema(result)
+    except Exception as e:
+        logger.error("Error while sending message", exc_info=e)
