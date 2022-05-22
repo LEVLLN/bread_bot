@@ -214,7 +214,7 @@ class AdminMessageProcessor(CommandMessageProcessor):
         )
 
     async def propagate_members_memes(self, *args) -> Optional[TextAnswerSchema]:
-        # TODO: Дописать тесты. Отрефакторить функцию распространения
+        # TODO: Дописать тесты. Отрефакторить и оптимизировать функцию распространения
         if self.chat.chat_id < 0:
             return await self.get_text_answer(
                 answer_text="Нельзя из чата копировать в другой чат. Только из личных сообщений с ботом!"

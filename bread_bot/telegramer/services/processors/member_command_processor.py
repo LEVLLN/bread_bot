@@ -32,13 +32,12 @@ class MemberCommandMessageProcessor(CommandMessageProcessor):
 
     async def get_members(self) -> List[MemberSchema]:
         response = await TelegramClient().get_chat(self.chat.chat_id)
-        chats = response.result
         chat_to_members = await ChatToMember.async_filter(
             db=self.db,
             where=ChatToMember.chat_id == self.chat.id,
             select_in_load=ChatToMember.member)
         result = {}
-        for chat in chats:
+        for chat in response.result:
             if chat.user.is_bot:
                 continue
             result[chat.user.id] = chat.user

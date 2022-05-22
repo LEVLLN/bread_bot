@@ -36,6 +36,7 @@ class MessageProcessor(ABC):
     async def process(self) -> Optional[BaseAnswerSchema]:
         """Основная функция процессора"""
         try:
+            await self.count_stats(stats_enum=StatsEnum.FLUDER)
             if not await self.condition:
                 return None
             return await self._process()

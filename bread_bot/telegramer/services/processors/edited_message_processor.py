@@ -17,10 +17,9 @@ class EditedMessageProcessor(MessageProcessor):
         if not self.chat.is_edited_trigger:
             return None
 
-        condition = Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name
         editor_messages: Property = await Property.async_first(
             db=self.db,
-            where=condition,
+            where=Property.slug == PropertiesEnum.ANSWER_TO_EDIT.name,
         )
         if editor_messages is None or not editor_messages.data:
             return None
