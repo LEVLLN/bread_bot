@@ -3,6 +3,7 @@ import pytest
 from bread_bot.telegramer.schemas.api_models import ForismaticQuote, EvilInsultResponse
 from bread_bot.telegramer.services.processors import UtilsCommandMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
+from bread_bot.tests.resources.reader import bashorg_resource
 
 
 class TestUtilsCommandProcessor:
@@ -68,3 +69,16 @@ class TestUtilsCommandProcessor:
         processor.message.reply = processor.message
         result = await processor.process()
         assert result.text == '@Test_test\nSome text\n\n© Some author'
+
+    async def test_get_joke(self, processor, mocker):
+        mock = mocker.patch(
+            "bread_bot.telegramer.services.processors.utils_command_processor."
+            "BashOrgClient.get_quote", return_value=bashorg_resource)
+        processor.message.text = "Хлеб анекдот"
+        result = await processor.process()
+        assert result.text == 'xxx: Да я сто лет не бегал - я не смогу бежать со скоростью 5 миль в\n' \
+                              '                час!\n' \
+                              'yyy: Поверь, если за тобой будет гнаться спятивший робот Илона Маска - ' \
+                              'побежишь, как миленький.\n' \
+                              '            '
+        mock.assert_called_once()

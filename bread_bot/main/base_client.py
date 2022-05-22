@@ -94,6 +94,8 @@ class BaseHTTPClient:
             response_content = json.loads(response_raw)
         except json.decoder.JSONDecodeError:
             response_content = response_raw.decode()
+        except Exception:
+            response_content = response.text
 
         try:
             request_content = json.loads(request_raw)

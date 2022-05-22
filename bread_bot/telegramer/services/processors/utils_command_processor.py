@@ -1,11 +1,17 @@
+import logging
 import random
 from typing import Optional
 
+from bs4 import BeautifulSoup
+
+from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
 from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
+
+logger = logging.getLogger(__name__)
 
 
 class UtilsCommandMessageProcessor(CommandMessageProcessor):
@@ -23,6 +29,7 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
         "цитата": "get_quote",
         "цит": "get_quote",
         "insult": "get_insult",
+        "анекдот": "get_joke",
     }
 
     async def handle_rude_words(self) -> Optional[TextAnswerSchema]:
@@ -72,6 +79,25 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
         return await self.get_text_answer(answer_text=f"Есть вероятность "
                                                       f"{self.command_params} - "
                                                       f"{str(random.randint(0, 100))}%")
+
+    async def get_joke(self) -> Optional[TextAnswerSchema]:
+        try:
+            html = await BashOrgClient().get_quote()
+        except Exception as e:
+            logger.error(str(e))
+            return None
+
+        try:
+            text = BeautifulSoup(html, "html.parser") \
+                .find(name="div", recursive=True, id="quotes") \
+                .div \
+                .find("div", **{"class": None}) \
+                .get_text(separator="\n")
+        except Exception as e:
+            logger.error(str(e))
+            return None
+        else:
+            return await self.get_text_answer(answer_text=text)
 
     async def help(self) -> Optional[TextAnswerSchema]:
         return await self.get_text_answer(answer_text="https://hlebbot.ru/help")

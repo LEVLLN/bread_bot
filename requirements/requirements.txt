@@ -18,6 +18,8 @@ asyncpg==0.24.0
     # via -r requirements/requirements.in
 bcrypt==3.2.0
     # via passlib
+beautifulsoup4==4.11.1
+    # via -r requirements/requirements.in
 cachetools==4.2.2
     # via google-auth
 certifi==2021.5.30
@@ -156,6 +158,8 @@ sniffio==1.2.0
     #   anyio
     #   httpcore
     #   httpx
+soupsieve==2.3.2.post1
+    # via beautifulsoup4
 sqlalchemy==1.4.22
     # via
     #   -r requirements/requirements.in
