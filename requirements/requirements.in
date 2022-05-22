@@ -35,3 +35,4 @@ opencensus-ext-requests==0.7.5
 # common
 python-dateutil==2.8.2
 asynclog==0.1.7
+Markdown==3.3.7

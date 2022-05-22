@@ -147,7 +147,7 @@ class TestMemberCommandProcessor:
         await stats_factory(slug=StatsEnum.FLUDER.name,
                             member_id=processor.member.id,
                             chat_id=processor.chat.chat_id,
-                            count=9)
+                            count=8)
         await stats_factory(slug=StatsEnum.CATCH_TRIGGER.name,
                             member_id=processor.member.id,
                             chat_id=processor.chat.chat_id,
@@ -155,4 +155,5 @@ class TestMemberCommandProcessor:
         processor.message.text = "Хлеб стата"
         result = await processor.process()
         assert result.text == "Попался на триггер:\nTester Testerov - 10\n\n\n" \
-                              "Написал сообщение:\nTester Testerov - 9\n\n\n"
+                              "Написал сообщение:\nTester Testerov - 9\n\n\n" \
+                              "Вызвал бота:\nTester Testerov - 1\n\n\n"

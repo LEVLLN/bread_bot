@@ -5,6 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from starlette.requests import Request
+from starlette.responses import HTMLResponse
+import markdown
+from starlette.templating import Jinja2Templates
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.telegramer.clients.telegram_client import TelegramClient
@@ -35,6 +39,13 @@ async def handle_message(
 ):
     await process_telegram_message(db=db, request_body=request_body)
     return RESPONSE_OK
+
+
+@router.get("/help", response_class=HTMLResponse)
+async def color_home(request: Request):
+    with open("./About.md", "r", encoding="utf-8") as input_file:
+        text = input_file.read()
+    return markdown.markdown(text)
 
 
 @router.post('/set_local_meme',

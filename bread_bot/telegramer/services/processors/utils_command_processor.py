@@ -74,4 +74,4 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
                                                       f"{str(random.randint(0, 100))}%")
 
     async def help(self) -> Optional[TextAnswerSchema]:
-        return await self.get_text_answer(answer_text="https://telegra.ph/HlebushekBot-10-04-3")
+        return await self.get_text_answer(answer_text="https://hlebbot.ru/help")
