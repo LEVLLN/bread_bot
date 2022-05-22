@@ -31,7 +31,7 @@ class VoiceMessageProcessor(MessageProcessor):
             return None
 
         return VoiceAnswerSchema(
-            voice_file_id=random.choice(voice_list.data),
+            voice=random.choice(voice_list.data),
             chat_id=self.chat.chat_id,
             reply_to_message_id=self.message.message_id,
         )

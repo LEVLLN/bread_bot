@@ -23,7 +23,7 @@ class TestVoiceMessageProcessor:
                     PropertiesEnum.BAD_VOICES.name,
                     ["some_answer_voice"],
                     True,
-                    VoiceAnswerSchema(reply_to_message_id=1, voice_file_id="some_answer_voice", chat_id=134),
+                    VoiceAnswerSchema(reply_to_message_id=1, voice="some_answer_voice", chat_id=134),
             ),
             (
                     PropertiesEnum.BAD_VOICES.name,

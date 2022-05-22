@@ -16,4 +16,4 @@ class TextAnswerSchema(BaseAnswerSchema):
 
 
 class VoiceAnswerSchema(BaseAnswerSchema):
-    voice_file_id: str
+    voice: str
