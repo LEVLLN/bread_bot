@@ -9,19 +9,19 @@ from bread_bot.main.base_client import BaseHTTPClient
 logger = logging.getLogger(__name__)
 
 
-class BashOrgClient(BaseHTTPClient):
+class BaneksClient(BaseHTTPClient):
     def __init__(self):
-        self.url = "http://bashorg.org"
-        self.casual_method = "casual"
+        self.url = "http://baneks.site"
+        self.random_method = "random"
 
     @property
-    async def casual_url(self) -> str:
-        return urljoin(self.url, self.casual_method)
+    async def random_url(self) -> str:
+        return urljoin(self.url, self.random_method)
 
     async def get_quote(self) -> str:
         response = await self.request(
             method="GET",
-            url="http://bashorg.org/casual",
+            url=await self.random_url,
             headers={
                 'Accept': '*/*',
             }
@@ -32,11 +32,10 @@ class BashOrgClient(BaseHTTPClient):
         try:
             html = await self.get_quote()
             text = BeautifulSoup(html, "html.parser") \
-                .find(name="div", recursive=True, id="quotes") \
-                .div \
-                .find("div", **{"class": None}) \
+                .find(name="section", itemprop="description") \
                 .get_text(separator="\n")
         except Exception as e:
             logger.error(str(e))
             return None
-        return text
+        else:
+            return text

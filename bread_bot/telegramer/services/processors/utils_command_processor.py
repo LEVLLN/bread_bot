@@ -2,9 +2,8 @@ import logging
 import random
 from typing import Optional
 
-from bs4 import BeautifulSoup
-
 from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
+from bread_bot.telegramer.clients.baneks_client import BaneksClient
 from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
@@ -81,23 +80,13 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
                                                       f"{str(random.randint(0, 100))}%")
 
     async def get_joke(self) -> Optional[TextAnswerSchema]:
-        try:
-            html = await BashOrgClient().get_quote()
-        except Exception as e:
-            logger.error(str(e))
-            return None
+        JokeVendor = random.choice([BashOrgClient, BaneksClient])
+        joke_vendor = JokeVendor()
+        text = await joke_vendor.get_text()
 
-        try:
-            text = BeautifulSoup(html, "html.parser") \
-                .find(name="div", recursive=True, id="quotes") \
-                .div \
-                .find("div", **{"class": None}) \
-                .get_text(separator="\n")
-        except Exception as e:
-            logger.error(str(e))
+        if text is None:
             return None
-        else:
-            return await self.get_text_answer(answer_text=text)
+        return await self.get_text_answer(answer_text=f"{text}\n\n© {joke_vendor.url}")
 
     async def help(self) -> Optional[TextAnswerSchema]:
         return await self.get_text_answer(answer_text="https://hlebbot.ru/help")
