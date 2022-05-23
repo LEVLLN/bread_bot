@@ -55,9 +55,10 @@ class PhrasesMessageProcessor(MessageProcessor):
             chat_id=self.chat.chat_id,
             meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
         )
-        substring_words = substring_words.data
+        if substring_words is None:
+            return None
         substring_words_mask = await composite_mask(
-            collection=filter(lambda x: len(x) >= 3, substring_words.keys()),
+            collection=filter(lambda x: len(x) >= 3, substring_words.data.keys()),
             split=False,
         )
         regex = f'({substring_words_mask})'
