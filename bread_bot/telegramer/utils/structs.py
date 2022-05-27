@@ -54,3 +54,4 @@ class LocalMemeTypesEnum(Enum):
 class PropertiesEnum(Enum):
     BAD_VOICES = "Плохие звуки"
     ANSWER_TO_EDIT = "Ответ на редактирование"
+    DIGITS = "Цифры"

@@ -6,9 +6,10 @@ from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
 from bread_bot.telegramer.clients.baneks_client import BaneksClient
 from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.telegramer.models import Property
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
-from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
+from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum, PropertiesEnum
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +72,21 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
             return await self.get_text_answer(answer_text=f"{username}\n{insult}")
         return await self.get_text_answer(answer_text=insult)
 
-    async def get_num(self) -> Optional[TextAnswerSchema]:
-        return await self.get_text_answer(answer_text=str(random.randint(0, 100000000)))
+    async def get_num(self) -> Optional[VoiceAnswerSchema]:
+        condition = Property.slug == PropertiesEnum.DIGITS.name
+        voice_list: Property = await Property.async_first(
+            db=self.db,
+            where=condition,
+        )
+
+        if not voice_list or not voice_list.data:
+            return None
+
+        return VoiceAnswerSchema(
+            voice=random.choice(voice_list.data),
+            chat_id=self.chat.chat_id,
+            reply_to_message_id=self.message.message_id,
+        )
 
     async def get_chance(self) -> Optional[TextAnswerSchema]:
         return await self.get_text_answer(answer_text=f"Есть вероятность "
