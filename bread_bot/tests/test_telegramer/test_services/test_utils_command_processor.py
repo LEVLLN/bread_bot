@@ -3,8 +3,9 @@ import pytest
 from bread_bot.telegramer.clients.baneks_client import BaneksClient
 from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
 from bread_bot.telegramer.schemas.api_models import ForismaticQuote, EvilInsultResponse
+from bread_bot.telegramer.schemas.bread_bot_answers import VoiceAnswerSchema
 from bread_bot.telegramer.services.processors import UtilsCommandMessageProcessor
-from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
+from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, PropertiesEnum
 from bread_bot.tests.resources.reader import bashorg_resource, baneks_resource
 
 
@@ -97,3 +98,13 @@ class TestUtilsCommandProcessor:
                               "— Не до грибов, Петька!\n\n" \
                               "\n\n© http://baneks.site"
         mock.assert_called_once()
+
+    async def test_get_num(self, processor, property_factory):
+        property_object = await property_factory(
+            slug=PropertiesEnum.DIGITS.name,
+            data=["some_digits_data"],
+        )
+        processor.message.text = "Хлеб цифры"
+        result = await processor.process()
+        assert isinstance(result, VoiceAnswerSchema)
+        assert result.voice == property_object.data[0]
