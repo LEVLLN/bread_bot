@@ -55,6 +55,61 @@ def request_body_message():
 
 
 @pytest.fixture
+def reply_voice():
+    return StandardBodySchema(
+        **{
+            "update_id": 958678863,
+            "message": {
+                "message_id": 13900,
+                "from": {
+                    "id": 296382623,
+                    "is_bot": False,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": 296382623,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "type": "private"
+                },
+                "date": 1655506631,
+                "reply_to_message": {
+                    "message_id": 13898,
+                    "from": {
+                        "id": 296382623,
+                        "is_bot": False,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "language_code": "en"
+                    },
+                    "chat": {
+                        "id": 296382623,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "type": "private"
+                    },
+                    "date": 1655506619,
+                    "voice": {
+                        "duration": 3,
+                        "mime_type": "audio/ogg",
+                        "file_id": "AwACAgIAAxkBAAI2SmKtBrufIcWi95pc7qz3NkFNPnZNAAI5HwACp3ZpSdqwY0ZTyPojJAQ",
+                        "file_unique_id": "AgADOR8AAqd2aUk",
+                        "file_size": 11599
+                    }
+                },
+                "text": "1234567"
+            }
+        }
+    )
+
+
+@pytest.fixture
 def request_body_without_message():
     return StandardBodySchema(
         **{
@@ -90,6 +145,7 @@ def request_body_edited_message():
             }
         }
     )
+
 
 @pytest.fixture
 def request_body_voice_message():

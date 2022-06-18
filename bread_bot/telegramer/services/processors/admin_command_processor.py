@@ -8,7 +8,7 @@ from bread_bot.main.settings import SHOW_STR_LIMIT
 from bread_bot.telegramer.models import LocalMeme, Chat, Member
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
-from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
+from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum, LocalMemeDataTypesEnum
 
 
 class AdminMessageProcessor(CommandMessageProcessor):
@@ -49,25 +49,29 @@ class AdminMessageProcessor(CommandMessageProcessor):
         else:
             return await method(sub_command)
 
-    async def add(self, meme_type: str, key: str, value: Optional[str]) -> Optional[TextAnswerSchema]:
+    async def add(self, meme_type: str,
+                  key: str,
+                  value: Optional[str],
+                  data_key: str = LocalMemeDataTypesEnum.TEXT.value) -> Optional[TextAnswerSchema]:
         await self.count_stats(stats_enum=StatsEnum.ADD_CONTENT)
         local_meme = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat.chat_id,
             meme_type=meme_type,
         )
+
         if local_meme is None:
             await LocalMeme.async_add_by_kwargs(
-                self.db,
+                db=self.db,
                 chat_id=self.chat.chat_id,
                 type=meme_type,
-                data={key: [value]} if value is not None else [key]
+                **{data_key: {key: [value]} if value is not None else [key]}
             )
             return await self.get_text_answer(
                 answer_text=f"Ура! У чата появились {LocalMemeTypesEnum[meme_type].value}"
             )
 
-        data = local_meme.data.copy()
+        data = getattr(local_meme, data_key).copy()
 
         if isinstance(data, dict) and key in data.keys():
             meme_list = data[key].copy()
@@ -79,7 +83,7 @@ class AdminMessageProcessor(CommandMessageProcessor):
         elif isinstance(data, list) and key and not value and key not in data:
             data.append(key)
 
-        local_meme.data = data
+        setattr(local_meme, data_key, data)
         await LocalMeme.async_add(self.db, local_meme)
 
         return await self.get_text_answer(
@@ -123,16 +127,24 @@ class AdminMessageProcessor(CommandMessageProcessor):
     async def remember(self, meme_type: str, is_key: bool = None,
                        key: str = None, value: str = None) -> Optional[TextAnswerSchema]:
         await self.count_stats(stats_enum=StatsEnum.ADD_CONTENT)
-        to_remember = key
-        if not self.message.reply:
+        reply = self.message.reply
+        data_key = LocalMemeDataTypesEnum.TEXT.value
+
+        if not reply:
             return await self.get_text_answer(
                 answer_text="Выбери сообщение, которое запомнить"
             )
-
-        key, value = self.message.reply.text, to_remember
-        if not is_key and to_remember is not None:
-            key, value = value, key
-        return await self.add(meme_type=meme_type, key=key, value=value)
+        if is_key:
+            key, value = reply.text, key
+            if not key:
+                return None
+        else:
+            if getattr(reply, "voice"):
+                value = reply.voice.file_id
+                data_key = LocalMemeDataTypesEnum.VOICE.value
+            else:
+                value = reply.text
+        return await self.add(meme_type=meme_type, key=key, value=value, data_key=data_key)
 
     async def show(self, meme_type: str) -> Optional[TextAnswerSchema]:
         local_meme = await LocalMeme.get_local_meme(

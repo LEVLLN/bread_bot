@@ -16,7 +16,8 @@ class TestUtilsCommandProcessor:
         return processor
 
     async def test_handle_rude_words(self, processor, local_meme_factory):
-        await local_meme_factory(type=LocalMemeTypesEnum.RUDE_WORDS.name, data=["You are is bad"], chat=processor.chat)
+        await local_meme_factory(type=LocalMemeTypesEnum.RUDE_WORDS.name,
+                                 data=["You are is bad"], chat=processor.chat, data_voice=None)
         reply_message = processor.message.copy(deep=True)
         processor.message.reply = reply_message
         processor.message.text = "Хлеб оскорби"

@@ -3,9 +3,8 @@ import re
 
 from bread_bot.telegramer.models import LocalMeme
 from bread_bot.telegramer.services.processors.base_message_processor import MessageProcessor
-from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.functions import composite_mask
-from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
+from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum, LocalMemeDataTypesEnum, TRIGGER_WORDS
 
 
 class PhrasesMessageProcessor(MessageProcessor):
@@ -32,7 +31,7 @@ class PhrasesMessageProcessor(MessageProcessor):
             return None
 
         message_text = self.message.text.lower().strip()
-        message_text_list = [message_text.replace(f"{trigger_word} ", "") for trigger_word in structs.TRIGGER_WORDS]
+        message_text_list = [message_text.replace(f"{trigger_word} ", "") for trigger_word in TRIGGER_WORDS]
         message_text_list.append(message_text)
 
         result = None
@@ -47,6 +46,16 @@ class PhrasesMessageProcessor(MessageProcessor):
             return await self.get_text_answer(answer_text=result)
         return None
 
+    @staticmethod
+    def _pack_data(local_meme: LocalMeme):
+        result = {}
+        for data_type in (LocalMemeDataTypesEnum.TEXT.value, LocalMemeDataTypesEnum.VOICE.value):
+            if getattr(local_meme, data_type) is None:
+                continue
+            for key, value in getattr(local_meme, data_type).items():
+                result[key] = (data_type, value)
+        return result
+
     async def get_substring_words(self):
         """Обработка подстрок"""
         await self.count_stats(stats_enum=StatsEnum.CATCH_SUBSTRING)
@@ -56,12 +65,12 @@ class PhrasesMessageProcessor(MessageProcessor):
             meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
         )
         if substring_words:
-            data = substring_words.data
+            data = self._pack_data(local_meme=substring_words)
         else:
             data = {}
 
         substring_words_mask = await composite_mask(
-            collection=filter(lambda x: len(x) >= 3, data.keys()),
+            collection=filter(lambda x: len(x) >= 3, sorted(data.keys(), key=len, reverse=True)),
             split=False,
         )
         regex = f'({substring_words_mask})'
@@ -69,10 +78,21 @@ class PhrasesMessageProcessor(MessageProcessor):
 
         if len(groups) > 0:
             substring_word = groups[0]
-            value = data.get(substring_word.lower().strip(), "упс!")
+            data_type, value = data.get(substring_word.lower().strip(), "упс!")
 
             if isinstance(value, list):
-                return await self.get_text_answer(answer_text=random.choice(value))
+                answer_value = random.choice(value)
             elif isinstance(value, str):
-                return await self.get_text_answer(answer_text=value)
+                answer_value = value
+            else:
+                answer_value = None
+
+            match data_type:
+                case LocalMemeDataTypesEnum.TEXT.value:
+                    return await self.get_text_answer(answer_value)
+                case LocalMemeDataTypesEnum.VOICE.value:
+                    return await self.get_voice_answer(answer_value)
+                case _:
+                    return None
+
         return None

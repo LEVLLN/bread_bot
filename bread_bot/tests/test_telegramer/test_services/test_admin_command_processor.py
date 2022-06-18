@@ -3,6 +3,7 @@ from sqlalchemy import and_
 
 from bread_bot.telegramer.models import LocalMeme, Stats, Chat
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import AdminMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
 
@@ -10,6 +11,13 @@ from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
 class TestAdminMessageProcessor:
     @pytest.fixture
     async def processor(self, message_service) -> AdminMessageProcessor:
+        processor = AdminMessageProcessor(message_service=message_service)
+        return processor
+
+    @pytest.fixture
+    async def voice_processor(self, db, reply_voice) -> AdminMessageProcessor:
+        message_service = MessageService(db=db, request_body=reply_voice)
+        await message_service.init()
         processor = AdminMessageProcessor(message_service=message_service)
         return processor
 
@@ -118,7 +126,7 @@ class TestAdminMessageProcessor:
     async def test_update_local_meme(self, db, local_meme_factory, processor,
                                      command_params, expected_data, source_data):
         local_meme = await local_meme_factory(type=LocalMemeTypesEnum.FREE_WORDS.name, data=source_data,
-                                              chat=processor.chat)
+                                              chat=processor.chat, data_voice=None,)
         assert local_meme.data == source_data
         processor.message.text = f"хлеб добавь {command_params}"
 
@@ -208,7 +216,7 @@ class TestAdminMessageProcessor:
     async def test_delete_local_meme(self, db, processor, local_meme_factory,
                                      command_params, expected_data, source_data, answer_is_complete):
         local_meme = await local_meme_factory(type=LocalMemeTypesEnum.FREE_WORDS.name, data=source_data,
-                                              chat=processor.chat)
+                                              chat=processor.chat, data_voice=None)
         assert local_meme.data == source_data
         processor.message.text = f"хлеб удали {command_params}"
 
@@ -259,6 +267,36 @@ class TestAdminMessageProcessor:
             Stats.member_id == processor.member.id,
             Stats.chat_id == processor.chat.chat_id,
             Stats.slug == StatsEnum.ADD_CONTENT.name)) is not None
+
+    @pytest.mark.parametrize(
+        "file_id, text, expected_data",
+        [
+            ("key", "хлеб запомни как ключ value", None),
+            ("outer_value", "хлеб запомни как значение my_key", {"my_key": ["outer_value"]}),
+            ("key", "хлеб запомни ключ value", {"key": ["value"]}),
+            ("outer_value", "хлеб запомни значение my_key", {"my_key": ["outer_value"]}),
+        ]
+    )
+    async def test_remember_local_meme_voice(self, db, processor, file_id, reply_voice, text, expected_data):
+        processor.message = reply_voice.message
+        processor.message.reply.voice.file_id = file_id
+        processor.message.text = text
+
+        await processor.process()
+
+        local_meme = await LocalMeme.async_first(
+            db=db,
+            where=and_(
+                LocalMeme.chat_id == processor.chat.chat_id,
+                LocalMeme.type == LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+            )
+        )
+        if local_meme:
+            assert local_meme.data_voice == expected_data
+            assert await Stats.async_first(db=db, where=and_(
+                Stats.member_id == processor.member.id,
+                Stats.chat_id == processor.chat.chat_id,
+                Stats.slug == StatsEnum.ADD_CONTENT.name)) is not None
 
     @pytest.mark.parametrize(
         "text",
@@ -318,7 +356,8 @@ class TestAdminMessageProcessor:
         await local_meme_factory(
             chat=processor.chat,
             data=data,
-            type=meme_type
+            type=meme_type,
+            data_voice=None,
         )
 
         result = await processor.process()

@@ -1,6 +1,6 @@
 import pytest
 
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import PhrasesMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
@@ -23,6 +23,7 @@ class TestPhrasesMessageProcessor:
                 "some free word 2": ["default answer 2"],
                 "key": ["trigger"]
             },
+            data_voice=None,
             chat=message_service.chat
         )
 
@@ -35,6 +36,21 @@ class TestPhrasesMessageProcessor:
                 'my_str': 'some_answer_str',
                 "ch": ["two_char_answer"],
                 "key": ["substring"],
+            },
+            data_voice=None,
+            chat=message_service.chat
+        )
+
+    @pytest.fixture
+    async def local_memes_substring_voice_collection(self, local_meme_factory, message_service: MessageService):
+        return await local_meme_factory(
+            type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+            data=None,
+            data_voice={
+                'my_voice': ['some_answer_in_list_voice'],
+                'my_voice_str': 'some_answer_str_voice',
+                "ch": ["two_char_answer_voice"],
+                "voice_key": ["substring_voice"],
             },
             chat=message_service.chat
         )
@@ -77,12 +93,36 @@ class TestPhrasesMessageProcessor:
             ("I triggered in message", None),
         ]
     )
-    async def test_handle_trigger_words(self, db, processor: PhrasesMessageProcessor,
-                                        local_memes_substring_collection, text, expected):
+    async def test_handle_substring_words(self, db, processor: PhrasesMessageProcessor,
+                                          local_memes_substring_collection, text, expected):
         processor.message.text = text
         result = await processor.get_substring_words()
         expected_result = TextAnswerSchema(
             text=expected,
+            reply_to_message_id=processor.message.message_id,
+            chat_id=processor.chat.chat_id
+        ) if expected else None
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("I triggered my_voice in message", "some_answer_in_list_voice"),
+            ("my_voice", "some_answer_in_list_voice"),
+            ("amy_voiceb", "some_answer_in_list_voice"),
+            (".my_voice.", "some_answer_in_list_voice"),
+            ("my_voice_str", "some_answer_str_voice"),
+            ("amy_voice_strb", "some_answer_str_voice"),
+            ("I triggered ch in message", None),
+            ("I triggered in message", None),
+        ]
+    )
+    async def test_handle_substring_words_voice(self, db, processor: PhrasesMessageProcessor,
+                                                local_memes_substring_voice_collection, text, expected):
+        processor.message.text = text
+        result = await processor.get_substring_words()
+        expected_result = VoiceAnswerSchema(
+            voice=expected,
             reply_to_message_id=processor.message.message_id,
             chat_id=processor.chat.chat_id
         ) if expected else None

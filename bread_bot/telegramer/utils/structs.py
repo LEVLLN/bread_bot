@@ -51,6 +51,11 @@ class LocalMemeTypesEnum(Enum):
     RUDE_WORDS = "Грубые фразы"
 
 
+class LocalMemeDataTypesEnum(Enum):
+    TEXT = "data"
+    VOICE = "data_voice"
+
+
 class PropertiesEnum(Enum):
     BAD_VOICES = "Плохие звуки"
     ANSWER_TO_EDIT = "Ответ на редактирование"

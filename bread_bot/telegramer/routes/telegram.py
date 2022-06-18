@@ -8,7 +8,6 @@ from starlette import status
 from starlette.requests import Request
 from starlette.responses import HTMLResponse
 import markdown
-from starlette.templating import Jinja2Templates
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.telegramer.clients.telegram_client import TelegramClient
