@@ -71,19 +71,23 @@ class AdminMessageProcessor(CommandMessageProcessor):
                 answer_text=f"Ура! У чата появились {LocalMemeTypesEnum[meme_type].value}"
             )
 
-        data = getattr(local_meme, data_key).copy()
+        data = getattr(local_meme, data_key)
+        if data is not None:
+            data_to_update = data.copy()
+        else:
+            data_to_update = {}
 
-        if isinstance(data, dict) and key in data.keys():
-            meme_list = data[key].copy()
+        if isinstance(data_to_update, dict) and key in data_to_update.keys():
+            meme_list = data_to_update[key].copy()
             if value not in meme_list:
                 meme_list.append(value)
-                data[key] = meme_list
+                data_to_update[key] = meme_list
         elif isinstance(data, dict) and key not in data.keys():
-            data[key] = [value]
+            data_to_update[key] = [value]
         elif isinstance(data, list) and key and not value and key not in data:
-            data.append(key)
+            data_to_update.append(key)
 
-        setattr(local_meme, data_key, data)
+        setattr(local_meme, data_key, data_to_update)
         await LocalMeme.async_add(self.db, local_meme)
 
         return await self.get_text_answer(
