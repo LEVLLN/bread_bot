@@ -278,11 +278,16 @@ class TestAdminMessageProcessor:
             ("existed_value", "хлеб запомни значение existed_key", {"existed_key": ["existed_value"]}),
         ]
     )
+    @pytest.mark.parametrize(
+        "is_existed_local_meme",
+        [True, False]
+    )
     async def test_remember_local_meme_voice(self, db, processor, file_id, reply_voice,
-                                             text, expected_data, local_meme_factory):
-        await local_meme_factory(type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
-                                              data={"existed_text_key": "kek"},
-                                              chat=processor.chat, data_voice=None)
+                                             text, expected_data, local_meme_factory, is_existed_local_meme):
+        if is_existed_local_meme:
+            await local_meme_factory(type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+                                     data={"existed_text_key": "kek"},
+                                     chat=processor.chat, data_voice=None)
         processor.message = reply_voice.message
         processor.message.reply.voice.file_id = file_id
         processor.message.text = text
@@ -298,6 +303,47 @@ class TestAdminMessageProcessor:
         )
         if local_meme:
             assert local_meme.data_voice == expected_data
+            assert await Stats.async_first(db=db, where=and_(
+                Stats.member_id == processor.member.id,
+                Stats.chat_id == processor.chat.chat_id,
+                Stats.slug == StatsEnum.ADD_CONTENT.name)) is not None
+
+
+    @pytest.mark.parametrize(
+        "file_id, text, expected_data",
+        [
+            ("key", "хлеб запомни как ключ value", None),
+            ("outer_value", "хлеб запомни как значение my_key", {"my_key": ["outer_value"]}),
+            ("key", "хлеб запомни ключ value", None),
+            ("outer_value", "хлеб запомни значение my_key", {"my_key": ["outer_value"]}),
+            ("existed_value", "хлеб запомни значение existed_key", {"existed_key": ["existed_value"]}),
+        ]
+    )
+    @pytest.mark.parametrize(
+        "is_existed_local_meme",
+        [True, False]
+    )
+    async def test_remember_local_meme_photo(self, db, processor, file_id, reply_photo,
+                                             text, expected_data, local_meme_factory, is_existed_local_meme):
+        if is_existed_local_meme:
+            await local_meme_factory(type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+                                     data={"existed_text_key": "kek"},
+                                     chat=processor.chat, data_voice=None)
+        processor.message = reply_photo.message
+        processor.message.reply.photo[0].file_id = file_id
+        processor.message.text = text
+
+        await processor.process()
+
+        local_meme = await LocalMeme.async_first(
+            db=db,
+            where=and_(
+                LocalMeme.chat_id == processor.chat.chat_id,
+                LocalMeme.type == LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+            )
+        )
+        if local_meme:
+            assert local_meme.data_photo == expected_data
             assert await Stats.async_first(db=db, where=and_(
                 Stats.member_id == processor.member.id,
                 Stats.chat_id == processor.chat.chat_id,
@@ -436,5 +482,4 @@ class TestAdminMessageProcessor:
 
         result = await processor.process()
 
-        print(result.text)
         assert result.text

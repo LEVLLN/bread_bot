@@ -49,7 +49,9 @@ class PhrasesMessageProcessor(MessageProcessor):
     @staticmethod
     def _pack_data(local_meme: LocalMeme):
         result = {}
-        for data_type in (LocalMemeDataTypesEnum.TEXT.value, LocalMemeDataTypesEnum.VOICE.value):
+        for data_type in (LocalMemeDataTypesEnum.TEXT.value,
+                          LocalMemeDataTypesEnum.VOICE.value,
+                          LocalMemeDataTypesEnum.PHOTO.value):
             if getattr(local_meme, data_type) is None:
                 continue
             for key, value in getattr(local_meme, data_type).items():
@@ -92,6 +94,8 @@ class PhrasesMessageProcessor(MessageProcessor):
                     return await self.get_text_answer(answer_value)
                 case LocalMemeDataTypesEnum.VOICE.value:
                     return await self.get_voice_answer(answer_value)
+                case LocalMemeDataTypesEnum.PHOTO.value:
+                    return await self.get_photo_answer(answer_value)
                 case _:
                     return None
 

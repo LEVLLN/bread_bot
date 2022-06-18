@@ -12,8 +12,9 @@ async def property_factory(db):
 
 @pytest.fixture
 async def local_meme_factory(db):
-    async def _factory(type, data, data_voice, chat):
-        return await LocalMeme.async_add_by_kwargs(db=db, type=type, data_voice=data_voice, data=data, chat=chat)
+    async def _factory(type, chat, data, data_photo=None, data_voice=None):
+        return await LocalMeme.async_add_by_kwargs(db=db, type=type, data_photo=data_photo,
+                                                   data_voice=data_voice, data=data, chat=chat)
     yield _factory
 
 

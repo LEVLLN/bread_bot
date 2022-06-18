@@ -17,3 +17,7 @@ class TextAnswerSchema(BaseAnswerSchema):
 
 class VoiceAnswerSchema(BaseAnswerSchema):
     voice: str
+
+
+class PhotoAnswerSchema(BaseAnswerSchema):
+    photo: str

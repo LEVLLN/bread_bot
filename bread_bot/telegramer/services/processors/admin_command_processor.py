@@ -143,9 +143,12 @@ class AdminMessageProcessor(CommandMessageProcessor):
             if not key:
                 return None
         else:
-            if getattr(reply, "voice"):
+            if reply.voice:
                 value = reply.voice.file_id
                 data_key = LocalMemeDataTypesEnum.VOICE.value
+            elif reply.photo:
+                value = reply.photo[0].file_id
+                data_key = LocalMemeDataTypesEnum.PHOTO.value
             else:
                 value = reply.text
         return await self.add(meme_type=meme_type, key=key, value=value, data_key=data_key)

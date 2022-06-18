@@ -23,6 +23,10 @@ class VoiceSchema(BaseModel):
     file_id: Optional[str]
 
 
+class PhotoSchema(BaseModel):
+    file_id: Optional[str]
+
+
 class BaseMessageSchema(BaseModel):
     message_id: int
     source: MemberSchema = Field(..., alias='from')
@@ -30,6 +34,7 @@ class BaseMessageSchema(BaseModel):
     date: Optional[int] = None
     text: Optional[str] = ''
     voice: Optional[VoiceSchema] = None
+    photo: List[PhotoSchema] = []
 
 
 class MessageSchema(BaseMessageSchema):

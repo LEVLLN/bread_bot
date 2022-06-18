@@ -1,6 +1,6 @@
 import pytest
 
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema, PhotoAnswerSchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import PhrasesMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
@@ -51,6 +51,20 @@ class TestPhrasesMessageProcessor:
                 'my_voice_str': 'some_answer_str_voice',
                 "ch": ["two_char_answer_voice"],
                 "voice_key": ["substring_voice"],
+            },
+            chat=message_service.chat
+        )
+
+    @pytest.fixture
+    async def local_memes_substring_photo_collection(self, local_meme_factory, message_service: MessageService):
+        return await local_meme_factory(
+            type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+            data=None,
+            data_photo={
+                'my_photo': ['some_answer_in_list_photo'],
+                'my_photo_str': 'some_answer_str_photo',
+                "ch": ["two_char_answer_photo"],
+                "photo_key": ["substring_photo"],
             },
             chat=message_service.chat
         )
@@ -123,6 +137,30 @@ class TestPhrasesMessageProcessor:
         result = await processor.get_substring_words()
         expected_result = VoiceAnswerSchema(
             voice=expected,
+            reply_to_message_id=processor.message.message_id,
+            chat_id=processor.chat.chat_id
+        ) if expected else None
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("I triggered my_photo in message", "some_answer_in_list_photo"),
+            ("my_photo", "some_answer_in_list_photo"),
+            ("amy_photob", "some_answer_in_list_photo"),
+            (".my_photo.", "some_answer_in_list_photo"),
+            ("my_photo_str", "some_answer_str_photo"),
+            ("amy_photo_strb", "some_answer_str_photo"),
+            ("I triggered ch in message", None),
+            ("I triggered in message", None),
+        ]
+    )
+    async def test_handle_substring_words_photo(self, db, processor: PhrasesMessageProcessor,
+                                                local_memes_substring_photo_collection, text, expected):
+        processor.message.text = text
+        result = await processor.get_substring_words()
+        expected_result = PhotoAnswerSchema(
+            photo=expected,
             reply_to_message_id=processor.message.message_id,
             chat_id=processor.chat.chat_id
         ) if expected else None

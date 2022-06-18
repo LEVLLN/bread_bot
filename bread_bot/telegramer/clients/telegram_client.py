@@ -1,16 +1,22 @@
+import logging
+
 from httpx import Response
 
 from bread_bot.main import settings
 from bread_bot.main.base_client import BaseHTTPClient
-from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema, VoiceAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema, VoiceAnswerSchema, PhotoAnswerSchema, \
+    TextAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import \
     ChatMemberBodySchema, GetWebHookInfoSchema
+
+logger = logging.getLogger(__name__)
 
 
 class TelegramClient(BaseHTTPClient):
     def __init__(self):
         self.send_message_method = 'sendMessage'
         self.send_voice_method = 'sendVoice'
+        self.send_photo_method = 'sendPhoto'
         self.set_webhook_method = 'setWebhook'
         self.get_webhook_info_method = 'getWebhookInfo'
         self.get_chat_method = 'getChatAdministrators'
@@ -38,10 +44,16 @@ class TelegramClient(BaseHTTPClient):
         )
 
     async def send_message_by_schema(self, schema: BaseAnswerSchema):
-        if isinstance(schema, VoiceAnswerSchema):
-            method = self.send_voice_method
-        else:
-            method = self.send_message_method
+        match schema:
+            case VoiceAnswerSchema():
+                method = self.send_voice_method
+            case PhotoAnswerSchema():
+                method = self.send_photo_method
+            case TextAnswerSchema():
+                method = self.send_message_method
+            case __:
+                logger.error("Unknown type to send of obj: %s", schema)
+                return None
 
         return await self.request(
             method="POST",

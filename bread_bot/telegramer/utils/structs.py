@@ -54,6 +54,7 @@ class LocalMemeTypesEnum(Enum):
 class LocalMemeDataTypesEnum(Enum):
     TEXT = "data"
     VOICE = "data_voice"
+    PHOTO = "data_photo"
 
 
 class PropertiesEnum(Enum):

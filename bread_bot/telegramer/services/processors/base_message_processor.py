@@ -8,7 +8,8 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.telegramer.models import Member, Chat, Stats, LocalMeme
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema, VoiceAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema, VoiceAnswerSchema, \
+    PhotoAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.utils import structs
@@ -62,6 +63,13 @@ class MessageProcessor(ABC):
             reply_to_message_id=self.message.message_id if to_reply else None,
             chat_id=self.chat.chat_id,
             voice=voice,
+        )
+
+    async def get_photo_answer(self, photo: str, to_reply: bool = True) -> PhotoAnswerSchema:
+        return PhotoAnswerSchema(
+            reply_to_message_id=self.message.message_id if to_reply else None,
+            chat_id=self.chat.chat_id,
+            photo=photo,
         )
 
     async def count_stats(
