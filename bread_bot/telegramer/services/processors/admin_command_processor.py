@@ -82,9 +82,9 @@ class AdminMessageProcessor(CommandMessageProcessor):
             if value not in meme_list:
                 meme_list.append(value)
                 data_to_update[key] = meme_list
-        elif isinstance(data, dict) and key not in data.keys():
+        elif isinstance(data_to_update, dict) and key not in data_to_update.keys():
             data_to_update[key] = [value]
-        elif isinstance(data, list) and key and not value and key not in data:
+        elif isinstance(data_to_update, list) and key and not value and key not in data_to_update:
             data_to_update.append(key)
 
         setattr(local_meme, data_key, data_to_update)

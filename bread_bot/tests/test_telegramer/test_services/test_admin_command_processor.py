@@ -273,11 +273,16 @@ class TestAdminMessageProcessor:
         [
             ("key", "хлеб запомни как ключ value", None),
             ("outer_value", "хлеб запомни как значение my_key", {"my_key": ["outer_value"]}),
-            ("key", "хлеб запомни ключ value", {"key": ["value"]}),
+            ("key", "хлеб запомни ключ value", None),
             ("outer_value", "хлеб запомни значение my_key", {"my_key": ["outer_value"]}),
+            ("existed_value", "хлеб запомни значение existed_key", {"existed_key": ["existed_value"]}),
         ]
     )
-    async def test_remember_local_meme_voice(self, db, processor, file_id, reply_voice, text, expected_data):
+    async def test_remember_local_meme_voice(self, db, processor, file_id, reply_voice,
+                                             text, expected_data, local_meme_factory):
+        await local_meme_factory(type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+                                              data={"existed_text_key": "kek"},
+                                              chat=processor.chat, data_voice=None)
         processor.message = reply_voice.message
         processor.message.reply.voice.file_id = file_id
         processor.message.text = text
