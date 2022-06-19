@@ -1,3 +1,4 @@
+import logging
 import random
 import re
 
@@ -5,6 +6,8 @@ from bread_bot.telegramer.models import LocalMeme
 from bread_bot.telegramer.services.processors.base_message_processor import MessageProcessor
 from bread_bot.telegramer.utils.functions import composite_mask
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum, LocalMemeDataTypesEnum, TRIGGER_WORDS
+
+logger = logging.getLogger(__name__)
 
 
 class PhrasesMessageProcessor(MessageProcessor):
@@ -66,37 +69,61 @@ class PhrasesMessageProcessor(MessageProcessor):
             chat_id=self.chat.chat_id,
             meme_type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
         )
-        if substring_words:
-            data = self._pack_data(local_meme=substring_words)
-        else:
-            data = {}
+        if substring_words is None:
+            logger.warning("Substrings object not found", extra={
+                "chat_id": self.chat.chat_id,
+            })
+            return None
 
-        substring_words_mask = await composite_mask(
-            collection=filter(lambda x: len(x) >= 3, sorted(data.keys(), key=len, reverse=True)),
-            split=False,
-        )
-        regex = f'({substring_words_mask})'
-        groups = re.findall(regex, self.message.text, re.IGNORECASE)
+        data_to_choice_list = []
+        for data_type in (LocalMemeDataTypesEnum.TEXT.value,
+                          LocalMemeDataTypesEnum.VOICE.value,
+                          LocalMemeDataTypesEnum.PHOTO.value):
+            data = getattr(substring_words, data_type)
+            if data is None:
+                continue
+            substring_words_mask = await composite_mask(
+                collection=filter(lambda x: len(x) >= 3, sorted(data.keys(), key=len, reverse=True)),
+                split=False,
+            )
+            regex = f'({substring_words_mask})'
+            groups = re.findall(regex, self.message.text, re.IGNORECASE)
 
-        if len(groups) > 0:
+            if len(groups) == 0:
+                continue
             substring_word = groups[0]
-            data_type, value = data.get(substring_word.lower().strip(), "упс!")
+            data_to_choice_list.append((data_type, data.get(substring_word.lower().strip(), "упс!")))
 
-            if isinstance(value, list):
-                answer_value = random.choice(value)
-            elif isinstance(value, str):
-                answer_value = value
-            else:
-                answer_value = None
+        if not data_to_choice_list:
+            logger.warning("Substrings object not found", extra={
+                "chat_id": self.chat.chat_id,
+            })
+            return None
 
-            match data_type:
-                case LocalMemeDataTypesEnum.TEXT.value:
-                    return await self.get_text_answer(answer_value)
-                case LocalMemeDataTypesEnum.VOICE.value:
-                    return await self.get_voice_answer(answer_value)
-                case LocalMemeDataTypesEnum.PHOTO.value:
-                    return await self.get_photo_answer(answer_value)
-                case _:
-                    return None
+        data_type, value = random.choice(data_to_choice_list)
 
-        return None
+        if isinstance(value, list):
+            answer_value = random.choice(value)
+        elif isinstance(value, str):
+            answer_value = value
+        else:
+            logger.warning("Unavailable value type, for substring", extra={
+                "chat_id": self.chat.chat_id,
+                "value": value,
+                "type": type(value),
+            })
+            return None
+
+        match data_type:
+            case LocalMemeDataTypesEnum.TEXT.value:
+                return await self.get_text_answer(answer_value)
+            case LocalMemeDataTypesEnum.VOICE.value:
+                return await self.get_voice_answer(answer_value)
+            case LocalMemeDataTypesEnum.PHOTO.value:
+                return await self.get_photo_answer(answer_value)
+            case _:
+                logger.warning("Data type of substring undefined", extra={
+                    "chat_id": self.chat.chat_id,
+                    "data_type": data_type,
+                })
+                return None
