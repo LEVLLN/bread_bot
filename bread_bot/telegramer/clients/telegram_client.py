@@ -5,7 +5,7 @@ from httpx import Response
 from bread_bot.main import settings
 from bread_bot.main.base_client import BaseHTTPClient
 from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema, VoiceAnswerSchema, PhotoAnswerSchema, \
-    TextAnswerSchema
+    TextAnswerSchema, StickerAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import \
     ChatMemberBodySchema, GetWebHookInfoSchema
 
@@ -17,6 +17,7 @@ class TelegramClient(BaseHTTPClient):
         self.send_message_method = 'sendMessage'
         self.send_voice_method = 'sendVoice'
         self.send_photo_method = 'sendPhoto'
+        self.send_sticker_method = 'sendSticker'
         self.set_webhook_method = 'setWebhook'
         self.get_webhook_info_method = 'getWebhookInfo'
         self.get_chat_method = 'getChatAdministrators'
@@ -49,6 +50,8 @@ class TelegramClient(BaseHTTPClient):
                 method = self.send_voice_method
             case PhotoAnswerSchema():
                 method = self.send_photo_method
+            case StickerAnswerSchema():
+                method = self.send_sticker_method
             case TextAnswerSchema():
                 method = self.send_message_method
             case __:

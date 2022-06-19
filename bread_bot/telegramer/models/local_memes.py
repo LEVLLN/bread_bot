@@ -20,6 +20,7 @@ class LocalMeme(mixins.AbstractIsActiveBaseModel,
     data = Column(JSON, default=JSON.NULL, nullable=True)
     data_voice = Column(JSON, default=JSON.NULL, nullable=True)
     data_photo = Column(JSON, default=JSON.NULL, nullable=True)
+    data_sticker = Column(JSON, default=JSON.NULL, nullable=True)
     chat = relationship(
         'Chat',
         back_populates='local_memes')

@@ -21,3 +21,7 @@ class VoiceAnswerSchema(BaseAnswerSchema):
 
 class PhotoAnswerSchema(BaseAnswerSchema):
     photo: str
+
+
+class StickerAnswerSchema(BaseAnswerSchema):
+    sticker: str

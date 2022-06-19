@@ -1,6 +1,7 @@
 import pytest
 
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema, PhotoAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema, PhotoAnswerSchema, \
+    StickerAnswerSchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import PhrasesMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
@@ -65,6 +66,20 @@ class TestPhrasesMessageProcessor:
                 'my_photo_str': 'some_answer_str_photo',
                 "ch": ["two_char_answer_photo"],
                 "photo_key": ["substring_photo"],
+            },
+            chat=message_service.chat
+        )
+
+    @pytest.fixture
+    async def local_memes_substring_sticker_collection(self, local_meme_factory, message_service: MessageService):
+        return await local_meme_factory(
+            type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
+            data=None,
+            data_sticker={
+                'my_sticker': ['some_answer_in_list_sticker'],
+                'my_sticker_str': 'some_answer_str_sticker',
+                "ch": ["two_char_answer_sticker"],
+                "sticker_key": ["substring_sticker"],
             },
             chat=message_service.chat
         )
@@ -161,6 +176,30 @@ class TestPhrasesMessageProcessor:
         result = await processor.get_substring_words()
         expected_result = PhotoAnswerSchema(
             photo=expected,
+            reply_to_message_id=processor.message.message_id,
+            chat_id=processor.chat.chat_id
+        ) if expected else None
+        assert result == expected_result
+
+    @pytest.mark.parametrize(
+        "text, expected",
+        [
+            ("I triggered my_sticker in message", "some_answer_in_list_sticker"),
+            ("my_sticker", "some_answer_in_list_sticker"),
+            ("amy_stickerb", "some_answer_in_list_sticker"),
+            (".my_sticker.", "some_answer_in_list_sticker"),
+            ("my_sticker_str", "some_answer_str_sticker"),
+            ("amy_sticker_strb", "some_answer_str_sticker"),
+            ("I triggered ch in message", None),
+            ("I triggered in message", None),
+        ]
+    )
+    async def test_handle_substring_words_sticker(self, db, processor: PhrasesMessageProcessor,
+                                                  local_memes_substring_sticker_collection, text, expected):
+        processor.message.text = text
+        result = await processor.get_substring_words()
+        expected_result = StickerAnswerSchema(
+            sticker=expected,
             reply_to_message_id=processor.message.message_id,
             chat_id=processor.chat.chat_id
         ) if expected else None

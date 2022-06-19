@@ -64,7 +64,8 @@ class PhrasesMessageProcessor(MessageProcessor):
         data_to_choice_list = []
         for data_type in (LocalMemeDataTypesEnum.TEXT.value,
                           LocalMemeDataTypesEnum.VOICE.value,
-                          LocalMemeDataTypesEnum.PHOTO.value):
+                          LocalMemeDataTypesEnum.PHOTO.value,
+                          LocalMemeDataTypesEnum.STICKER.value):
             data = getattr(substring_words, data_type)
             if data is None:
                 continue
@@ -108,6 +109,8 @@ class PhrasesMessageProcessor(MessageProcessor):
                 return await self.get_voice_answer(answer_value)
             case LocalMemeDataTypesEnum.PHOTO.value:
                 return await self.get_photo_answer(answer_value)
+            case LocalMemeDataTypesEnum.STICKER.value:
+                return await self.get_sticker_answer(answer_value)
             case _:
                 logger.warning("Data type of substring undefined", extra={
                     "chat_id": self.chat.chat_id,

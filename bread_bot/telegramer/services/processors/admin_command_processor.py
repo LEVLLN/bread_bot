@@ -149,6 +149,9 @@ class AdminMessageProcessor(CommandMessageProcessor):
             elif reply.photo:
                 value = reply.photo[0].file_id
                 data_key = LocalMemeDataTypesEnum.PHOTO.value
+            elif reply.sticker:
+                value = reply.sticker.file_id
+                data_key = LocalMemeDataTypesEnum.STICKER.value
             else:
                 value = reply.text
         return await self.add(meme_type=meme_type, key=key, value=value, data_key=data_key)

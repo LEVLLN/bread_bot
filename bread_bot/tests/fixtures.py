@@ -186,6 +186,69 @@ def reply_photo():
 
 
 @pytest.fixture
+def reply_sticker():
+    return StandardBodySchema(
+        **{
+            "update_id": 958678863,
+            "message": {
+                "message_id": 13900,
+                "from": {
+                    "id": 296382623,
+                    "is_bot": False,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "id": 296382623,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "type": "private"
+                },
+                "date": 1655506631,
+                "reply_to_message": {
+                    "message_id": 13951,
+                    "from": {
+                        "id": 296382623,
+                        "is_bot": False,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "language_code": "en"
+                    },
+                    "chat": {
+                        "id": 296382623,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "type": "private"
+                    },
+                    "date": 1655570499,
+                    "sticker": {
+                        "width": 512,
+                        "height": 512,
+                        "emoji": "🤨",
+                        "set_name": "kz_meme",
+                        "is_animated": False,
+                        "is_video": False,
+                        "thumb": {
+                            "file_id": "AAMCAgADGQEAAja1Yq-UNR6YPAf6qnuwQiapV9kWpW0AAn4BAAJ0-FQb4PyXRewndEgBAAdtAAMkBA",
+                            "file_unique_id": "AQADfgEAAnT4VBty", "file_size": 17784, "width": 320, "height": 320
+                        },
+                        "file_id": "CAACAgIAAxkBAAI2tWKvlDUemDwH-qp7sEImqVfZFqVtAAJ-AQACdPhUG-D8l0XsJ3RIJAQ",
+                        "file_unique_id": "AgADfgEAAnT4VBs",
+                        "file_size": 28628
+                    }
+                },
+                "text": "12345"
+            }
+        }
+    )
+
+
+@pytest.fixture
 def request_body_without_message():
     return StandardBodySchema(
         **{

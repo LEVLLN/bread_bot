@@ -27,6 +27,10 @@ class PhotoSchema(BaseModel):
     file_id: Optional[str]
 
 
+class StickerSchema(BaseModel):
+    file_id: Optional[str]
+
+
 class BaseMessageSchema(BaseModel):
     message_id: int
     source: MemberSchema = Field(..., alias='from')
@@ -35,6 +39,7 @@ class BaseMessageSchema(BaseModel):
     text: Optional[str] = ''
     voice: Optional[VoiceSchema] = None
     photo: List[PhotoSchema] = []
+    sticker: Optional[StickerSchema] = None
 
 
 class MessageSchema(BaseMessageSchema):
