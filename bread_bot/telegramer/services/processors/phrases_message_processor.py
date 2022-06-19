@@ -24,7 +24,6 @@ class PhrasesMessageProcessor(MessageProcessor):
 
     async def get_trigger_words(self):
         """Обработка триггеров и привязок"""
-        await self.count_stats(stats_enum=StatsEnum.CATCH_TRIGGER)
         trigger_words: LocalMeme = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat.chat_id,
@@ -42,7 +41,7 @@ class PhrasesMessageProcessor(MessageProcessor):
             if message_text_candidate in trigger_words.data:
                 result = trigger_words.data.get(message_text_candidate, "упс!")
                 break
-
+        await self.count_stats(stats_enum=StatsEnum.CATCH_TRIGGER)
         if isinstance(result, list):
             return await self.get_text_answer(answer_text=random.choice(result))
         elif isinstance(result, str):
@@ -51,7 +50,6 @@ class PhrasesMessageProcessor(MessageProcessor):
 
     async def get_substring_words(self):
         """Обработка подстрок"""
-        await self.count_stats(stats_enum=StatsEnum.CATCH_SUBSTRING)
         substring_words = await LocalMeme.get_local_meme(
             db=self.db,
             chat_id=self.chat.chat_id,
@@ -102,6 +100,7 @@ class PhrasesMessageProcessor(MessageProcessor):
             })
             return None
 
+        await self.count_stats(stats_enum=StatsEnum.CATCH_SUBSTRING)
         match data_type:
             case LocalMemeDataTypesEnum.TEXT.value:
                 return await self.get_text_answer(answer_value)
