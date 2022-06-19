@@ -49,18 +49,6 @@ class PhrasesMessageProcessor(MessageProcessor):
             return await self.get_text_answer(answer_text=result)
         return None
 
-    @staticmethod
-    def _pack_data(local_meme: LocalMeme):
-        result = {}
-        for data_type in (LocalMemeDataTypesEnum.TEXT.value,
-                          LocalMemeDataTypesEnum.VOICE.value,
-                          LocalMemeDataTypesEnum.PHOTO.value):
-            if getattr(local_meme, data_type) is None:
-                continue
-            for key, value in getattr(local_meme, data_type).items():
-                result[key] = (data_type, value)
-        return result
-
     async def get_substring_words(self):
         """Обработка подстрок"""
         await self.count_stats(stats_enum=StatsEnum.CATCH_SUBSTRING)
