@@ -95,9 +95,7 @@ class TestUtilsCommandProcessor:
             "BaneksClient.get_quote", return_value=baneks_resource)
         processor.message.text = "Хлеб анекдот"
         result = await processor.process()
-        assert result.text == "\n\n— Василий Иваныч, белые в лесу!!\n" \
-                              "— Не до грибов, Петька!\n\n" \
-                              "\n\n© http://baneks.site"
+        assert result.text == "Купил мужик шляпу. Пришел домой, стал мерять, а она ему мала.\n\n© https://baneks.ru"
         mock.assert_called_once()
 
     async def test_get_num(self, processor, property_factory):

@@ -162,7 +162,7 @@
         message2 [взят в reply message1]: Хлеб запомни как ключ MyCustomValue
         # MyKey: [MyCustomValue]
 
-- `Анекдот` - Присылает анекдот из ресурсов: bashorg.org
+- `Анекдот` - Присылает анекдот из ресурсов: bashorg.org, baneks.ru
 - `Совет` - Присылает совет из ресурса: http://fucking-great-advice.ru
 ### Хлебное спасибо за внимание. Пользуйтесь на здоровье.
 

@@ -1,4 +1,5 @@
 import logging
+import random
 from typing import Optional
 from urllib.parse import urljoin
 
@@ -11,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 class BaneksClient(BaseHTTPClient):
     def __init__(self):
-        self.url = "http://baneks.site"
-        self.random_method = "random"
+        self.url = "https://baneks.ru"
+        self.random_method = str(random.randint(1, 1142))
 
     @property
     async def random_url(self) -> str:
@@ -32,8 +33,7 @@ class BaneksClient(BaseHTTPClient):
         try:
             html = await self.get_quote()
             text = BeautifulSoup(html, "html.parser") \
-                .find(name="section", itemprop="description") \
-                .get_text(separator="\n")
+                .find(name="article",).find("p").get_text()
         except Exception as e:
             logger.error(str(e))
             return None

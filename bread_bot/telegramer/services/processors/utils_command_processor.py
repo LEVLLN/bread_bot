@@ -2,6 +2,7 @@ import logging
 import random
 from typing import Optional
 
+from bread_bot.telegramer.clients.baneks_client import BaneksClient
 from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
 from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
@@ -95,7 +96,7 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
                                                       f"{str(random.randint(0, 100))}%")
 
     async def get_joke(self) -> Optional[TextAnswerSchema]:
-        JokeVendor = random.choice([BashOrgClient, ])
+        JokeVendor = random.choice([BashOrgClient, BaneksClient])
         joke_vendor = JokeVendor()
         text = await joke_vendor.get_text()
 
