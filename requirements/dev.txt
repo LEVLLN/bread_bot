@@ -17,10 +17,7 @@ attrs==21.4.0
 certifi==2021.5.30
     # via
     #   -c requirements/requirements.txt
-    #   httpx
-charset-normalizer==2.0.4
-    # via
-    #   -c requirements/requirements.txt
+    #   httpcore
     #   httpx
 coverage==5.5
     # via
@@ -36,11 +33,11 @@ h11==0.12.0
     # via
     #   -c requirements/requirements.txt
     #   httpcore
-httpcore==0.13.6
+httpcore==0.15.0
     # via
     #   -c requirements/requirements.txt
     #   httpx
-httpx==0.19.0
+httpx==0.23.0
     # via
     #   -c requirements/requirements.txt
     #   respx
@@ -89,7 +86,7 @@ python-dateutil==2.8.2
     #   -c requirements/requirements.txt
     #   -r requirements/dev.in
     #   freezegun
-respx==0.17.1
+respx==0.19.2
     # via -r requirements/dev.in
 rfc3986[idna2008]==1.5.0
     # via

@@ -3,9 +3,9 @@ import random
 from typing import Optional
 
 from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
-from bread_bot.telegramer.clients.baneks_client import BaneksClient
 from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
+from bread_bot.telegramer.clients.great_advice import GreatAdviceClient
 from bread_bot.telegramer.models import Property
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
@@ -30,6 +30,7 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
         "цит": "get_quote",
         "insult": "get_insult",
         "анекдот": "get_joke",
+        "совет": "get_great_advice",
     }
 
     async def handle_rude_words(self) -> Optional[TextAnswerSchema]:
@@ -94,13 +95,20 @@ class UtilsCommandMessageProcessor(CommandMessageProcessor):
                                                       f"{str(random.randint(0, 100))}%")
 
     async def get_joke(self) -> Optional[TextAnswerSchema]:
-        JokeVendor = random.choice([BashOrgClient, BaneksClient])
+        JokeVendor = random.choice([BashOrgClient, ])
         joke_vendor = JokeVendor()
         text = await joke_vendor.get_text()
 
         if text is None:
             return None
         return await self.get_text_answer(answer_text=f"{text}\n\n© {joke_vendor.url}")
+
+    async def get_great_advice(self) -> Optional[TextAnswerSchema]:
+        advice = await GreatAdviceClient().get_advice()
+        await self.count_stats(
+            stats_enum=StatsEnum.ADVICE,
+        )
+        return await self.get_text_answer(answer_text=advice.text)
 
     async def help(self) -> Optional[TextAnswerSchema]:
         return await self.get_text_answer(answer_text="https://hlebbot.ru/help")

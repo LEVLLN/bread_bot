@@ -2,7 +2,7 @@ import pytest
 
 from bread_bot.telegramer.clients.baneks_client import BaneksClient
 from bread_bot.telegramer.clients.bashorg_client import BashOrgClient
-from bread_bot.telegramer.schemas.api_models import ForismaticQuote, EvilInsultResponse
+from bread_bot.telegramer.schemas.api_models import ForismaticQuote, EvilInsultResponse, GreatAdviceResponse
 from bread_bot.telegramer.schemas.bread_bot_answers import VoiceAnswerSchema
 from bread_bot.telegramer.services.processors import UtilsCommandMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, PropertiesEnum
@@ -109,3 +109,15 @@ class TestUtilsCommandProcessor:
         result = await processor.process()
         assert isinstance(result, VoiceAnswerSchema)
         assert result.voice == property_object.data[0]
+
+    async def test_get_great_advice(self, processor, mocker):
+        mock = mocker.patch(
+            "bread_bot.telegramer.services.processors.utils_command_processor."
+            "GreatAdviceClient.get_advice", return_value=GreatAdviceResponse(
+                text='Some text',
+                id=123,
+            ))
+        processor.message.text = "Хлеб совет"
+        result = await processor.process()
+        assert result.text == 'Some text'
+        mock.assert_called_once()

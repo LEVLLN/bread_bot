@@ -47,3 +47,8 @@ class ForismaticQuote(BaseModel):
 class EvilInsultResponse(BaseModel):
     insult: str
     comment: str
+
+
+class GreatAdviceResponse(BaseModel):
+    id: int
+    text: str

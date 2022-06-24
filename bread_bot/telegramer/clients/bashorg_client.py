@@ -15,13 +15,13 @@ class BashOrgClient(BaseHTTPClient):
         self.casual_method = "casual"
 
     @property
-    async def casual_url(self) -> str:
+    def casual_url(self) -> str:
         return urljoin(self.url, self.casual_method)
 
     async def get_quote(self) -> str:
         response = await self.request(
             method="GET",
-            url="http://bashorg.org/casual",
+            url=self.casual_url,
             headers={
                 'Accept': '*/*',
             }
