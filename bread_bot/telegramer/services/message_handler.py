@@ -64,7 +64,6 @@ async def process_telegram_message(db: AsyncSession, request_body: StandardBodyS
 
     if message_service is None:
         return
-    i = 0
     processor = MessageProcessor(message_service)
     for processors_sequence in [
         EditedMessageProcessor,
@@ -74,7 +73,6 @@ async def process_telegram_message(db: AsyncSession, request_body: StandardBodyS
         UtilsCommandMessageProcessor,
         PhrasesMessageProcessor,
     ]:
-        i += 1
         processor.set_next(processors_sequence(message_service))
 
     message = await processor.handle(await processor.process())
