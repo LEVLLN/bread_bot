@@ -114,10 +114,10 @@ class TestPhrasesMessageProcessor:
         [
             ("I triggered my_substring in message", "some_answer_in_list"),
             ("my_substring", "some_answer_in_list"),
-            ("amy_substringb", "some_answer_in_list"),
+            ("a my_substring b", "some_answer_in_list"),
             (".my_substring.", "some_answer_in_list"),
             ("my_str", "some_answer_str"),
-            ("amy_strb", "some_answer_str"),
+            ("a my_str b", "some_answer_str"),
             ("I triggered ch in message", None),
             ("I triggered in message", None),
         ]
@@ -138,10 +138,10 @@ class TestPhrasesMessageProcessor:
         [
             ("I triggered my_voice in message", "some_answer_in_list_voice"),
             ("my_voice", "some_answer_in_list_voice"),
-            ("amy_voiceb", "some_answer_in_list_voice"),
+            ("a my_voice b", "some_answer_in_list_voice"),
             (".my_voice.", "some_answer_in_list_voice"),
             ("my_voice_str", "some_answer_str_voice"),
-            ("amy_voice_strb", "some_answer_str_voice"),
+            ("a my_voice_str b", "some_answer_str_voice"),
             ("I triggered ch in message", None),
             ("I triggered in message", None),
         ]
@@ -162,10 +162,10 @@ class TestPhrasesMessageProcessor:
         [
             ("I triggered my_photo in message", "some_answer_in_list_photo"),
             ("my_photo", "some_answer_in_list_photo"),
-            ("amy_photob", "some_answer_in_list_photo"),
+            ("a my_photo b", "some_answer_in_list_photo"),
             (".my_photo.", "some_answer_in_list_photo"),
             ("my_photo_str", "some_answer_str_photo"),
-            ("amy_photo_strb", "some_answer_str_photo"),
+            ("a my_photo_str b", "some_answer_str_photo"),
             ("I triggered ch in message", None),
             ("I triggered in message", None),
         ]
@@ -186,10 +186,10 @@ class TestPhrasesMessageProcessor:
         [
             ("I triggered my_sticker in message", "some_answer_in_list_sticker"),
             ("my_sticker", "some_answer_in_list_sticker"),
-            ("amy_stickerb", "some_answer_in_list_sticker"),
+            ("a my_sticker b", "some_answer_in_list_sticker"),
             (".my_sticker.", "some_answer_in_list_sticker"),
             ("my_sticker_str", "some_answer_str_sticker"),
-            ("amy_sticker_strb", "some_answer_str_sticker"),
+            ("a my_sticker_str b", "some_answer_str_sticker"),
             ("I triggered ch in message", None),
             ("I triggered in message", None),
         ]

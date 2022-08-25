@@ -10,6 +10,7 @@ from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema, Tex
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import (
+    MessageProcessor,
     AdminMessageProcessor,
     EditedMessageProcessor,
     MemberCommandMessageProcessor,
@@ -63,9 +64,9 @@ async def process_telegram_message(db: AsyncSession, request_body: StandardBodyS
 
     if message_service is None:
         return
-
-    # Выполнение цепочкой до первого успешного.
-    for Processor in [
+    i = 0
+    processor = MessageProcessor(message_service)
+    for processors_sequence in [
         EditedMessageProcessor,
         VoiceMessageProcessor,
         AdminMessageProcessor,
@@ -73,9 +74,10 @@ async def process_telegram_message(db: AsyncSession, request_body: StandardBodyS
         UtilsCommandMessageProcessor,
         PhrasesMessageProcessor,
     ]:
-        message = await Processor(message_service=message_service).process()
-        if message is not None:
-            break
+        i += 1
+        processor.set_next(processors_sequence(message_service))
+
+    message = await processor.handle(await processor.process())
 
     if message is None:
         logger.error("Result answer schema is None: %s", message_service.request_body.dict())

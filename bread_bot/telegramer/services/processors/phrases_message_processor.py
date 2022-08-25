@@ -71,7 +71,7 @@ class PhrasesMessageProcessor(MessageProcessor):
                 continue
             substring_words_mask = await composite_mask(
                 collection=filter(lambda x: len(x) >= 3, sorted(data.keys(), key=len, reverse=True)),
-                split=False,
+                split=True,
             )
             regex = f'({substring_words_mask})'
             groups = re.findall(regex, self.message.text, re.IGNORECASE)
