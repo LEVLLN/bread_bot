@@ -64,8 +64,8 @@ async def process_telegram_message(db: AsyncSession, request_body: StandardBodyS
 
     if message_service is None:
         return
-    processor = MessageProcessor(message_service)
-    for processors_sequence in [
+    # Выполнение цепочкой до первого успешного.
+    for Processor in [
         EditedMessageProcessor,
         VoiceMessageProcessor,
         AdminMessageProcessor,
@@ -73,9 +73,9 @@ async def process_telegram_message(db: AsyncSession, request_body: StandardBodyS
         UtilsCommandMessageProcessor,
         PhrasesMessageProcessor,
     ]:
-        processor.set_next(processors_sequence(message_service))
-
-    message = await processor.handle(await processor.process())
+        message = await Processor(message_service=message_service).process()
+        if message is not None:
+            break
 
     if message is None:
         logger.error("Result answer schema is None: %s", message_service.request_body.dict())

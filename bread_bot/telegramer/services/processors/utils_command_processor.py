@@ -1,6 +1,5 @@
 import logging
 import random
-from abc import ABC
 from typing import Optional
 
 from bread_bot.telegramer.clients.baneks_client import BaneksClient
@@ -9,7 +8,7 @@ from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
 from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
 from bread_bot.telegramer.clients.great_advice import GreatAdviceClient
 from bread_bot.telegramer.models import Property
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema, BaseAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema
 from bread_bot.telegramer.services.processors.base_command_processor import CommandMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum, PropertiesEnum
 

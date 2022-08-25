@@ -1,8 +1,8 @@
 import logging
 import random
 import re
-from abc import ABC, abstractmethod
-from typing import Optional, Any
+from abc import ABC
+from typing import Optional
 
 from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,45 +19,7 @@ from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
 logger = logging.getLogger(__name__)
 
 
-class Processor(ABC):
-    _next_handler: "Processor" = None
-
-    @abstractmethod
-    def set_next(self, handler: "Processor") -> "Processor":
-        pass
-
-    async def _process(self) -> Optional[BaseAnswerSchema]:
-        """Контекст процессора"""
-        pass
-
-    async def process(self) -> Optional[BaseAnswerSchema]:
-        pass
-
-    @abstractmethod
-    async def handle(self, request: Any) -> Optional[BaseAnswerSchema]:
-        if self._next_handler:
-            return await self._next_handler.handle(request)
-        return None
-
-
-class AbstractProcessor(Processor):
-    def set_next(self, handler: Processor) -> Processor:
-        self._next_handler = handler
-        return handler
-
-    @abstractmethod
-    async def handle(self, request: Any) -> Optional[BaseAnswerSchema]:
-        result: Optional[BaseAnswerSchema] = await self.process()
-        if result:
-            return result
-        else:
-            return await super().handle(request)
-
-
-class MessageProcessor(AbstractProcessor):
-    async def handle(self, request) -> Optional[BaseAnswerSchema]:
-        return await super().handle(request)
-
+class MessageProcessor(ABC):
     def __init__(self, message_service: MessageService):
         self.message_service: MessageService = message_service
         self.db: AsyncSession = self.message_service.db
