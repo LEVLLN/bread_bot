@@ -38,13 +38,13 @@ class MemberCommandMessageProcessor(CommandMessageProcessor):
             select_in_load=ChatToMember.member)
         result = {}
         for chat in response.result:
-            if chat.user.is_bot:
+            if chat.user.is_bot or chat.user.id is None:
                 continue
             result[chat.user.id] = chat.user
         for chat_to_member in chat_to_members:
             if chat_to_member.member and not chat_to_member.member.is_bot:
                 member = chat_to_member.member
-                if member.member_id in result.keys():
+                if member.member_id and member.member_id in result.keys():
                     continue
                 member_schema = MemberSchema(
                     is_bot=member.is_bot,
