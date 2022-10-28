@@ -23,10 +23,7 @@ class MessageService(object):
         self.message = await self.get_message()
         self.chat = await Chat.handle_by_message(db=self.db, message=self.message)
         self.member = await Member.handle_by_message(db=self.db, message=self.message)
-        await self.bind_chat_to_member()
-
-    async def bind_chat_to_member(self) -> bool:
-        return await ChatToMember.bind_by_ids(
+        await ChatToMember.bind_by_ids(
             member_id=self.member.id,
             chat_id=self.chat.id,
             db=self.db,
