@@ -112,7 +112,7 @@ pip-compile -r requirements/dev.in
 Для начала везде, где Вы видите слово `bread_bot` - тут может оказаться наименование вашего микросервиса. Ну логично, да?
 Необходимо установить все зависимости в проекте:
 ```commandline
-pip install -r requirements/requirements.txt
+pip install -r requirements/dev.txt
 ```
 Представьте на секунду, что вы уже поставили PostgreSQL. И теперь нужно создать БД с пользователем и паролем:
 ```postgresql
