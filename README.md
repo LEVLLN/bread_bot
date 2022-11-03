@@ -144,7 +144,7 @@ flake8
 ```
 Запустить тесты:
 ```commandline
-python -m unittest --verbose --failfast --catch
+pytest bread_bot/tests
 ```
 Запустить создания данных по покрытию тестами
 ```commandline
@@ -164,6 +164,6 @@ coverage erase
 ```
 Можно использовать последовательность:
 ```commandline
-coverage erase && coverage run -m unittest && coverage html
+coverage erase && coverage run pytest bread_bot/tests && coverage html
 ```
 Функциональность бота описана в [About.md](About.md)
