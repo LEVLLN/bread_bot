@@ -41,6 +41,7 @@ class StatsEnum(Enum):
     CALLED_TOP = "Вызвал команду 'топ'"
     CATCH_TRIGGER = "Попался на триггер"
     CATCH_SUBSTRING = "Попался на подстроку"
+    VALIDATION_ERROR = "Ошибка валидации"
 
 
 class LocalMemeTypesEnum(Enum):

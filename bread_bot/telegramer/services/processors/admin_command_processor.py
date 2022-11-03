@@ -53,6 +53,9 @@ class AdminMessageProcessor(CommandMessageProcessor):
                   key: str,
                   value: Optional[str],
                   data_key: str = LocalMemeDataTypesEnum.TEXT.value) -> Optional[TextAnswerSchema]:
+        if len(key) < 3:
+            await self.count_stats(stats_enum=StatsEnum.VALIDATION_ERROR)
+            return await self.get_text_answer(answer_text="Ключ не может быть меньше 3х символов")
         await self.count_stats(stats_enum=StatsEnum.ADD_CONTENT)
         local_meme = await LocalMeme.get_local_meme(
             db=self.db,
