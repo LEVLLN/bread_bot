@@ -79,6 +79,31 @@ class TestAdminMessageProcessor:
             Stats.slug == StatsEnum.ADD_CONTENT.name)) is not None
 
     @pytest.mark.parametrize(
+        "command_params, expected_answer",
+        [
+            (
+                    "триггер ke=value",
+                    "Ключ не может быть меньше 3х символов"
+            ),
+            (
+                    "триггер k=value",
+                    "Ключ не может быть меньше 3х символов"
+            )
+        ]
+    )
+    async def test_add_local_meme_creating_validation(self, db, processor, command_params, expected_answer):
+        processor.message.text = f"хлеб добавь {command_params}"
+
+        result = await processor.process()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == expected_answer
+
+        assert await Stats.async_first(db=db, where=and_(
+            Stats.member_id == processor.member.id,
+            Stats.chat_id == processor.chat.chat_id,
+            Stats.slug == StatsEnum.VALIDATION_ERROR.name)) is not None
+
+    @pytest.mark.parametrize(
         "command_params, source_data, expected_data",
         [
             (
@@ -126,7 +151,7 @@ class TestAdminMessageProcessor:
     async def test_update_local_meme(self, db, local_meme_factory, processor,
                                      command_params, expected_data, source_data):
         local_meme = await local_meme_factory(type=LocalMemeTypesEnum.FREE_WORDS.name, data=source_data,
-                                              chat=processor.chat, data_voice=None,)
+                                              chat=processor.chat, data_voice=None, )
         assert local_meme.data == source_data
         processor.message.text = f"хлеб добавь {command_params}"
 
