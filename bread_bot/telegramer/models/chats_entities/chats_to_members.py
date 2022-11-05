@@ -5,7 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
-from bread_bot.telegramer.models import Member, Chat
+from bread_bot.telegramer.models.chats_entities.members import Member
+from bread_bot.telegramer.models.chats_entities.chats import Chat
 
 logger = logging.getLogger(__name__)
 

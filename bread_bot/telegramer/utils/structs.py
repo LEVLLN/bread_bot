@@ -64,3 +64,8 @@ class PropertiesEnum(Enum):
     BAD_VOICES = "Плохие звуки"
     ANSWER_TO_EDIT = "Ответ на редактирование"
     DIGITS = "Цифры"
+
+
+class AnswerEntityTypesEnum(str, Enum):
+    TRIGGER = "TRIGGER"
+    SUBSTRING = "SUBSTRING"

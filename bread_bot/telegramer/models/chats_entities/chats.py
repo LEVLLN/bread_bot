@@ -32,6 +32,9 @@ class Chat(mixins.AbstractIsActiveBaseModel,
     members = relationship(
         'ChatToMember',
         back_populates='chat')
+    answer_packs = relationship(
+        "AnswerPacksToChats",
+        back_populates="chats")
 
     @classmethod
     async def handle_by_message(cls, message: MessageSchema, db: AsyncSession) -> "Chat":
