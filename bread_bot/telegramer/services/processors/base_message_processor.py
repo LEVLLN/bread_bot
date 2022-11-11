@@ -8,12 +8,17 @@ from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.telegramer.models import Member, Chat, Stats, LocalMeme
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema, VoiceAnswerSchema, \
-    PhotoAnswerSchema, StickerAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import (
+    TextAnswerSchema,
+    BaseAnswerSchema,
+    VoiceAnswerSchema,
+    PhotoAnswerSchema,
+    StickerAnswerSchema,
+)
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.utils import structs
-from bread_bot.telegramer.utils.functions import composite_mask
+from bread_bot.telegramer.utils.functions import async_composite_mask
 from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
 
 logger = logging.getLogger(__name__)
@@ -111,7 +116,8 @@ class MessageProcessor(ABC):
             return
 
         groups = re.findall(
-            f"^({await composite_mask(structs.TRIGGER_WORDS)})\\s({await composite_mask(command_collection)})?",
+            f"^({await async_composite_mask(structs.TRIGGER_WORDS)})"
+            f"\\s({await async_composite_mask(command_collection)})?",
             self.message.text,
             re.IGNORECASE
         )
@@ -129,7 +135,7 @@ class MessageProcessor(ABC):
         value = None
 
         groups = re.findall(
-            f"^({await composite_mask(sub_command_collection.keys())})\\s(.*)",
+            f"^({await async_composite_mask(sub_command_collection.keys())})\\s(.*)",
             self.command_params,
             re.IGNORECASE
         )

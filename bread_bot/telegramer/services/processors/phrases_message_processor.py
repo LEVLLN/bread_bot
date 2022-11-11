@@ -4,7 +4,7 @@ import re
 
 from bread_bot.telegramer.models import LocalMeme
 from bread_bot.telegramer.services.processors.base_message_processor import MessageProcessor
-from bread_bot.telegramer.utils.functions import composite_mask
+from bread_bot.telegramer.utils.functions import async_composite_mask
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum, LocalMemeDataTypesEnum, TRIGGER_WORDS
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class PhrasesMessageProcessor(MessageProcessor):
             data = getattr(substring_words, data_type)
             if data is None:
                 continue
-            substring_words_mask = await composite_mask(
+            substring_words_mask = await async_composite_mask(
                 collection=filter(lambda x: len(x) >= 3, sorted(data.keys(), key=len, reverse=True)),
                 split=True,
             )

@@ -6,15 +6,6 @@ TRIGGER_WORDS = [
     "bread_bot"
 ]
 
-DEFAULT_PREFIX = [
-    "",
-    "тупа",
-    "скорее всего",
-    "вероятно",
-    "ля,",
-    "ха-ха,",
-    "ха,",
-]
 ERROR_CHAT_MESSAGES = [
     "Что-то сломалось, напишите создателю",
     "Ты точно правильно команду ввёл?",
@@ -69,3 +60,53 @@ class PropertiesEnum(Enum):
 class AnswerEntityTypesEnum(str, Enum):
     TRIGGER = "TRIGGER"
     SUBSTRING = "SUBSTRING"
+
+
+class AdminCommandsEnum(str, Enum):
+    SHOW = "SHOW"
+    ADD = "ADD"
+    REMEMBER = "REMEMBER"
+    DELETE = "DELETE"
+    ANSWER_CHANCE = "SHOW_ANSWER_CHANCE"
+    SET_ANSWER_CHANCE = "SET_ANSWER_CHANCE"
+    PROPAGATE = "PROPAGATE"
+    SET_VOICE_TRIGGER = "SET_VOICE_TRIGGER"
+    SET_EDITED_TRIGGER = "SET_EDITED_TRIGGER"
+
+
+class MemberCommandsEnum(str, Enum):
+    WHO = "WHO"
+    TOP = "TOP"
+    COUPLE = "COUPLE"
+    STATS = "STATS"
+
+
+class EntertainmentCommandsEnum(str, Enum):
+    CHANCE = "CHANCE"
+    HELP = "HELP"
+    CHOOSE_VARIANT = "CHOOSE_VARIANT"
+    GQUOTE = "QUOTE"
+    INSULT = "INSULT"
+    JOKE = "JOKE"
+    ADVICE = "ADVICE"
+    RANDOM = "RANDOM"
+
+
+class IterEnum(str, Enum):
+    @classmethod
+    def list(cls):
+        return [value for value in cls._member_map_.values()]
+
+
+class CommandAnswerParametersEnum(IterEnum):
+    SUBSTRING = "подстроку"
+    SUBSTRING_LIST = "подстроки"
+    TRIGGER = "триггер"
+    TRIGGER_LIST = "триггеры"
+
+
+class CommandKeyValueParametersEnum(IterEnum):
+    KEY = "ключ"
+    KEY_LIST = "ключи"
+    VALUE = "значение"
+    VALUE_LIST = "значения"
