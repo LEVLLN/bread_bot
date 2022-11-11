@@ -12,8 +12,8 @@ from bread_bot.telegramer.utils.structs import StatsEnum
 
 class TestMemberCommandProcessor:
     @pytest.fixture
-    async def processor(self, message_service) -> MemberCommandMessageProcessor:
-        processor = MemberCommandMessageProcessor(message_service=message_service)
+    async def processor(self, message_service, member_service) -> MemberCommandMessageProcessor:
+        processor = MemberCommandMessageProcessor(message_service=message_service, member_service=member_service)
         return processor
 
     @respx.mock

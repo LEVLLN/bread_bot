@@ -11,8 +11,8 @@ from bread_bot.tests.resources.reader import bashorg_resource, baneks_resource
 
 class TestUtilsCommandProcessor:
     @pytest.fixture
-    async def processor(self, message_service) -> UtilsCommandMessageProcessor:
-        processor = UtilsCommandMessageProcessor(message_service=message_service)
+    async def processor(self, message_service, member_service) -> UtilsCommandMessageProcessor:
+        processor = UtilsCommandMessageProcessor(message_service=message_service, member_service=member_service)
         return processor
 
     async def test_handle_rude_words(self, processor, local_meme_factory):

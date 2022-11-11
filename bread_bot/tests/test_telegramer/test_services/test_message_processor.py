@@ -16,8 +16,8 @@ class TestMessageProcessor:
             ("Хлеб добавь подстроку key=value", "Хлеб", "добавь", "подстроку key=value"),
         ],
     )
-    async def test_parse_command(self, message_service, db, text, trigger_word, command, params):
-        processor = MessageProcessor(message_service=message_service)
+    async def test_parse_command(self, message_service, member_service, db, text, trigger_word, command, params):
+        processor = MessageProcessor(message_service=message_service, member_service=member_service)
         processor.message.text = text
         await processor.parse_command(["топ", "добавь"])
         assert processor.trigger_word == trigger_word
@@ -35,9 +35,9 @@ class TestMessageProcessor:
             ("Хлеб добавь триггер key=value", "Хлеб", "добавь", "триггер key=value", "some_value2", "key", "value"),
         ],
     )
-    async def test_parse_sub_command(self, message_service, db, text, trigger_word,
+    async def test_parse_sub_command(self, message_service, member_service, db, text, trigger_word,
                                      command, params, sub_command, key, value):
-        processor = MessageProcessor(message_service=message_service)
+        processor = MessageProcessor(message_service=message_service, member_service=member_service)
         processor.message.text = text
         await processor.parse_command(["топ", "добавь"])
         assert processor.trigger_word == trigger_word

@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 
 from bread_bot.main.database.base import DeclarativeBase
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
+from bread_bot.telegramer.services.member_service import MemberService
 from bread_bot.telegramer.services.message_service import MessageService
 
 
@@ -320,21 +321,25 @@ def request_body_voice_message():
 
 
 @pytest.fixture
-async def message_service(db, request_body_message) -> MessageService:
-    message_service = MessageService(db=db, request_body=request_body_message)
-    await message_service.init()
+async def message_service(request_body_message) -> MessageService:
+    message_service = MessageService(request_body=request_body_message)
     return message_service
 
 
 @pytest.fixture
-async def edited_message_service(db, request_body_edited_message) -> MessageService:
-    message_service = MessageService(db=db, request_body=request_body_edited_message)
-    await message_service.init()
+async def member_service(db, message_service) -> MemberService:
+    member_service = MemberService(db=db, message=message_service.message)
+    await member_service.process()
+    return member_service
+
+
+@pytest.fixture
+async def edited_message_service(request_body_edited_message) -> MessageService:
+    message_service = MessageService(request_body=request_body_edited_message)
     return message_service
 
 
 @pytest.fixture
-async def voice_message_service(db, request_body_voice_message) -> MessageService:
-    message_service = MessageService(db=db, request_body=request_body_voice_message)
-    await message_service.init()
+async def voice_message_service(request_body_voice_message) -> MessageService:
+    message_service = MessageService(request_body=request_body_voice_message)
     return message_service

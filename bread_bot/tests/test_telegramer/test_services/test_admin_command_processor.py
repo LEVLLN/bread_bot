@@ -3,6 +3,7 @@ from sqlalchemy import and_
 
 from bread_bot.telegramer.models import LocalMeme, Stats, Chat
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.telegramer.services.member_service import MemberService
 from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import AdminMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
@@ -10,15 +11,16 @@ from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
 
 class TestAdminMessageProcessor:
     @pytest.fixture
-    async def processor(self, message_service) -> AdminMessageProcessor:
-        processor = AdminMessageProcessor(message_service=message_service)
+    async def processor(self, db, message_service, member_service) -> AdminMessageProcessor:
+        processor = AdminMessageProcessor(message_service=message_service, member_service=member_service)
         return processor
 
     @pytest.fixture
     async def voice_processor(self, db, reply_voice) -> AdminMessageProcessor:
-        message_service = MessageService(db=db, request_body=reply_voice)
-        await message_service.init()
-        processor = AdminMessageProcessor(message_service=message_service)
+        message_service = MessageService(request_body=reply_voice)
+        member_processor = MemberService(db=db, message=message_service.message)
+        await member_processor.process()
+        processor = AdminMessageProcessor(message_service=message_service, member_service=member_processor)
         return processor
 
     @pytest.mark.parametrize(

@@ -1,8 +1,4 @@
-from typing import Optional
-
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from bread_bot.telegramer.models import Chat, Member, ChatToMember
+from bread_bot.telegramer.exceptions.base import NextStepException
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema, MessageSchema
 
 
@@ -11,37 +7,25 @@ class MessageService(object):
     def __init__(
             self,
             request_body: StandardBodySchema = None,
-            db: AsyncSession = None
     ):
         self.request_body: StandardBodySchema = request_body
-        self.db = db
-        self.chat: Optional[Chat] = None
-        self.member: Optional[Member] = None
-        self.message: Optional[MessageSchema] = None
-
-    async def init(self):
-        self.message = await self.get_message()
-        self.chat = await Chat.handle_by_message(db=self.db, message=self.message)
-        self.member = await Member.handle_by_message(db=self.db, message=self.message)
-        await ChatToMember.bind_by_ids(
-            member_id=self.member.id,
-            chat_id=self.chat.id,
-            db=self.db,
-        )
+        self.message = self.get_message()
 
     @property
-    async def has_message(self) -> bool:
+    def has_message(self) -> bool:
         """Проверка тела запроса на наличие сообщения"""
         return hasattr(self.request_body, 'message') and self.request_body.message is not None
 
     @property
-    async def has_edited_message(self) -> bool:
+    def has_edited_message(self) -> bool:
         """Проверка тела запроса на наличие отредактированного сообщения"""
         return hasattr(self.request_body, 'edited_message') and self.request_body.edited_message is not None
 
-    async def get_message(self) -> MessageSchema:
+    def get_message(self) -> MessageSchema:
         """Получение редактированного или обычного сообщения в качестве основного"""
-        if await self.has_edited_message:
+        if not self.has_message and not self.has_edited_message:
+            raise NextStepException("Отсутствует сообщение")
+        if self.has_edited_message:
             return self.request_body.edited_message
         else:
             return self.request_body.message

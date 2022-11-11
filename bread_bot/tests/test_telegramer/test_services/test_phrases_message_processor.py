@@ -9,12 +9,12 @@ from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 
 class TestPhrasesMessageProcessor:
     @pytest.fixture
-    async def processor(self, message_service) -> PhrasesMessageProcessor:
-        processor = PhrasesMessageProcessor(message_service=message_service)
+    async def processor(self, message_service, member_service) -> PhrasesMessageProcessor:
+        processor = PhrasesMessageProcessor(message_service=message_service, member_service=member_service)
         return processor
 
     @pytest.fixture
-    async def local_memes_trigger_collection(self, local_meme_factory, message_service: MessageService):
+    async def local_memes_trigger_collection(self, local_meme_factory, member_service):
         return await local_meme_factory(
             type=LocalMemeTypesEnum.FREE_WORDS.name,
             data={
@@ -25,11 +25,11 @@ class TestPhrasesMessageProcessor:
                 "key": ["trigger"]
             },
             data_voice=None,
-            chat=message_service.chat
+            chat=member_service.chat
         )
 
     @pytest.fixture
-    async def local_memes_substring_collection(self, local_meme_factory, message_service: MessageService):
+    async def local_memes_substring_collection(self, local_meme_factory, member_service):
         return await local_meme_factory(
             type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
             data={
@@ -39,11 +39,11 @@ class TestPhrasesMessageProcessor:
                 "key": ["substring"],
             },
             data_voice=None,
-            chat=message_service.chat
+            chat=member_service.chat
         )
 
     @pytest.fixture
-    async def local_memes_substring_voice_collection(self, local_meme_factory, message_service: MessageService):
+    async def local_memes_substring_voice_collection(self, local_meme_factory, member_service):
         return await local_meme_factory(
             type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
             data=None,
@@ -53,11 +53,11 @@ class TestPhrasesMessageProcessor:
                 "ch": ["two_char_answer_voice"],
                 "voice_key": ["substring_voice"],
             },
-            chat=message_service.chat
+            chat=member_service.chat
         )
 
     @pytest.fixture
-    async def local_memes_substring_photo_collection(self, local_meme_factory, message_service: MessageService):
+    async def local_memes_substring_photo_collection(self, local_meme_factory, member_service):
         return await local_meme_factory(
             type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
             data=None,
@@ -67,11 +67,11 @@ class TestPhrasesMessageProcessor:
                 "ch": ["two_char_answer_photo"],
                 "photo_key": ["substring_photo"],
             },
-            chat=message_service.chat
+            chat=member_service.chat
         )
 
     @pytest.fixture
-    async def local_memes_substring_sticker_collection(self, local_meme_factory, message_service: MessageService):
+    async def local_memes_substring_sticker_collection(self, local_meme_factory, member_service):
         return await local_meme_factory(
             type=LocalMemeTypesEnum.SUBSTRING_WORDS.name,
             data=None,
@@ -81,7 +81,7 @@ class TestPhrasesMessageProcessor:
                 "ch": ["two_char_answer_sticker"],
                 "sticker_key": ["substring_sticker"],
             },
-            chat=message_service.chat
+            chat=member_service.chat
         )
 
     @pytest.mark.parametrize(
