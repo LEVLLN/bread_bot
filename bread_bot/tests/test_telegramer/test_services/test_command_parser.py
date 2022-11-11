@@ -1,10 +1,8 @@
 import pytest
 
-from bread_bot.telegramer.exceptions.command_parser import (
-    CommandNotFoundException,
-    HeaderNotFoundException,
-    CommandKeyValueInvalidException,
-    CommandParameterNotFoundException,
+from bread_bot.telegramer.exceptions.commands import (
+    NotAvailableCommandException,
+    CommandParseException,
 )
 from bread_bot.telegramer.schemas.commands import (
     ParameterCommandSchema,
@@ -211,15 +209,15 @@ class TestCommandParser:
     @pytest.mark.parametrize(
         "message_text, excepted_exception, expected_message",
         [
-            ("Не хлеб, привет test test", HeaderNotFoundException, "Не найдено ключевое слово бота"),
-            ("Хлеб", CommandNotFoundException, "Не найдена команда"),
-            ("Test Test Test", HeaderNotFoundException, "Не найдено ключевое слово бота"),
-            ("Хлеб несуществующая_команда test", CommandNotFoundException, "Не найдена команда"),
-            ("Хлеб добавь", CommandParameterNotFoundException, "Не найдены параметры команды"),
-            ("Хлеб покажи", CommandParameterNotFoundException, "Не найдены параметры команды"),
-            ("Хлеб добавь подстроку", CommandKeyValueInvalidException, "Не найдено ключ-значения"),
-            ("Хлеб добавь подстроку my_value", CommandKeyValueInvalidException, "Не найдено ключ-значения"),
-            ("Хлеб запомни значение", CommandKeyValueInvalidException, "Не найдено значения"),
+            ("Не хлеб, привет test test", NotAvailableCommandException, "Не найдено ключевое слово бота"),
+            ("Хлеб", NotAvailableCommandException, "Не найдена команда"),
+            ("Test Test Test", NotAvailableCommandException, "Не найдено ключевое слово бота"),
+            ("Хлеб несуществующая_команда test", NotAvailableCommandException, "Не найдена команда"),
+            ("Хлеб добавь", CommandParseException, "Не найдены параметры команды"),
+            ("Хлеб покажи", CommandParseException, "Не найдены параметры команды"),
+            ("Хлеб добавь подстроку", CommandParseException, "Не найдено ключ-значения"),
+            ("Хлеб добавь подстроку my_value", CommandParseException, "Не найдено ключ-значения"),
+            ("Хлеб запомни значение", CommandParseException, "Не найдено значения"),
         ]
     )
     async def test_parse_command_not_found(self, message_text, excepted_exception, expected_message):

@@ -1,11 +1,9 @@
 import re
 from typing import Tuple
 
-from bread_bot.telegramer.exceptions.command_parser import (
-    CommandNotFoundException,
-    CommandParameterNotFoundException,
-    HeaderNotFoundException,
-    CommandKeyValueInvalidException,
+from bread_bot.telegramer.exceptions.commands import (
+    NotAvailableCommandException,
+    CommandParseException,
 )
 from bread_bot.telegramer.schemas.commands import (
     CommandSchema,
@@ -66,7 +64,7 @@ class CommandParser:
         try:
             return self.parse_properties(structs.TRIGGER_WORDS, self.message_text)
         except IndexError:
-            raise HeaderNotFoundException("Не найдено ключевое слово бота")
+            raise NotAvailableCommandException("Не найдено ключевое слово бота")
 
     def _find_command(self, rest: str) -> Tuple[str, str]:
         """
@@ -75,7 +73,7 @@ class CommandParser:
         try:
             command, rest = self.parse_properties(self.command_settings_service.alias_list, rest)
         except IndexError:
-            raise CommandNotFoundException("Не найдена команда")
+            raise NotAvailableCommandException("Не найдена команда")
         else:
             return command.strip().lower(), rest
 
@@ -89,7 +87,7 @@ class CommandParser:
         try:
             parameter, rest = self.parse_properties(self.command_settings.available_parameters, rest)
         except (IndexError, TypeError) as e:
-            raise CommandParameterNotFoundException("Не найдены параметры команды")
+            raise CommandParseException("Не найдены параметры команды")
         else:
             return self.command_settings_service.parameters_value_to_enum[parameter.strip().lower()], rest
 
@@ -100,7 +98,7 @@ class CommandParser:
         try:
             self.command_settings = self.command_settings_service.alias_to_settings[command]
         except KeyError:
-            raise CommandNotFoundException("Не найдена команда")
+            raise NotAvailableCommandException("Не найдена команда")
         else:
             self.main_parameters["command"] = self.command_settings.command
 
@@ -117,7 +115,7 @@ class CommandParser:
             key, value = rest.split("=")
         except ValueError:
             if to_raise_exception:
-                raise CommandKeyValueInvalidException("Не найдено ключ-значения")
+                raise CommandParseException("Не найдено ключ-значения")
             return ValueParameterCommandSchema(
                 **self.main_parameters,
                 parameter=parameter,
@@ -147,7 +145,7 @@ class CommandParser:
         """
         parameter, rest = self._find_parameters(rest=rest)
         if len(rest) == 0:
-            raise CommandKeyValueInvalidException("Не найдено значения")
+            raise CommandParseException("Не найдено значения")
         parameter_list = self.split_rest(rest=rest)
         return ValueListParameterCommandSchema(
             **self.main_parameters,
@@ -189,4 +187,4 @@ class CommandParser:
                 return ParameterCommandSchema(**self.main_parameters, parameter=parameter, rest_text=rest)
             # Отсутствующие кейсы
             case _:
-                raise CommandNotFoundException("Не определен тип команды")
+                raise NotAvailableCommandException("Не найдены подходящие команды")
