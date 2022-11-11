@@ -148,7 +148,7 @@ pytest bread_bot/tests
 ```
 Запустить создания данных по покрытию тестами
 ```commandline
-coverage run -m unittest
+coverage run -m pytest bread_bot/tests
 ```
 Запустить вывод отчета по покрытию тестами
 ```commandline
