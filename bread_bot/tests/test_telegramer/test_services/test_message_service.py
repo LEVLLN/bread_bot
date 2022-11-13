@@ -3,7 +3,7 @@ import pytest
 from bread_bot.telegramer.exceptions.base import NextStepException
 from bread_bot.telegramer.models import Chat, Member, ChatToMember
 from bread_bot.telegramer.services.member_service import MemberService
-from bread_bot.telegramer.services.message_service import MessageService
+from bread_bot.telegramer.services.messages.message_service import MessageService
 
 
 class TestMessageHandler:

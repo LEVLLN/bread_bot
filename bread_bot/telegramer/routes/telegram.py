@@ -17,7 +17,7 @@ from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
     ChatMemberBodySchema
-from bread_bot.telegramer.services.message_handler import process_telegram_message
+from bread_bot.telegramer.services.messages.message_handler import process_telegram_message
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 from bread_bot.utils.dependencies import get_async_session
 

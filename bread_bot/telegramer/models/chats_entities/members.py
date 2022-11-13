@@ -1,9 +1,7 @@
 from sqlalchemy import Column, String, Boolean, BigInteger
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
-from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
 
 
 class Member(mixins.AbstractIsActiveBaseModel,

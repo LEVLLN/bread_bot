@@ -4,7 +4,7 @@ from sqlalchemy import and_
 from bread_bot.telegramer.models import LocalMeme, Stats, Chat
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.services.member_service import MemberService
-from bread_bot.telegramer.services.message_service import MessageService
+from bread_bot.telegramer.services.messages.message_service import MessageService
 from bread_bot.telegramer.services.processors import AdminMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum, StatsEnum
 

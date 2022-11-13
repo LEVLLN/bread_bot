@@ -2,7 +2,6 @@ import pytest
 
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, VoiceAnswerSchema, PhotoAnswerSchema, \
     StickerAnswerSchema
-from bread_bot.telegramer.services.message_service import MessageService
 from bread_bot.telegramer.services.processors import PhrasesMessageProcessor
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 

@@ -16,7 +16,7 @@ from bread_bot.telegramer.schemas.bread_bot_answers import (
     StickerAnswerSchema,
 )
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
-from bread_bot.telegramer.services.message_service import MessageService
+from bread_bot.telegramer.services.messages.message_service import MessageService
 from bread_bot.telegramer.services.member_service import MemberService
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.functions import async_composite_mask

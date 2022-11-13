@@ -1,3 +1,4 @@
+# FIXME: Данный модуль переписан на message_receiver.py, но пока что используется. Как перестанет - выпилить модуль.
 import asyncio
 import logging
 from typing import Optional
@@ -10,7 +11,7 @@ from bread_bot.telegramer.exceptions.base import NextStepException
 from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema, TextAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
 from bread_bot.telegramer.services.member_service import MemberService
-from bread_bot.telegramer.services.message_service import MessageService
+from bread_bot.telegramer.services.messages.message_service import MessageService
 from bread_bot.telegramer.services.processors import (
     AdminMessageProcessor,
     EditedMessageProcessor,
