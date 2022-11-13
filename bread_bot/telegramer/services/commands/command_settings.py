@@ -6,7 +6,6 @@ from bread_bot.telegramer.utils.structs import (
     EntertainmentCommandsEnum,
     MemberCommandsEnum,
     CommandAnswerParametersEnum,
-    CommandKeyValueParametersEnum,
 )
 
 
@@ -23,124 +22,111 @@ class CommandSettings:
     # Инициализация настройки команд
     _COMMAND_SETTINGS = (
         CommandSettingsSchema(
-            alias="покажи",
+            aliases=["покажи", ],
             command=AdminCommandsEnum.SHOW,
             available_parameters=CommandAnswerParametersEnum.list(),
         ),
         CommandSettingsSchema(
-            alias="добавь",
+            aliases=["добавь", ],
             command=AdminCommandsEnum.ADD,
             available_parameters=CommandAnswerParametersEnum.list(),
             to_find_for_key_values=True,
         ),
         CommandSettingsSchema(
-            alias="запомни",
+            aliases=["запомни", "запомни значение", "подстрока"],
             command=AdminCommandsEnum.REMEMBER,
-            available_parameters=CommandKeyValueParametersEnum.list(),
             to_find_for_values=True,
+            to_find_for_values_list=True,
         ),
         CommandSettingsSchema(
-            alias="удали",
+            aliases=["удали", ],
             command=AdminCommandsEnum.DELETE,
             available_parameters=CommandAnswerParametersEnum.list(),
             to_find_for_values=True,
             to_find_for_key_values=True,
         ),
         CommandSettingsSchema(
-            alias="процент срабатывания",
+            aliases=["процент срабатывания", "процент"],
             command=AdminCommandsEnum.ANSWER_CHANCE,
             to_find_for_values=True,
         ),
         CommandSettingsSchema(
-            alias="распространи",
+            aliases=["распространи", ],
             command=AdminCommandsEnum.PROPAGATE,
         ),
         CommandSettingsSchema(
-            alias="голосовые",
+            aliases=["голосовые", ],
             command=AdminCommandsEnum.SET_VOICE_TRIGGER,
         ),
         CommandSettingsSchema(
-            alias="редактирование",
+            aliases=["редактирование", ],
             command=AdminCommandsEnum.SET_EDITED_TRIGGER,
         ),
         CommandSettingsSchema(
-            alias="статистика",
+            aliases=["статистика", "стата"],
             command=MemberCommandsEnum.STATS,
         ),
         CommandSettingsSchema(
-            alias="парочка",
+            aliases=["парочка", ],
             command=MemberCommandsEnum.COUPLE,
         ),
         CommandSettingsSchema(
-            alias="топ",
+            aliases=["топ", ],
             command=MemberCommandsEnum.TOP,
         ),
         CommandSettingsSchema(
-            alias="кто",
+            aliases=["кто", "у кого", "кем", "с кем"],
             command=MemberCommandsEnum.WHO,
         ),
         CommandSettingsSchema(
             command=EntertainmentCommandsEnum.CHANCE,
-            alias="вероятность"
+            aliases=["вероятность", "шанс"]
         ),
         CommandSettingsSchema(
-            alias="help",
+            aliases=["help", "хелп", "помощь"],
             command=EntertainmentCommandsEnum.HELP,
         ),
         CommandSettingsSchema(
-            alias="выбери",
+            aliases=["выбери", "выбор"],
             command=EntertainmentCommandsEnum.CHOOSE_VARIANT,
             to_find_for_values_list=True,
         ),
         CommandSettingsSchema(
-            alias="цитата",
+            aliases=["цитата", "цит"],
             command=EntertainmentCommandsEnum.GQUOTE,
         ),
         CommandSettingsSchema(
-            alias="insult",
+            aliases=["insult", ],
             command=EntertainmentCommandsEnum.INSULT,
         ),
         CommandSettingsSchema(
-            alias="анекдот",
+            aliases=["анекдот", "шутка", "анек"],
             command=EntertainmentCommandsEnum.JOKE,
         ),
         CommandSettingsSchema(
-            alias="совет",
+            aliases=["совет", ],
             command=EntertainmentCommandsEnum.ADVICE,
         ),
     )
 
     @cached_property
     def alias_list(self) -> list[str]:
-        return [command_settings.alias for command_settings in self._COMMAND_SETTINGS]
-
-    @cached_property
-    def alias_to_command(self) -> dict[str, str]:
-        return {
-            command_settings.alias: command_settings.command.value for command_settings in self._COMMAND_SETTINGS
-        }
-
-    @cached_property
-    def command_to_alias(self) -> dict[str, str]:
-        return {
-            command_settings.command.value: command_settings.alias for command_settings in self._COMMAND_SETTINGS
-        }
-
-    @cached_property
-    def command_to_settings(self) -> dict[str, CommandSettingsSchema]:
-        return {
-            command_settings.command.value: command_settings for command_settings in self._COMMAND_SETTINGS
-        }
+        result = []
+        for command_settings in self._COMMAND_SETTINGS:
+            result += command_settings.aliases
+        return result
 
     @cached_property
     def alias_to_settings(self) -> dict[str, CommandSettingsSchema]:
-        return {
-            command_settings.alias: command_settings for command_settings in self._COMMAND_SETTINGS
-        }
+        result = {}
+        for command_settings in self._COMMAND_SETTINGS:
+            for alias in command_settings.aliases:
+                result[alias] = command_settings
+        return result
 
     @cached_property
     def parameters_value_to_enum(self):
         return {
             parameter.value: parameter
-            for parameter in (CommandKeyValueParametersEnum.list() + CommandAnswerParametersEnum.list())
+            for parameter in CommandAnswerParametersEnum.list()
         }

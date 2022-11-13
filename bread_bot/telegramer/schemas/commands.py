@@ -1,11 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, conlist
 
 from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
     MemberCommandsEnum,
     EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,
-    CommandKeyValueParametersEnum,
 )
 
 
@@ -37,7 +36,7 @@ class ParameterCommandSchema(CommandSchema):
         parameter = "подстроки"
         rest_text = ""
     """
-    parameter: CommandKeyValueParametersEnum | CommandAnswerParametersEnum
+    parameter: CommandAnswerParametersEnum
 
 
 class ValueListCommandSchema(CommandSchema):
@@ -50,7 +49,7 @@ class ValueListCommandSchema(CommandSchema):
         parameter_list = ["один", "два", "три", "четыре"]
         rest_text = ""
     """
-    value_list: list
+    value_list: conlist(str, min_items=1)
 
 
 class ValueCommandSchema(CommandSchema):
@@ -63,7 +62,7 @@ class ValueCommandSchema(CommandSchema):
         value = "100"
         rest_text = ""
     """
-    value: str
+    value: str = Field(..., min_length=1)
 
 
 class ValueParameterCommandSchema(ParameterCommandSchema):
@@ -77,7 +76,7 @@ class ValueParameterCommandSchema(ParameterCommandSchema):
         value = "мое_значение"
         rest_text = ""
     """
-    value: str
+    value: str = Field(..., min_length=1)
 
 
 class ValueListParameterCommandSchema(ParameterCommandSchema):
@@ -106,7 +105,7 @@ class KeyValueParameterCommandSchema(ValueParameterCommandSchema):
         value = "мое_значение"
         rest_text = ""
     """
-    key: str
+    key: str = Field(..., min_length=1)
 
 
 class CommandSettingsSchema(BaseModel):
@@ -114,8 +113,8 @@ class CommandSettingsSchema(BaseModel):
     Схема настройки команды
     """
     command: AdminCommandsEnum | EntertainmentCommandsEnum | MemberCommandsEnum
-    alias: str = Field(..., title="Вызов команды на русском языке")
-    available_parameters: list[CommandAnswerParametersEnum | CommandKeyValueParametersEnum] | None = \
+    aliases: list[str] = Field(..., title="Список вызовов команды на русском языке")
+    available_parameters: list[CommandAnswerParametersEnum] | None = \
         Field(None, title="Допустимые параметры к команде")
     to_find_for_values_list: bool = Field(False, title="Ожидание списка значений")
     to_find_for_values: bool = Field(False, title="Ожидание одного значения")

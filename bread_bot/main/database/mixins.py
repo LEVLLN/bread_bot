@@ -24,6 +24,10 @@ class AbstractIsActiveBaseModel(DeclarativeBase):
 class BaseModel(DeclarativeBase):
     __abstract__ = True
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
     @declared_attr
     def __tablename__(cls):
         return cls.__name__.lower()
@@ -69,6 +73,7 @@ class CRUDMixin(object):
             select_in_load,
             order_by,
             limit,
+            for_update,
     ) -> ScalarResult:
         """
         Составление select запроса с фильтрами и ограничениями
@@ -79,7 +84,7 @@ class CRUDMixin(object):
         :param order_by: Группировка по полю
         :param limit: Ограничение количества записей
         """
-        expression = select(cls)
+        expression = select(cls, for_update)
         if where is not None:
             expression = expression.where(
                 where
@@ -137,6 +142,7 @@ class CRUDMixin(object):
             select_in_load=None,
             order_by=None,
             limit=None,
+            for_update=False,
     ):
         scalars = await cls._async_filter(
             db,
@@ -144,6 +150,7 @@ class CRUDMixin(object):
             select_in_load,
             order_by=order_by,
             limit=limit,
+            for_update=for_update,
         )
         result = scalars.all()
         await db.flush()
@@ -156,13 +163,15 @@ class CRUDMixin(object):
             where=None,
             select_in_load=None,
             order_by=None,
+            for_update=False,
     ) -> 'CRUDMixin':
         scalars = await cls._async_filter(
             db,
             where,
             select_in_load,
             order_by=order_by,
-            limit=1
+            limit=1,
+            for_update=for_update,
         )
         result = scalars.first()
         await db.flush()

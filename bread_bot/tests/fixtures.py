@@ -323,23 +323,23 @@ def request_body_voice_message():
 @pytest.fixture
 async def message_service(request_body_message) -> MessageService:
     message_service = MessageService(request_body=request_body_message)
-    return message_service
+    yield message_service
 
 
 @pytest.fixture
 async def member_service(db, message_service) -> MemberService:
     member_service = MemberService(db=db, message=message_service.message)
     await member_service.process()
-    return member_service
+    yield member_service
 
 
 @pytest.fixture
 async def edited_message_service(request_body_edited_message) -> MessageService:
     message_service = MessageService(request_body=request_body_edited_message)
-    return message_service
+    yield message_service
 
 
 @pytest.fixture
 async def voice_message_service(request_body_voice_message) -> MessageService:
     message_service = MessageService(request_body=request_body_voice_message)
-    return message_service
+    yield message_service

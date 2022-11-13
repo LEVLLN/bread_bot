@@ -11,14 +11,12 @@ from bread_bot.telegramer.schemas.commands import (
     ValueParameterCommandSchema,
     CommandSchema,
     ValueCommandSchema,
-    ValueListParameterCommandSchema,
 )
 from bread_bot.telegramer.services.commands.command_parser import CommandParser
 from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
     EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,
-    CommandKeyValueParametersEnum,
 )
 
 
@@ -127,11 +125,10 @@ class TestCommandParser:
             ),
             (
                     "Хлеб процент срабатывания",
-                    ValueCommandSchema(
+                    CommandSchema(
                         header="Хлеб",
                         command=AdminCommandsEnum.ANSWER_CHANCE,
                         rest_text="",
-                        value="",
                     )
             ),
             (
@@ -144,41 +141,46 @@ class TestCommandParser:
                     )
             ),
             (
-                    "Хлеб запомни значение my_key",
-                    ValueListParameterCommandSchema(
+                    "Хлеб запомни my_key",
+                    ValueListCommandSchema(
                         header="Хлеб",
                         command=AdminCommandsEnum.REMEMBER,
-                        parameter=CommandKeyValueParametersEnum.VALUE,
                         rest_text="",
                         value_list=["my_key"],
                     )
             ),
             (
-                    "Хлеб запомни ключ my_value",
-                    ValueListParameterCommandSchema(
+                    "Хлеб запомни my_value",
+                    ValueListCommandSchema(
                         header="Хлеб",
                         command=AdminCommandsEnum.REMEMBER,
-                        parameter=CommandKeyValueParametersEnum.KEY,
                         rest_text="",
                         value_list=["my_value"],
                     )
             ),
             (
-                    "Хлеб запомни ключи my_value1, my_value2",
-                    ValueListParameterCommandSchema(
+                    "Хлеб запомни my_value1, my_value2",
+                    ValueListCommandSchema(
                         header="Хлеб",
                         command=AdminCommandsEnum.REMEMBER,
-                        parameter=CommandKeyValueParametersEnum.KEY_LIST,
                         rest_text="",
                         value_list=["my_value1", "my_value2"],
                     )
             ),
             (
-                    "Хлеб запомни значения my_key1, my_key2",
-                    ValueListParameterCommandSchema(
+                    "Хлеб запомни my_key1, my_key2",
+                    ValueListCommandSchema(
                         header="Хлеб",
                         command=AdminCommandsEnum.REMEMBER,
-                        parameter=CommandKeyValueParametersEnum.VALUE_LIST,
+                        rest_text="",
+                        value_list=["my_key1", "my_key2"],
+                    )
+            ),
+            (
+                    "Хлеб подстрока my_key1, my_key2",
+                    ValueListCommandSchema(
+                        header="Хлеб",
+                        command=AdminCommandsEnum.REMEMBER,
                         rest_text="",
                         value_list=["my_key1", "my_key2"],
                     )
@@ -192,11 +194,19 @@ class TestCommandParser:
                     )
             ),
             (
-                    "Хлеб цитата значение test=test",
+                    "Хлеб цитата test=test",
                     CommandSchema(
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.GQUOTE,
-                        rest_text="значение test=test",
+                        rest_text="test=test",
+                    )
+            ),
+            (
+                    "Хлеб цитата цит",
+                    CommandSchema(
+                        header="Хлеб",
+                        command=EntertainmentCommandsEnum.GQUOTE,
+                        rest_text="цит",
                     )
             ),
         ]
@@ -217,7 +227,7 @@ class TestCommandParser:
             ("Хлеб покажи", CommandParseException, "Не найдены параметры команды"),
             ("Хлеб добавь подстроку", CommandParseException, "Не найдено ключ-значения"),
             ("Хлеб добавь подстроку my_value", CommandParseException, "Не найдено ключ-значения"),
-            ("Хлеб запомни значение", CommandParseException, "Не найдено значения"),
+            ("Хлеб запомни", CommandParseException, "Введены неправильные значения"),
         ]
     )
     async def test_parse_command_not_found(self, message_text, excepted_exception, expected_message):

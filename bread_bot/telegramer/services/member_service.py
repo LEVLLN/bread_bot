@@ -73,6 +73,8 @@ class MemberService:
         return instance
 
     async def bind_chat_to_member(self, member_id: int, chat_id: int) -> bool:
+        if member_id is None:
+            return False
         member: Member = await Member.async_first(
             db=self.db,
             where=Member.id == member_id,

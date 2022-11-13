@@ -105,8 +105,9 @@ class CommandAnswerParametersEnum(IterEnum):
     TRIGGER_LIST = "триггеры"
 
 
-class CommandKeyValueParametersEnum(IterEnum):
-    KEY = "ключ"
-    KEY_LIST = "ключи"
-    VALUE = "значение"
-    VALUE_LIST = "значения"
+ANSWER_ENTITY_MAP = {
+    CommandAnswerParametersEnum.SUBSTRING: AnswerEntityTypesEnum.SUBSTRING,
+    CommandAnswerParametersEnum.SUBSTRING_LIST: AnswerEntityTypesEnum.SUBSTRING,
+    CommandAnswerParametersEnum.TRIGGER: AnswerEntityTypesEnum.TRIGGER,
+    CommandAnswerParametersEnum.TRIGGER_LIST: AnswerEntityTypesEnum.TRIGGER,
+}
