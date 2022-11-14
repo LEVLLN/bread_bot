@@ -6,7 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from bread_bot.telegramer.exceptions.base import RaiseUpException
 from bread_bot.telegramer.models import (
     AnswerPack,
-    TextEntity, VoiceEntity, PhotoEntity, StickerEntity,
+    TextEntity,
+    VoiceEntity,
+    PhotoEntity,
+    StickerEntity,
 )
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.schemas.commands import (
@@ -68,7 +71,7 @@ class AdminCommandMethod:
         if self.message_service.message.reply is None:
             raise RaiseUpException("Необходимо выбрать сообщение в качестве ответа для обработки")
 
-    async def execute(self):
+    async def execute(self) -> TextAnswerSchema:
         match self.command_instance.command:
             case AdminCommandsEnum.ADD:
                 return await self.add(
@@ -82,7 +85,13 @@ class AdminCommandMethod:
             case AdminCommandsEnum.DELETE:
                 return await self.delete()
 
-    async def add(self, key: str, value: str, entity_class: any, reaction_type: AnswerEntityTypesEnum):
+    async def add(
+            self,
+            key: str,
+            value: str,
+            entity_class: any,
+            reaction_type: AnswerEntityTypesEnum,
+    ):
         """Команда Добавить"""
         self._check_length_key(reaction_type, key)
 
@@ -141,34 +150,35 @@ class AdminCommandMethod:
         return self._return_answer()
 
     async def delete(self):
-        """Удаление значений"""
+        """Удаление по ключам и по ключам-значениям"""
         answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
             db=self.db,
             chat_id=self.member_service.chat.id,
-            select_in_loads=[
-                AnswerPack.text_entities,
-                AnswerPack.voice_entities,
-                AnswerPack.photo_entities,
-                AnswerPack.sticker_entities,
-            ]
         )
         if answer_pack is None:
             return self._return_answer("У чата нет ни одного пакета под управлением")
 
-        match self.command_instance:
-            case KeyValueParameterCommandSchema():
-                filter_params = dict(
-                    key=self.command_instance.key,
-                    value=self.command_instance.value,
-                    pack_id=answer_pack.id,
-                    reaction_type=ANSWER_ENTITY_MAP[self.command_instance.parameter]
-                )
-            case ValueParameterCommandSchema():
-                filter_params = dict(
-                    key=self.command_instance.value,
-                    pack_id=answer_pack.id,
-                    reaction_type=ANSWER_ENTITY_MAP[self.command_instance.parameter]
-                )
-            case _:
-                raise RaiseUpException("Введены неправильные значения")
+        for entity_class in (TextEntity, VoiceEntity, PhotoEntity, StickerEntity,):
+            match self.command_instance:
+                case KeyValueParameterCommandSchema():
+                    await entity_class.async_delete(
+                        self.db,
+                        where=and_(
+                            entity_class.key == self.command_instance.key,
+                            entity_class.value == self.command_instance.value,
+                            entity_class.pack_id == answer_pack.id,
+                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter]
+                        )
+                    )
+                case ValueParameterCommandSchema():
+                    await entity_class.async_delete(
+                        self.db,
+                        where=and_(
+                            entity_class.key == self.command_instance.value,
+                            entity_class.pack_id == answer_pack.id,
+                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter]
+                        )
+                    )
+                case _:
+                    raise RaiseUpException("Введены неправильные значения")
         return self._return_answer()

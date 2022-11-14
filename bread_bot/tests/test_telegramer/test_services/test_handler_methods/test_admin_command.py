@@ -3,7 +3,11 @@ from sqlalchemy import and_
 
 from bread_bot.telegramer.exceptions.base import RaiseUpException
 from bread_bot.telegramer.models import (
-    AnswerPack, AnswerPacksToChats, TextEntity, PhotoEntity, VoiceEntity,
+    AnswerPack,
+    AnswerPacksToChats,
+    TextEntity,
+    PhotoEntity,
+    VoiceEntity,
     StickerEntity,
 )
 from bread_bot.telegramer.schemas.commands import (
@@ -12,7 +16,11 @@ from bread_bot.telegramer.schemas.commands import (
 )
 from bread_bot.telegramer.services.handlers.methods.admin_commands import AdminCommandMethod
 from bread_bot.telegramer.services.messages.message_service import MessageService
-from bread_bot.telegramer.utils.structs import AdminCommandsEnum, CommandAnswerParametersEnum, AnswerEntityTypesEnum
+from bread_bot.telegramer.utils.structs import (
+    AdminCommandsEnum,
+    CommandAnswerParametersEnum,
+    AnswerEntityTypesEnum, ANSWER_ENTITY_MAP,
+)
 
 
 class BaseAdminCommand:
@@ -282,7 +290,63 @@ class TestDelete(BaseAdminCommand):
         result = await admin_command_method.execute()
         assert result.text == "У чата нет ни одного пакета под управлением"
 
-    async def test(self, db, admin_command_method, command_instance, based_pack):
+    @pytest.mark.parametrize(
+        "expected_model",
+        [
+            TextEntity,
+            StickerEntity,
+            PhotoEntity,
+            VoiceEntity,
+        ]
+    )
+    @pytest.mark.parametrize(
+        "parameter",
+        [
+            CommandAnswerParametersEnum.SUBSTRING_LIST,
+            CommandAnswerParametersEnum.SUBSTRING,
+            CommandAnswerParametersEnum.TRIGGER,
+            CommandAnswerParametersEnum.TRIGGER_LIST,
+        ]
+    )
+    async def test(self, db, admin_command_method, command_instance, based_pack, expected_model, parameter):
+        admin_command_method.command_instance.parameter = parameter
+        entities = []
+        for key in ["other_key", command_instance.value]:
+            entities.append(expected_model(
+                key=key,
+                value="something",
+                reaction_type=ANSWER_ENTITY_MAP[parameter],
+                pack_id=based_pack.id,
+            ))
+        await expected_model.async_add_all(db, entities)
+
+        pre_expected = await expected_model.async_filter(db, where=expected_model.pack_id == based_pack.id)
+        assert len(pre_expected) == 2
+        assert pre_expected == entities
+
         result = await admin_command_method.execute()
+        expected = await expected_model.async_filter(db, where=expected_model.pack_id == based_pack.id)
 
         assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert len(expected) == 1
+        assert expected[0].key == "other_key"
+        assert expected[0].reaction_type == ANSWER_ENTITY_MAP[parameter]
+        assert expected[0].pack_id == based_pack.id
+
+    async def test_key_value(self, db, admin_command_method, command_key_value_instance, based_pack,):
+        admin_command_method.command_instance = command_key_value_instance
+        entity = TextEntity(
+            key=command_key_value_instance.key,
+            value=command_key_value_instance.value,
+            reaction_type=ANSWER_ENTITY_MAP[command_key_value_instance.parameter],
+            pack_id=based_pack.id,
+        )
+        await TextEntity.async_add(db, entity)
+
+        assert await TextEntity.async_first(db, ) == entity
+        result = await admin_command_method.execute()
+        expected = await TextEntity.async_filter(db, where=TextEntity.pack_id == based_pack.id)
+
+        assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert expected == []
+
