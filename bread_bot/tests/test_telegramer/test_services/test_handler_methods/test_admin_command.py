@@ -75,7 +75,8 @@ class TestAdd(BaseAdminCommand):
             command=AdminCommandsEnum.ADD,
             parameter=CommandAnswerParametersEnum.TRIGGER,
             key="my_key",
-            value="my_value"
+            value="my_value",
+            raw_command="добавь"
         )
 
     @pytest.fixture
@@ -179,7 +180,8 @@ class TestRemember(BaseAdminCommand):
         yield ValueListCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.REMEMBER,
-            value_list=["my_value", "my_value1"]
+            value_list=["my_value", "my_value1"],
+            raw_command="запомни",
         )
 
     async def test_raise_short_key(
@@ -273,7 +275,8 @@ class TestDelete(BaseAdminCommand):
             header="хлеб",
             command=AdminCommandsEnum.DELETE,
             parameter=CommandAnswerParametersEnum.SUBSTRING,
-            value="LOL"
+            value="LOL",
+            raw_command="удали",
         )
 
     @pytest.fixture
@@ -283,7 +286,8 @@ class TestDelete(BaseAdminCommand):
             command=AdminCommandsEnum.DELETE,
             parameter=CommandAnswerParametersEnum.SUBSTRING,
             key="TEST",
-            value="LOL"
+            value="LOL",
+            raw_command="удали",
         )
 
     async def test_not_existed_packs(self, db, admin_command_method, command_instance):

@@ -23,6 +23,7 @@ class CommandSchema(BaseModel):
     """
     header: str = Field(..., title="Способ обращения к боту")
     command: AdminCommandsEnum | MemberCommandsEnum | EntertainmentCommandsEnum
+    raw_command: str = Field(..., title="Оригинальный текст команды")
     rest_text: str = Field("", title="Остаточный текст после обработки команды")
 
 

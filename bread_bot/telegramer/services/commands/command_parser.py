@@ -114,6 +114,7 @@ class CommandParser:
             raise NotAvailableCommandException("Не найдена команда")
         else:
             self.main_parameters["command"] = self.command_settings.command
+            self.main_parameters["raw_command"] = command
 
     def _handle_parameter_key_value(
             self,

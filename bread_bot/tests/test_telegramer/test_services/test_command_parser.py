@@ -55,7 +55,8 @@ class TestCommandParser:
                         header="Хлеб",
                         command=AdminCommandsEnum.SHOW,
                         parameter=CommandAnswerParametersEnum.SUBSTRING_LIST,
-                        rest_text="как дела дорогой?"
+                        rest_text="как дела дорогой?",
+                        raw_command="покажи",
                     )
             ),
             (
@@ -64,7 +65,8 @@ class TestCommandParser:
                         header="Хлеб",
                         command=AdminCommandsEnum.SHOW,
                         parameter=CommandAnswerParametersEnum.SUBSTRING_LIST,
-                        rest_text=""
+                        rest_text="",
+                        raw_command="покажи",
                     )
             ),
             (
@@ -73,7 +75,8 @@ class TestCommandParser:
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.CHOOSE_VARIANT,
                         value_list=["1", "2", "3", "4"],
-                        rest_text=""
+                        rest_text="",
+                        raw_command="выбери",
                     )
             ),
             (
@@ -82,7 +85,8 @@ class TestCommandParser:
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.CHOOSE_VARIANT,
                         value_list=["1", "2", "3", "4"],
-                        rest_text=""
+                        rest_text="",
+                        raw_command="выбери",
                     )
             ),
             (
@@ -91,7 +95,8 @@ class TestCommandParser:
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.CHOOSE_VARIANT,
                         value_list=["1"],
-                        rest_text=""
+                        rest_text="",
+                        raw_command="выбери",
                     )
             ),
             (
@@ -101,7 +106,8 @@ class TestCommandParser:
                         command=AdminCommandsEnum.ADD,
                         parameter=CommandAnswerParametersEnum.SUBSTRING,
                         key="my_key",
-                        value="my_value"
+                        value="my_value",
+                        raw_command="добавь",
                     )
             ),
             (
@@ -110,7 +116,8 @@ class TestCommandParser:
                         header="Хлеб",
                         command=AdminCommandsEnum.DELETE,
                         parameter=CommandAnswerParametersEnum.TRIGGER,
-                        value="my_value"
+                        value="my_value",
+                        raw_command="удали",
                     )
             ),
             (
@@ -120,7 +127,8 @@ class TestCommandParser:
                         command=AdminCommandsEnum.DELETE,
                         parameter=CommandAnswerParametersEnum.TRIGGER,
                         key="my_key",
-                        value="my_value"
+                        value="my_value",
+                        raw_command="удали",
                     )
             ),
             (
@@ -129,6 +137,7 @@ class TestCommandParser:
                         header="Хлеб",
                         command=AdminCommandsEnum.ANSWER_CHANCE,
                         rest_text="",
+                        raw_command="процент срабатывания",
                     )
             ),
             (
@@ -138,6 +147,17 @@ class TestCommandParser:
                         command=AdminCommandsEnum.ANSWER_CHANCE,
                         rest_text="",
                         value="20",
+                        raw_command="процент срабатывания",
+                    )
+            ),
+            (
+                    "Хлеб процент 20",
+                    ValueCommandSchema(
+                        header="Хлеб",
+                        command=AdminCommandsEnum.ANSWER_CHANCE,
+                        rest_text="",
+                        value="20",
+                        raw_command="процент",
                     )
             ),
             (
@@ -147,6 +167,7 @@ class TestCommandParser:
                         command=AdminCommandsEnum.REMEMBER,
                         rest_text="",
                         value_list=["my_key"],
+                        raw_command="запомни",
                     )
             ),
             (
@@ -156,6 +177,7 @@ class TestCommandParser:
                         command=AdminCommandsEnum.REMEMBER,
                         rest_text="",
                         value_list=["my_value"],
+                        raw_command="запомни",
                     )
             ),
             (
@@ -165,6 +187,7 @@ class TestCommandParser:
                         command=AdminCommandsEnum.REMEMBER,
                         rest_text="",
                         value_list=["my_value1", "my_value2"],
+                        raw_command="запомни",
                     )
             ),
             (
@@ -174,6 +197,7 @@ class TestCommandParser:
                         command=AdminCommandsEnum.REMEMBER,
                         rest_text="",
                         value_list=["my_key1", "my_key2"],
+                        raw_command="запомни",
                     )
             ),
             (
@@ -183,6 +207,7 @@ class TestCommandParser:
                         command=AdminCommandsEnum.REMEMBER,
                         rest_text="",
                         value_list=["my_key1", "my_key2"],
+                        raw_command="подстрока",
                     )
             ),
             (
@@ -191,6 +216,7 @@ class TestCommandParser:
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.GQUOTE,
                         rest_text="",
+                        raw_command="цитата",
                     )
             ),
             (
@@ -199,6 +225,7 @@ class TestCommandParser:
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.GQUOTE,
                         rest_text="test=test",
+                        raw_command="цитата",
                     )
             ),
             (
@@ -207,6 +234,7 @@ class TestCommandParser:
                         header="Хлеб",
                         command=EntertainmentCommandsEnum.GQUOTE,
                         rest_text="цит",
+                        raw_command="цитата",
                     )
             ),
         ]

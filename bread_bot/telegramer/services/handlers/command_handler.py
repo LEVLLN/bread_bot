@@ -17,7 +17,7 @@ class CommandHandler(AbstractHandler):
                 and self.message_service.message.text)
 
     async def process(self) -> BaseAnswerSchema:
-        if not self.condition():
+        if not await self.condition():
             raise NextStepException("Не подходит условие для обработки")
         command_instance = CommandParser(message_text=self.message_service.message.text).parse()
         match command_instance.command:
