@@ -91,6 +91,7 @@ class AdminCommandMethod:
             value: str,
             entity_class: any,
             reaction_type: AnswerEntityTypesEnum,
+            description: str | None = None,
     ):
         """Команда Добавить"""
         self._check_length_key(reaction_type, key)
@@ -110,13 +111,18 @@ class AdminCommandMethod:
             for_update=True,
         )
         if entity is None:
+            instance_params = dict(
+                pack_id=answer_pack.id,
+                key=key,
+                value=value,
+                reaction_type=reaction_type,
+            )
+            if description is not None:
+                instance_params.update(dict(description=description))
             await entity_class.async_add(
                 db=self.db,
                 instance=entity_class(
-                    pack_id=answer_pack.id,
-                    key=key,
-                    value=value,
-                    reaction_type=reaction_type,
+                    **instance_params
                 )
             )
         return self._return_answer()
@@ -125,6 +131,8 @@ class AdminCommandMethod:
         """Команда Запомни"""
         self._check_reply_existed()
         reply = self.message_service.message.reply
+        description: str | None = None
+
         match reply:
             case BaseMessageSchema(photo=[], sticker=None, text="" | None):
                 value = reply.voice.file_id
@@ -132,6 +140,7 @@ class AdminCommandMethod:
             case BaseMessageSchema(voice=None, sticker=None, text="" | None):
                 value = reply.photo[0].file_id
                 entity_class = PhotoEntity
+                description = reply.caption
             case BaseMessageSchema(photo=[], voice=None, text="" | None):
                 value = reply.sticker.file_id
                 entity_class = StickerEntity
@@ -146,6 +155,7 @@ class AdminCommandMethod:
                 value=value,
                 entity_class=entity_class,
                 reaction_type=reaction_type,
+                description=description,
             )
         return self._return_answer()
 

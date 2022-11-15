@@ -40,6 +40,7 @@ class BaseMessageSchema(BaseModel):
     voice: Optional[VoiceSchema] = None
     photo: List[PhotoSchema] = []
     sticker: Optional[StickerSchema] = None
+    caption: Optional[str] = None
 
 
 class MessageSchema(BaseMessageSchema):

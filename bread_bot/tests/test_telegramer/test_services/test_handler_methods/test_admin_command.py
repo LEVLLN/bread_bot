@@ -172,7 +172,6 @@ class TestRemember(BaseAdminCommand):
     async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
         message_service = MessageService(request_body=request_body_message)
         message_service.message.reply = reply_photo.message.reply
-        message_service.message.reply.photo[0].file_id = "LOL"
         yield message_service
 
     @pytest.fixture
@@ -226,6 +225,30 @@ class TestRemember(BaseAdminCommand):
         assert command_instance.value_list == [entity.key for entity in entities]
         assert photo_message_service.message.reply.photo[0].file_id == entities[0].value
         assert entities[0].reaction_type == AnswerEntityTypesEnum.SUBSTRING
+        assert entities[0].description is None
+
+    async def test_photo_reply_with_capture(
+            self,
+            db,
+            based_pack,
+            admin_command_method,
+            command_instance,
+            message_service,
+            reply_photo_with_caption,
+    ):
+        message_service.message.reply = reply_photo_with_caption.message.reply
+        admin_command_method.message_service = message_service
+        result = await admin_command_method.execute()
+
+        entities = await PhotoEntity.async_filter(
+            db, where=PhotoEntity.pack_id == based_pack.id,
+        )
+        assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert entities is not None
+        assert command_instance.value_list == [entity.key for entity in entities]
+        assert message_service.message.reply.photo[0].file_id == entities[0].value
+        assert entities[0].reaction_type == AnswerEntityTypesEnum.SUBSTRING
+        assert entities[0].description == reply_photo_with_caption.message.reply.caption
 
     async def test_voice_reply(
         self,

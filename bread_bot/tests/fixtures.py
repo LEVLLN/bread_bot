@@ -187,6 +187,76 @@ def reply_photo():
 
 
 @pytest.fixture
+def reply_photo_with_caption():
+    return StandardBodySchema(
+        **{
+            "update_id": 958895851,
+            "message": {
+                "message_id": 34387,
+                "from": {
+                    "id": 296382623,
+                    "is_bot": False,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "language_code": "en"},
+                "chat": {
+                    "id": 296382623,
+                    'first_name': 'Tester',
+                    'last_name': 'Testerov',
+                    'username': 'Test_test',
+                    "type": "private"
+                },
+                "date": 1668554167,
+                "reply_to_message": {
+                    "message_id": 34386,
+                    "from": {
+                        "id": 296382623,
+                        "is_bot": False,
+                        'first_name': 'Tester',
+                        'last_name': 'Testerov',
+                        'username': 'Test_test',
+                        "language_code": "en"
+                    },
+                    "chat": {
+                        "id": 296382623,
+                        'first_name': 'Tester',
+                        'last_name': 'Testerov',
+                        'username': 'Test_test',
+                        "type": "private"
+                    },
+                    "date": 1668552671,
+                    "photo": [
+                        {
+                            "file_id": "AgACAgIAAxkBAAKGUmN0F99KZ-AAKRwjEbDXugS4arUhjBh3b3AQADAgADcwADKwQ",
+                            "file_unique_id": "AQADkcIxGw17oEt4",
+                            "file_size": 2105,
+                            "width": 71,
+                            "height": 90
+                        },
+                        {
+                            "file_id": "AgACAgIAAxkBAAKGUmN0F99KZ-AAKRwjEbDXugS4arUhjBh3b3AQADAgADbQADKwQ",
+                            "file_unique_id": "AQADkcIxGw17oEty",
+                            "file_size": 31202,
+                            "width": 252,
+                            "height": 320},
+                        {
+                            "file_id": "AgACAgIAAxkBAAKGUmN0F99KZ-AAKRwjEbDXugS4arUhjBh3b3AQADAgADeAADKwQ",
+                            "file_unique_id": "AQADkcIxGw17oEt9",
+                            "file_size": 80331,
+                            "width": 475,
+                            "height": 604
+                        }
+                    ],
+                    "caption": "some_message_good"
+                },
+                "text": "lololol"
+            }
+        }
+    )
+
+
+@pytest.fixture
 def reply_sticker():
     return StandardBodySchema(
         **{
