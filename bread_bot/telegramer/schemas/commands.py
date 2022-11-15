@@ -14,12 +14,14 @@ class CommandSchema(BaseModel):
 
     example: хлеб топ ->
         header = "хлеб"
-        command = "топ"
+        command = MemberCommandsEnum.TOP
         rest_text: ""
+        raw_command: "топ"
     example: хлеб анекдот дня ->
         header = "хлеб"
-        command = "анекдот"
-        rest_text: "дня"
+        command = AdminCommandsEnum.JOKE
+        rest_text = "дня"
+        raw_command = "анекдот"
     """
     header: str = Field(..., title="Способ обращения к боту")
     command: AdminCommandsEnum | MemberCommandsEnum | EntertainmentCommandsEnum
@@ -33,9 +35,10 @@ class ParameterCommandSchema(CommandSchema):
 
     example: хлеб покажи подстроки ->
         header = "хлеб"
-        command = "покажи"
-        parameter = "подстроки"
+        command = AdminCommandsEnum.SHOW
+        parameter = CommandAnswerParametersEnum.SUBSTRING_LIST
         rest_text = ""
+        raw_command = "покажи"
     """
     parameter: CommandAnswerParametersEnum
 
@@ -46,9 +49,10 @@ class ValueListCommandSchema(CommandSchema):
 
     example: хлеб выбери один или два или три или четыре ->
         header = "хлеб"
-        command = "выбери"
-        parameter_list = ["один", "два", "три", "четыре"]
+        command = EntertainmentCommandsEnum.CHOOSE_VARIANT
+        valie_list = ["один", "два", "три", "четыре"]
         rest_text = ""
+        raw_command = "выбери"
     """
     value_list: conlist(str, min_items=1)
 
@@ -59,9 +63,10 @@ class ValueCommandSchema(CommandSchema):
 
     example: хлеб процент срабатывания 100 ->
         header = "хлеб"
-        command = "процент срабатывания"
+        command = AdminCommandsEnum.ANSWER_CHANCE
         value = "100"
         rest_text = ""
+        raw_command = "процент срабатывания"
     """
     value: str = Field(..., min_length=1)
 
@@ -72,10 +77,11 @@ class ValueParameterCommandSchema(ParameterCommandSchema):
 
      example: хлеб запомни значение мое_значение ->
         header = "хлеб"
-        command = "запомни"
+        command = AdminCommandsEnum.REMEMBER
         parameter = "значение"
         value = "мое_значение"
         rest_text = ""
+        raw_command = "запомни"
     """
     value: str = Field(..., min_length=1)
 
@@ -86,10 +92,11 @@ class ValueListParameterCommandSchema(ParameterCommandSchema):
 
      example: хлеб запомни значение один, два, три ->
         header = "хлеб"
-        command = "запомни"
+        command = AdminCommandsEnum.REMEMBER
         parameter = "значение"
         value_list =["один", "два", "три"]
         rest_text = ""
+        raw_command = "запомни"
     """
     value_list: list[str]
 
@@ -100,11 +107,12 @@ class KeyValueParameterCommandSchema(ValueParameterCommandSchema):
 
      example: хлеб добавь триггер мой_ключ=мое_значение ->
         header = "хлеб"
-        command = "добавь"
+        command = AdminCommandsEnum.ADD
         parameter = "триггер"
         key = "мой_ключ"
         value = "мое_значение"
         rest_text = ""
+        raw_command = "добавь"
     """
     key: str = Field(..., min_length=1)
 
