@@ -75,7 +75,7 @@ class CommandSettings:
             command=MemberCommandsEnum.TOP,
         ),
         CommandSettingsSchema(
-            aliases=["кто", "у кого", "кем", "с кем"],
+            aliases=["кто", "у кого", "кем", "с кем", "кем", "кого", "кому", "о ком"],
             command=MemberCommandsEnum.WHO,
         ),
         CommandSettingsSchema(
