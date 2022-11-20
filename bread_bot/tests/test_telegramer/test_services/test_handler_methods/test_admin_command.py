@@ -12,9 +12,9 @@ from bread_bot.telegramer.models import (
 )
 from bread_bot.telegramer.schemas.commands import (
     KeyValueParameterCommandSchema, ValueListCommandSchema,
-    ValueParameterCommandSchema,
+    ValueParameterCommandSchema, CommandSchema, ValueCommandSchema,
 )
-from bread_bot.telegramer.services.handlers.methods.admin_commands import AdminCommandMethod
+from bread_bot.telegramer.services.handlers.command_methods.admin_command_method import AdminCommandMethod
 from bread_bot.telegramer.services.messages.message_service import MessageService
 from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
@@ -35,21 +35,6 @@ class BaseAdminCommand:
             )
         )
         yield answer_pack
-
-    @pytest.fixture
-    async def admin_command_method(
-            self,
-            db,
-            message_service,
-            member_service,
-            command_instance,
-    ):
-        yield AdminCommandMethod(
-            db=db,
-            member_service=member_service,
-            message_service=message_service,
-            command_instance=command_instance,
-        )
 
     @pytest.fixture
     async def admin_command_method(
@@ -206,15 +191,25 @@ class TestRemember(BaseAdminCommand):
             await admin_command_method.execute()
         assert e.value.args[0] == "Необходимо выбрать сообщение в качестве ответа для обработки"
 
+    @pytest.mark.parametrize(
+        "command, reaction_type",
+        [
+            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+        ]
+    )
     async def test_photo_reply(
-        self,
-        db,
-        based_pack,
-        admin_command_method,
-        command_instance,
-        photo_message_service,
+            self,
+            db,
+            based_pack,
+            admin_command_method,
+            command_instance,
+            photo_message_service,
+            command,
+            reaction_type,
     ):
         admin_command_method.message_service = photo_message_service
+        admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await PhotoEntity.async_filter(
@@ -224,9 +219,16 @@ class TestRemember(BaseAdminCommand):
         assert entities is not None
         assert command_instance.value_list == [entity.key for entity in entities]
         assert photo_message_service.message.reply.photo[0].file_id == entities[0].value
-        assert entities[0].reaction_type == AnswerEntityTypesEnum.SUBSTRING
+        assert entities[0].reaction_type == reaction_type
         assert entities[0].description is None
 
+    @pytest.mark.parametrize(
+        "command, reaction_type",
+        [
+            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+        ]
+    )
     async def test_photo_reply_with_capture(
             self,
             db,
@@ -235,9 +237,12 @@ class TestRemember(BaseAdminCommand):
             command_instance,
             message_service,
             reply_photo_with_caption,
+            command,
+            reaction_type,
     ):
         message_service.message.reply = reply_photo_with_caption.message.reply
         admin_command_method.message_service = message_service
+        admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await PhotoEntity.async_filter(
@@ -247,18 +252,28 @@ class TestRemember(BaseAdminCommand):
         assert entities is not None
         assert command_instance.value_list == [entity.key for entity in entities]
         assert message_service.message.reply.photo[0].file_id == entities[0].value
-        assert entities[0].reaction_type == AnswerEntityTypesEnum.SUBSTRING
+        assert entities[0].reaction_type == reaction_type
         assert entities[0].description == reply_photo_with_caption.message.reply.caption
 
+    @pytest.mark.parametrize(
+        "command, reaction_type",
+        [
+            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+        ]
+    )
     async def test_voice_reply(
-        self,
-        db,
-        based_pack,
-        admin_command_method,
-        command_instance,
-        reply_voice,
+            self,
+            db,
+            based_pack,
+            admin_command_method,
+            command_instance,
+            reply_voice,
+            command,
+            reaction_type,
     ):
         admin_command_method.message_service.message.reply = reply_voice.message.reply
+        admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await VoiceEntity.async_filter(
@@ -268,17 +283,27 @@ class TestRemember(BaseAdminCommand):
         assert entities is not None
         assert command_instance.value_list == [entity.key for entity in entities]
         assert reply_voice.message.reply.voice.file_id == entities[0].value
-        assert entities[0].reaction_type == AnswerEntityTypesEnum.SUBSTRING
+        assert entities[0].reaction_type == reaction_type
 
+    @pytest.mark.parametrize(
+        "command, reaction_type",
+        [
+            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+        ]
+    )
     async def test_sticker_reply(
-        self,
-        db,
-        based_pack,
-        admin_command_method,
-        command_instance,
-        reply_sticker,
+            self,
+            db,
+            based_pack,
+            admin_command_method,
+            command_instance,
+            reply_sticker,
+            command,
+            reaction_type,
     ):
         admin_command_method.message_service.message.reply = reply_sticker.message.reply
+        admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await StickerEntity.async_filter(
@@ -288,7 +313,7 @@ class TestRemember(BaseAdminCommand):
         assert entities is not None
         assert command_instance.value_list == [entity.key for entity in entities]
         assert reply_sticker.message.reply.sticker.file_id == entities[0].value
-        assert entities[0].reaction_type == AnswerEntityTypesEnum.SUBSTRING
+        assert entities[0].reaction_type == reaction_type
 
 
 class TestDelete(BaseAdminCommand):
@@ -360,7 +385,7 @@ class TestDelete(BaseAdminCommand):
         assert expected[0].reaction_type == ANSWER_ENTITY_MAP[parameter]
         assert expected[0].pack_id == based_pack.id
 
-    async def test_key_value(self, db, admin_command_method, command_key_value_instance, based_pack,):
+    async def test_key_value(self, db, admin_command_method, command_key_value_instance, based_pack, ):
         admin_command_method.command_instance = command_key_value_instance
         entity = TextEntity(
             key=command_key_value_instance.key,
@@ -377,3 +402,110 @@ class TestDelete(BaseAdminCommand):
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert expected == []
 
+
+class TestAnswerChance(BaseAdminCommand):
+    @pytest.fixture
+    async def command_instance(self, ):
+        yield CommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.ANSWER_CHANCE,
+            raw_command="процент",
+        )
+
+    @pytest.fixture
+    async def command_value_instance(self, ):
+        yield ValueCommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.ANSWER_CHANCE,
+            value="100",
+            raw_command="процент",
+        )
+
+    @pytest.mark.parametrize(
+        "answer_chance",
+        [
+            "100",
+            "20",
+            "80",
+            "15",
+        ]
+    )
+    async def test_set_answer_chance(
+            self,
+            db,
+            admin_command_method,
+            command_value_instance,
+            based_pack,
+            answer_chance,
+    ):
+        command_value_instance.value = answer_chance
+        admin_command_method.command_instance = command_value_instance
+        assert based_pack.answer_chance == 100
+
+        result = await admin_command_method.execute()
+        excepted_answer_pack = await AnswerPack.async_first(
+            db=db,
+            where=AnswerPack.id == based_pack.id
+        )
+
+        assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert excepted_answer_pack.answer_chance == int(answer_chance)
+
+    @pytest.mark.parametrize(
+        "answer_chance",
+        [
+            "100",
+            "20",
+            "80",
+            "15",
+        ]
+    )
+    async def test_get_answer_chance(
+            self,
+            db,
+            admin_command_method,
+            command_instance,
+            based_pack,
+            answer_chance,
+    ):
+        based_pack.answer_chance = answer_chance
+        await AnswerPack.async_add(db, based_pack)
+        admin_command_method.command_instance = command_instance
+
+        result = await admin_command_method.execute()
+
+        assert result.text == answer_chance
+
+    @pytest.mark.parametrize(
+        "answer_chance",
+        [
+            "some_string",
+            "-1",
+            "0.11",
+            "101",
+            "140",
+            "100.1",
+            "",
+            None,
+        ]
+    )
+    async def test_invalid_value(
+            self,
+            db,
+            admin_command_method,
+            command_value_instance,
+            based_pack,
+            answer_chance,
+    ):
+        command_value_instance.value = answer_chance
+        admin_command_method.command_instance = command_value_instance
+        assert based_pack.answer_chance == 100
+
+        result = await admin_command_method.execute()
+        excepted_answer_pack = await AnswerPack.async_first(
+            db=db,
+            where=AnswerPack.id == based_pack.id
+        )
+
+        assert result.text == "Некорректное значение. Необходимо ввести число от 0 до 100"
+        assert excepted_answer_pack.answer_chance == 100

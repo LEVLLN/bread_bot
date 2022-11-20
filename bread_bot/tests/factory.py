@@ -20,8 +20,8 @@ async def local_meme_factory(db):
 
 @pytest.fixture
 async def member_factory(db):
-    async def _factory(username, member_id):
-        return await Member.async_add_by_kwargs(db=db, username=username, member_id=member_id)
+    async def _factory(username, member_id, **kwargs):
+        return await Member.async_add_by_kwargs(db=db, username=username, member_id=member_id, **kwargs)
     yield _factory
 
 

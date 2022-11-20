@@ -1,4 +1,4 @@
-"""add chance to answer
+"""add get_chance to answer
 
 Revision ID: 8f91b5211c28
 Revises: 7b0577f46d91

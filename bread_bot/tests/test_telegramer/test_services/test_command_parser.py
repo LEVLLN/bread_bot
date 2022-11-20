@@ -17,6 +17,7 @@ from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
     EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,
+    IntegrationCommandsEnum,
 )
 
 
@@ -214,7 +215,7 @@ class TestCommandParser:
                     "Хлеб цитата",
                     CommandSchema(
                         header="Хлеб",
-                        command=EntertainmentCommandsEnum.GQUOTE,
+                        command=IntegrationCommandsEnum.QUOTE,
                         rest_text="",
                         raw_command="цитата",
                     )
@@ -223,7 +224,7 @@ class TestCommandParser:
                     "Хлеб цитата test=test",
                     CommandSchema(
                         header="Хлеб",
-                        command=EntertainmentCommandsEnum.GQUOTE,
+                        command=IntegrationCommandsEnum.QUOTE,
                         rest_text="test=test",
                         raw_command="цитата",
                     )
@@ -232,7 +233,7 @@ class TestCommandParser:
                     "Хлеб цитата цит",
                     CommandSchema(
                         header="Хлеб",
-                        command=EntertainmentCommandsEnum.GQUOTE,
+                        command=IntegrationCommandsEnum.QUOTE,
                         rest_text="цит",
                         raw_command="цитата",
                     )

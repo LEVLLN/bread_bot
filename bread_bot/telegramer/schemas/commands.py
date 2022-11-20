@@ -5,6 +5,7 @@ from bread_bot.telegramer.utils.structs import (
     MemberCommandsEnum,
     EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,
+    IntegrationCommandsEnum,
 )
 
 
@@ -24,7 +25,7 @@ class CommandSchema(BaseModel):
         raw_command = "анекдот"
     """
     header: str = Field(..., title="Способ обращения к боту")
-    command: AdminCommandsEnum | MemberCommandsEnum | EntertainmentCommandsEnum
+    command: AdminCommandsEnum | MemberCommandsEnum | EntertainmentCommandsEnum | IntegrationCommandsEnum
     raw_command: str = Field(..., title="Оригинальный текст команды")
     rest_text: str = Field("", title="Остаточный текст после обработки команды")
 
@@ -121,10 +122,12 @@ class CommandSettingsSchema(BaseModel):
     """
     Схема настройки команды
     """
-    command: AdminCommandsEnum | EntertainmentCommandsEnum | MemberCommandsEnum
+    command: AdminCommandsEnum | EntertainmentCommandsEnum | MemberCommandsEnum | IntegrationCommandsEnum
     aliases: list[str] = Field(..., title="Список вызовов команды на русском языке")
     available_parameters: list[CommandAnswerParametersEnum] | None = \
         Field(None, title="Допустимые параметры к команде")
     to_find_for_values_list: bool = Field(False, title="Ожидание списка значений")
     to_find_for_values: bool = Field(False, title="Ожидание одного значения")
     to_find_for_key_values: bool = Field(False, title="Ожидание структуры ключ=значение")
+    description: str | None = None
+    examples: list | None = None

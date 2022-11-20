@@ -42,13 +42,13 @@ async def test_receive_fallback(db, mocker, message_service, exception, expected
                 ),
         ),
         (
-                "Хлеб совет",
+                "Хлеб процент",
                 True,
                 False,
                 TextAnswerSchema(
-                    text="Результат команды",
-                    reply_to_message_id=None,
-                    chat_id=1,
+                    text="100",
+                    reply_to_message_id=1,
+                    chat_id=134,
                 )
         ),
         ("Test", True, True, None),

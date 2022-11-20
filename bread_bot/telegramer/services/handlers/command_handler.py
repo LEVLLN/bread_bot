@@ -1,12 +1,17 @@
 from bread_bot.telegramer.exceptions.base import NextStepException
 from bread_bot.telegramer.schemas.bread_bot_answers import BaseAnswerSchema, TextAnswerSchema
 from bread_bot.telegramer.services.commands.command_parser import CommandParser
+from bread_bot.telegramer.services.handlers.command_methods.entertainment_command_method import \
+    EntertainmentCommandMethod
+from bread_bot.telegramer.services.handlers.command_methods.integration_command_method import IntegrationCommandMethod
+from bread_bot.telegramer.services.handlers.command_methods.member_command_method import MemberCommandMethod
 from bread_bot.telegramer.services.handlers.handler import AbstractHandler
-from bread_bot.telegramer.services.handlers.methods.admin_commands import AdminCommandMethod
+from bread_bot.telegramer.services.handlers.command_methods.admin_command_method import AdminCommandMethod
 from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
     MemberCommandsEnum,
     EntertainmentCommandsEnum,
+    IntegrationCommandsEnum,
 )
 
 
@@ -20,21 +25,20 @@ class CommandHandler(AbstractHandler):
         if not await self.condition():
             raise NextStepException("Не подходит условие для обработки")
         command_instance = CommandParser(message_text=self.message_service.message.text).parse()
+        command_params = dict(
+            db=self.db,
+            message_service=self.message_service,
+            member_service=self.member_service,
+            command_instance=command_instance,
+        )
         match command_instance.command:
             case AdminCommandsEnum():
-                return await AdminCommandMethod(
-                    db=self.db,
-                    message_service=self.message_service,
-                    member_service=self.member_service,
-                    command_instance=command_instance,
-                ).execute()
+                return await AdminCommandMethod(**command_params).execute()
             case EntertainmentCommandsEnum():
-                return TextAnswerSchema(
-                    text="Результат команды",
-                    reply_to_message_id=None,
-                    chat_id=1,
-                )
+                return await EntertainmentCommandMethod(**command_params).execute()
             case MemberCommandsEnum():
-                return BaseAnswerSchema(chat_id=1)
+                return await MemberCommandMethod(**command_params).execute()
+            case IntegrationCommandsEnum():
+                return await IntegrationCommandMethod(**command_params).execute()
             case _:
                 raise NextStepException("Переход на следующий шаг")

@@ -1,9 +1,6 @@
-import random
-
 from sqlalchemy import and_
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from bread_bot.telegramer.exceptions.base import RaiseUpException
+from bread_bot.telegramer.exceptions.base import RaiseUpException, NextStepException
 from bread_bot.telegramer.models import (
     AnswerPack,
     TextEntity,
@@ -15,62 +12,19 @@ from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.schemas.commands import (
     CommandSchema,
     KeyValueParameterCommandSchema,
-    ValueListCommandSchema,
     ValueCommandSchema,
-    ParameterCommandSchema,
-    ValueListParameterCommandSchema,
     ValueParameterCommandSchema,
 )
 from bread_bot.telegramer.schemas.telegram_messages import BaseMessageSchema
-from bread_bot.telegramer.services.member_service import MemberService
-from bread_bot.telegramer.services.messages.message_service import MessageService
+from bread_bot.telegramer.services.handlers.command_methods.base_command_method import BaseCommandMethod
 from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
     AnswerEntityTypesEnum,
 )
 
-COMMAND_INSTANCE_TYPE = (
-        CommandSchema |
-        ValueCommandSchema |
-        ValueListCommandSchema |
-        ValueListParameterCommandSchema |
-        ParameterCommandSchema |
-        KeyValueParameterCommandSchema
-)
 
-
-class AdminCommandMethod:
-    def __init__(
-            self,
-            db: AsyncSession,
-            command_instance: COMMAND_INSTANCE_TYPE,
-            message_service: MessageService,
-            member_service: MemberService,
-    ):
-        self.db: AsyncSession = db
-        self.command_instance: COMMAND_INSTANCE_TYPE = command_instance
-        self.member_service: MemberService = member_service
-        self.message_service: MessageService = message_service
-
-    COMPLETE_MESSAGES = ["Сделал", "Есть, сэр!", "Выполнено", "Принял"]
-
-    def _return_answer(self, text: str | None = None):
-        return TextAnswerSchema(
-            text=text or random.choice(self.COMPLETE_MESSAGES),
-            chat_id=self.member_service.chat.chat_id,
-            reply_to_message_id=self.message_service.message.message_id,
-        )
-
-    @staticmethod
-    def _check_length_key(reaction_type: AnswerEntityTypesEnum, key: str):
-        if reaction_type != AnswerEntityTypesEnum.TRIGGER and len(key) < 3:
-            raise RaiseUpException("Ключ для подстроки не может быть меньше 3-х символов")
-
-    def _check_reply_existed(self):
-        if self.message_service.message.reply is None:
-            raise RaiseUpException("Необходимо выбрать сообщение в качестве ответа для обработки")
-
+class AdminCommandMethod(BaseCommandMethod):
     async def execute(self) -> TextAnswerSchema:
         match self.command_instance.command:
             case AdminCommandsEnum.ADD:
@@ -82,8 +36,14 @@ class AdminCommandMethod:
                 )
             case AdminCommandsEnum.REMEMBER:
                 return await self.remember(reaction_type=AnswerEntityTypesEnum.SUBSTRING)
+            case AdminCommandsEnum.REMEMBER_TRIGGER:
+                return await self.remember(reaction_type=AnswerEntityTypesEnum.TRIGGER)
             case AdminCommandsEnum.DELETE:
                 return await self.delete()
+            case AdminCommandsEnum.ANSWER_CHANCE:
+                return await self.handle_answer_chance()
+            case _:
+                raise NextStepException()
 
     async def add(
             self,
@@ -192,3 +152,28 @@ class AdminCommandMethod:
                 case _:
                     raise RaiseUpException("Введены неправильные значения")
         return self._return_answer()
+
+    async def handle_answer_chance(self):
+        answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
+            db=self.db,
+            chat_id=self.member_service.chat.id,
+        )
+        if not answer_pack:
+            answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(self.db, self.member_service.chat.id)
+        match self.command_instance:
+            case ValueCommandSchema():
+                chance_value = self.command_instance.value
+                error_message = "Некорректное значение. Необходимо ввести число от 0 до 100"
+                try:
+                    value = int(chance_value.strip())
+                except (ValueError, AttributeError):
+                    return self._return_answer(error_message)
+                if value > 100 or value < 0:
+                    return self._return_answer(error_message)
+                answer_pack.answer_chance = self.command_instance.value
+                await AnswerPack.async_add(db=self.db, instance=answer_pack)
+                return self._return_answer()
+            case CommandSchema():
+                return self._return_answer(str(answer_pack.answer_chance))
+            case _:
+                raise RaiseUpException("Не удалось установить процент срабатывания")

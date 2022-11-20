@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, select, and_
+from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, select, and_, SmallInteger
 from sqlalchemy.orm import relationship, selectinload
 
 from bread_bot.main.database import mixins
@@ -13,6 +13,7 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel,
     name = Column(String(255), nullable=False, default="based")
     is_private = Column(Boolean, nullable=False, default=True)
     author = Column(Integer, ForeignKey("members.id", ondelete="CASCADE"), nullable=True)
+    answer_chance = Column(SmallInteger, default=100, nullable=False)
 
     chats = relationship(
         "AnswerPacksToChats",
