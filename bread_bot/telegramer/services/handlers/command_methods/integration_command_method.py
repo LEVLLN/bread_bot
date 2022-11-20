@@ -19,7 +19,7 @@ class IntegrationCommandMethod(BaseCommandMethod):
             case IntegrationCommandsEnum.JOKE:
                 return await self.get_joke()
             case _:
-                NextStepException()
+                NextStepException("Не найдена команда")
 
     async def get_advice(self):
         advice = await GreatAdviceClient().get_advice()

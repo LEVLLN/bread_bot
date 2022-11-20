@@ -24,7 +24,7 @@ class MemberCommandMethod(BaseCommandMethod):
             case MemberCommandsEnum.COUPLE:
                 return await self.get_couple()
             case _:
-                raise NextStepException()
+                raise NextStepException("Не найдена команда")
 
     @staticmethod
     def get_username(member: MemberSchema) -> str:

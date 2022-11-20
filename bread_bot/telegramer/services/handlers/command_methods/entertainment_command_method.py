@@ -18,7 +18,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
             case EntertainmentCommandsEnum.HELP:
                 return self.help()
             case _:
-                raise NextStepException()
+                raise NextStepException("Не найдена команде")
 
     def get_chance(self):
         return super()._return_answer(

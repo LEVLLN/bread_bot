@@ -21,6 +21,7 @@ class VoiceAnswerSchema(BaseAnswerSchema):
 
 class PhotoAnswerSchema(BaseAnswerSchema):
     photo: str
+    capture: str | None = None
 
 
 class StickerAnswerSchema(BaseAnswerSchema):

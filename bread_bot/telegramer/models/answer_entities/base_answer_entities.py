@@ -14,4 +14,8 @@ class BaseEntity(mixins.AbstractIsActiveBaseModel,
     reaction_type = Column(Enum(AnswerEntityTypesEnum), nullable=False)
 
     def __repr__(self):
-        return f"{self.__class__.__name__}<key: '{self.key}', value: '{self.value}', pack_id: {self.pack_id}>"
+        return f"{self.__class__.__name__}" \
+               f"<[{self.reaction_type}] " \
+               f"key: '{self.key}', " \
+               f"value: '{self.value}', " \
+               f"pack_id: {self.pack_id}>"

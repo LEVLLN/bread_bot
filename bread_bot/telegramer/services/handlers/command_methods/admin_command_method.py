@@ -43,7 +43,7 @@ class AdminCommandMethod(BaseCommandMethod):
             case AdminCommandsEnum.ANSWER_CHANCE:
                 return await self.handle_answer_chance()
             case _:
-                raise NextStepException()
+                raise NextStepException("Не найдена команда")
 
     async def add(
             self,
@@ -63,7 +63,7 @@ class AdminCommandMethod(BaseCommandMethod):
         entity = await entity_class.async_first(
             self.db,
             where=and_(
-                entity_class.key == key,
+                entity_class.key == key.lower(),
                 entity_class.value == value,
                 entity_class.pack_id == answer_pack.id,
                 entity_class.reaction_type == reaction_type
@@ -73,7 +73,7 @@ class AdminCommandMethod(BaseCommandMethod):
         if entity is None:
             instance_params = dict(
                 pack_id=answer_pack.id,
-                key=key,
+                key=key.lower(),
                 value=value,
                 reaction_type=reaction_type,
             )
