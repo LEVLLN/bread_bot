@@ -166,3 +166,17 @@ class TestAnswerHandler:
         with pytest.raises(NextStepException) as error:
             await substring_answer_handler.process()
         assert error.value.args[0] == "Пропуск ответа по проценту срабатывания"
+
+    async def test_edited(
+            self,
+            db,
+            substring_answer_handler,
+            prepare_data,
+            text_entity_factory,
+            based_pack,
+            edited_message_service,
+    ):
+        substring_answer_handler.message_service = edited_message_service
+        with pytest.raises(NextStepException) as error:
+            await substring_answer_handler.process()
+        assert error.value.args[0] == "Не подходит условие для обработки"

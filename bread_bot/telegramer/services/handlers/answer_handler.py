@@ -21,7 +21,8 @@ class AnswerHandler(AbstractHandler):
     async def condition(self) -> bool:
         return (self.message_service
                 and self.message_service.message
-                and self.message_service.message.text)
+                and self.message_service.message.text
+                and not self.message_service.has_edited_message)
 
     async def get_answer_pack(self) -> AnswerPack:
         """Получить пакет ответов для чата"""
