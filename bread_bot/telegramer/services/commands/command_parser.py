@@ -1,5 +1,8 @@
 import re
+from functools import wraps
 from typing import Tuple
+
+from pydantic import ValidationError
 
 from bread_bot.telegramer.exceptions.commands import (
     NotAvailableCommandException,
@@ -18,7 +21,7 @@ from bread_bot.telegramer.schemas.commands import (
 from bread_bot.telegramer.services.commands.command_settings import CommandSettings
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.functions import composite_mask
-from bread_bot.telegramer.utils.structs import CommandAnswerParametersEnum, CommandKeyValueParametersEnum
+from bread_bot.telegramer.utils.structs import CommandAnswerParametersEnum
 
 
 class CommandParser:
@@ -27,6 +30,16 @@ class CommandParser:
         self.command_settings_service = CommandSettings()
         self.command_settings = None
         self.main_parameters: dict = {}
+
+    @staticmethod
+    def _catch_validation_error(func):
+        @wraps(func)
+        def wrapper(self):
+            try:
+                return func(self)
+            except ValidationError:
+                raise CommandParseException("Введены неправильные значения")
+        return wrapper
 
     @staticmethod
     def parse_properties(keys: list, source_text: str) -> Tuple[str, str]:
@@ -80,7 +93,7 @@ class CommandParser:
     def _find_parameters(
             self,
             rest: str
-    ) -> Tuple[CommandAnswerParametersEnum | CommandKeyValueParametersEnum, str]:
+    ) -> Tuple[CommandAnswerParametersEnum, str]:
         """
         Поиск параметров
         """
@@ -101,6 +114,7 @@ class CommandParser:
             raise NotAvailableCommandException("Не найдена команда")
         else:
             self.main_parameters["command"] = self.command_settings.command
+            self.main_parameters["raw_command"] = command
 
     def _handle_parameter_key_value(
             self,
@@ -134,9 +148,14 @@ class CommandParser:
         Получение команды без параметра со списком значений
         """
         parameter_list = self.split_rest(rest=rest)
+        value_list = []
+        for parameter_list_item in parameter_list:
+            if parameter_list_item == "":
+                continue
+            value_list.append(parameter_list_item)
         return ValueListCommandSchema(
             **self.main_parameters,
-            value_list=[parameter_list_item.strip() for parameter_list_item in parameter_list],
+            value_list=value_list,
         )
 
     def _handle_parameter_value_list(self, rest: str) -> ValueListParameterCommandSchema:
@@ -153,6 +172,7 @@ class CommandParser:
             value_list=parameter_list,
         )
 
+    @_catch_validation_error
     def parse(self) -> CommandSchema:
         """
         Парсинг команды из строки в структуру
@@ -177,7 +197,10 @@ class CommandParser:
                 return CommandSchema(**self.main_parameters, rest_text=rest)
             # Команда + Значение
             case CommandSettingsSchema(to_find_for_values=True, available_parameters=None):
-                return ValueCommandSchema(**self.main_parameters, value=rest)
+                try:
+                    return ValueCommandSchema(**self.main_parameters, value=rest)
+                except ValidationError:
+                    return CommandSchema(**self.main_parameters)
             # Команда + Параметр + Список Значений + Без ключей
             case CommandSettingsSchema(to_find_for_key_values=False, available_parameters=_, to_find_for_values=True):
                 return self._handle_parameter_value_list(rest=rest)

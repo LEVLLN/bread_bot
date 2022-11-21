@@ -16,7 +16,8 @@ from bread_bot.telegramer.schemas.bread_bot_answers import (
     StickerAnswerSchema,
 )
 from bread_bot.telegramer.schemas.telegram_messages import MessageSchema
-from bread_bot.telegramer.services.message_service import MessageService
+from bread_bot.telegramer.services.messages.message_service import MessageService
+from bread_bot.telegramer.services.member_service import MemberService
 from bread_bot.telegramer.utils import structs
 from bread_bot.telegramer.utils.functions import async_composite_mask
 from bread_bot.telegramer.utils.structs import StatsEnum, LocalMemeTypesEnum
@@ -25,11 +26,12 @@ logger = logging.getLogger(__name__)
 
 
 class MessageProcessor(ABC):
-    def __init__(self, message_service: MessageService):
+    def __init__(self, message_service: MessageService, member_service: MemberService):
         self.message_service: MessageService = message_service
-        self.db: AsyncSession = self.message_service.db
-        self.member: Member = self.message_service.member
-        self.chat: Chat = self.message_service.chat
+        self.member_service: MemberService = member_service
+        self.db: AsyncSession = self.member_service.db
+        self.member: Member = self.member_service.member
+        self.chat: Chat = self.member_service.chat
         self.message: MessageSchema = self.message_service.message
         self.trigger_word: Optional[str] = ""
         self.command: str = ""

@@ -10,7 +10,7 @@ from bread_bot.telegramer.utils.structs import StatsEnum, PropertiesEnum
 class EditedMessageProcessor(MessageProcessor):
     @property
     async def condition(self) -> bool:
-        return await self.message_service.has_edited_message
+        return self.message_service.has_edited_message
 
     async def _process(self) -> Optional[TextAnswerSchema]:
         await self.count_stats(stats_enum=StatsEnum.EDITOR)

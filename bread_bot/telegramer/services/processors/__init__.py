@@ -1,3 +1,4 @@
+# FIXME: Отказ от процессоров после переключения на Handlers
 from .admin_command_processor import AdminMessageProcessor
 from .edited_message_processor import EditedMessageProcessor
 from .member_command_processor import MemberCommandMessageProcessor

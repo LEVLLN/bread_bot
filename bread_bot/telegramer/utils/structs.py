@@ -66,6 +66,7 @@ class AdminCommandsEnum(str, Enum):
     SHOW = "SHOW"
     ADD = "ADD"
     REMEMBER = "REMEMBER"
+    REMEMBER_TRIGGER = "REMEMBER_TRIGGER"
     DELETE = "DELETE"
     ANSWER_CHANCE = "SHOW_ANSWER_CHANCE"
     SET_ANSWER_CHANCE = "SET_ANSWER_CHANCE"
@@ -85,11 +86,14 @@ class EntertainmentCommandsEnum(str, Enum):
     CHANCE = "CHANCE"
     HELP = "HELP"
     CHOOSE_VARIANT = "CHOOSE_VARIANT"
-    GQUOTE = "QUOTE"
+    RANDOM = "RANDOM"
+
+
+class IntegrationCommandsEnum(str, Enum):
+    ADVICE = "ADVICE"
+    QUOTE = "QUOTE"
     INSULT = "INSULT"
     JOKE = "JOKE"
-    ADVICE = "ADVICE"
-    RANDOM = "RANDOM"
 
 
 class IterEnum(str, Enum):
@@ -105,8 +109,9 @@ class CommandAnswerParametersEnum(IterEnum):
     TRIGGER_LIST = "триггеры"
 
 
-class CommandKeyValueParametersEnum(IterEnum):
-    KEY = "ключ"
-    KEY_LIST = "ключи"
-    VALUE = "значение"
-    VALUE_LIST = "значения"
+ANSWER_ENTITY_MAP = {
+    CommandAnswerParametersEnum.SUBSTRING: AnswerEntityTypesEnum.SUBSTRING,
+    CommandAnswerParametersEnum.SUBSTRING_LIST: AnswerEntityTypesEnum.SUBSTRING,
+    CommandAnswerParametersEnum.TRIGGER: AnswerEntityTypesEnum.TRIGGER,
+    CommandAnswerParametersEnum.TRIGGER_LIST: AnswerEntityTypesEnum.TRIGGER,
+}
