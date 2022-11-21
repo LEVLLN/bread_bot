@@ -1,10 +1,12 @@
 import asyncio
 import random
 
+from sqlalchemy import and_
+
 from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.telegramer.models import (
-    ChatToMember,
+    ChatToMember, Member,
 )
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
@@ -38,17 +40,16 @@ class MemberCommandMethod(BaseCommandMethod):
         result = {}
         chat_to_members = await ChatToMember.async_filter(
             db=self.db,
-            where=ChatToMember.chat_id == self.member_service.chat.id,
+            where=and_(
+                ChatToMember.chat_id == self.member_service.chat.id,
+                Member.is_bot == False,
+                Member.id is not None,
+                Member.username is not None,
+            ),
             select_in_load=ChatToMember.member)
         for chat_to_member in chat_to_members:
             if chat_to_member.member and not chat_to_member.member.is_bot:
                 member = chat_to_member.member
-                if member.is_bot:
-                    continue
-                if member.id is None:
-                    continue
-                if member.username is None:
-                    continue
                 member_schema = MemberSchema(
                     is_bot=member.is_bot,
                     username=member.username,
