@@ -24,6 +24,7 @@ class AnswerHandler(AbstractHandler):
                 and self.message_service.message.text)
 
     async def get_answer_pack(self) -> AnswerPack:
+        """Получить пакет ответов для чата"""
         answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
             self.db,
             self.member_service.chat.id,
@@ -40,6 +41,7 @@ class AnswerHandler(AbstractHandler):
 
     @staticmethod
     async def get_entities_by_keys(answer_pack: AnswerPack, reaction_type: AnswerEntityTypesEnum) -> dict:
+        """Достать все сущности и группировать по ключам"""
         answer_pack_by_keys = {}
         entities = (
                 answer_pack.text_entities + answer_pack.sticker_entities +
@@ -55,6 +57,7 @@ class AnswerHandler(AbstractHandler):
         return answer_pack_by_keys
 
     def find_keys(self, answer_pack_by_keys: dict, reaction_type: AnswerEntityTypesEnum):
+        """Поиск ключей из БД среди сообщения"""
         match reaction_type:
             case AnswerEntityTypesEnum.SUBSTRING:
                 regex = f"({composite_mask(list(answer_pack_by_keys.keys()), split=True)})"
@@ -72,7 +75,11 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Не подходит условие для обработки")
 
         answer_pack: AnswerPack = await self.get_answer_pack()
-        if not random.random() < answer_pack.answer_chance / 100:
+        # Отработка шансов только для подстрок
+        if (
+                reaction_type == AnswerEntityTypesEnum.SUBSTRING
+                and not random.random() < answer_pack.answer_chance / 100
+        ):
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
         answer_pack_by_keys = await self.get_entities_by_keys(answer_pack=answer_pack, reaction_type=reaction_type)

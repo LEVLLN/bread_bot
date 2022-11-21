@@ -156,7 +156,7 @@ class TestAnswerHandler:
     async def test_chance(
             self,
             db,
-            trigger_answer_handler,
+            substring_answer_handler,
             prepare_data,
             text_entity_factory,
             based_pack,
@@ -164,5 +164,5 @@ class TestAnswerHandler:
         based_pack.answer_chance = 0
         await AnswerPack.async_add(db, instance=based_pack)
         with pytest.raises(NextStepException) as error:
-            await trigger_answer_handler.process()
+            await substring_answer_handler.process()
         assert error.value.args[0] == "Пропуск ответа по проценту срабатывания"

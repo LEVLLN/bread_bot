@@ -106,17 +106,10 @@ class TelegramClient(BaseHTTPClient):
             raise ValueError('Ошибка получения администраторов чата')
         return ChatMemberBodySchema(**result)
 
-    async def send_voice(self, chat_id: int, voice_file_id: str,
-                         reply_to: int = None) -> Response:
-        data = {
-            'chat_id': chat_id,
-            'voice': voice_file_id,
-        }
-        if reply_to is not None:
-            data['reply_to_message_id'] = reply_to
+    async def send(self, data: dict, method: str):
         return await self.request(
-            method='POST',
-            url=f'{self.base_url}/{self.send_voice_method}',
+            method="POST",
+            url=f"{self.base_url}/{method}",
             data=data,
             headers=self.headers,
         )

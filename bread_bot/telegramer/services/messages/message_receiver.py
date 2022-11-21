@@ -4,7 +4,7 @@ from functools import wraps
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.telegramer.exceptions.base import NextStepException, RaiseUpException
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema
 from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
 from bread_bot.telegramer.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
 from bread_bot.telegramer.services.handlers.command_handler import CommandHandler
@@ -50,7 +50,7 @@ class MessageReceiver:
         return wrapper
 
     @fallback_method
-    async def receive(self):
+    async def receive(self) -> BaseAnswerSchema | None:
         message_service: MessageService = MessageService(request_body=self.request_body)
         member_service: MemberService = MemberService(db=self.db, message=message_service.message)
         await member_service.process()
