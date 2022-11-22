@@ -48,7 +48,9 @@ class CommandSettings:
             command=AdminCommandsEnum.REMEMBER,
             to_find_for_values=True,
             to_find_for_values_list=True,
-            description="Запоминает как подстроку из сообщения в ответе",
+            description="Запоминает как подстроку из сообщения в ответе. "
+                        "Работает с картинками, картинками с описанием "
+                        "анимациями, голосовыми, стикерами, текстом",
             examples=[
                 "Хлеб запомни my_key",
                 "Хлеб запомни значение my_key",
