@@ -35,6 +35,8 @@ class AdminCommandMethod(BaseCommandMethod):
                     entity_class=TextEntity,
                     reaction_type=ANSWER_ENTITY_MAP[self.command_instance.parameter]
                 )
+            case AdminCommandsEnum.SHOW:
+                return await self.show()
             case AdminCommandsEnum.REMEMBER:
                 return await self.remember(reaction_type=AnswerEntityTypesEnum.SUBSTRING)
             case AdminCommandsEnum.REMEMBER_TRIGGER:
@@ -45,6 +47,9 @@ class AdminCommandMethod(BaseCommandMethod):
                 return await self.handle_answer_chance()
             case _:
                 raise NextStepException("Не найдена команда")
+
+    async def show(self):
+        raise RaiseUpException("Функция временно отключена")
 
     async def add(
             self,

@@ -248,6 +248,15 @@ class TestCommandParser:
                         raw_command="цитата",
                     )
             ),
+            (
+                    "Хлеб удали подстроки лол, цит",
+                    CommandSchema(
+                        header="Хлеб",
+                        command=IntegrationCommandsEnum.QUOTE,
+                        rest_text="цит",
+                        raw_command="цитата",
+                    )
+            ),
         ]
     )
     async def test_parse_command(self, message_text, expected_result):

@@ -79,7 +79,6 @@ class CommandSettings:
                 "Хлеб удали подстроки my_key",
                 "Хлеб удали триггер my_key",
                 "Хлеб удали подстроки my_key=my_value",
-                "Хлеб удали подстроки my_key_1, my_key_2, my_key_3",
             ]
         ),
         CommandSettingsSchema(
