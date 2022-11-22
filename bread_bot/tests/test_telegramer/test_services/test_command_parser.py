@@ -250,11 +250,13 @@ class TestCommandParser:
             ),
             (
                     "Хлеб удали подстроки лол, цит",
-                    CommandSchema(
+                    ValueParameterCommandSchema(
                         header="Хлеб",
-                        command=IntegrationCommandsEnum.QUOTE,
-                        rest_text="цит",
-                        raw_command="цитата",
+                        command=AdminCommandsEnum.DELETE,
+                        rest_text="",
+                        parameter=CommandAnswerParametersEnum.SUBSTRING_LIST,
+                        raw_command="удали",
+                        value="лол, цит"
                     )
             ),
         ]
