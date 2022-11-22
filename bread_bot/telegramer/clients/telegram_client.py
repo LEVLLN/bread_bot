@@ -14,18 +14,19 @@ logger = logging.getLogger(__name__)
 
 class TelegramClient(BaseHTTPClient):
     def __init__(self):
-        self.send_message_method = 'sendMessage'
-        self.send_voice_method = 'sendVoice'
-        self.send_photo_method = 'sendPhoto'
-        self.send_sticker_method = 'sendSticker'
-        self.set_webhook_method = 'setWebhook'
-        self.get_webhook_info_method = 'getWebhookInfo'
-        self.get_chat_method = 'getChatAdministrators'
-        self.base_url = f'https://api.telegram.org/bot' \
-                        f'{settings.TELEGRAM_BOT_TOKEN}'
+        self.send_animation = "sendAnimation"
+        self.send_message_method = "sendMessage"
+        self.send_voice_method = "sendVoice"
+        self.send_photo_method = "sendPhoto"
+        self.send_sticker_method = "sendSticker"
+        self.set_webhook_method = "setWebhook"
+        self.get_webhook_info_method = "getWebhookInfo"
+        self.get_chat_method = "getChatAdministrators"
+        self.base_url = f"https://api.telegram.org/bot" \
+                        f"{settings.TELEGRAM_BOT_TOKEN}"
         self.headers = {
-            'Content-type': 'application/json',
-            'Accept': 'text/plain',
+            "Content-type": "application/json",
+            "Accept": "text/plain",
         }
 
     async def send_message(self, chat_id: int,

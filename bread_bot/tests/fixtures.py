@@ -111,6 +111,75 @@ def reply_voice():
 
 
 @pytest.fixture
+def reply_gif():
+    return StandardBodySchema(
+        **{
+            "update_id": 958907794,
+            "message": {
+                "message_id": 35506,
+                "from": {
+                    "id": 296382623,
+                    "is_bot": False,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "language_code": "ru"
+                },
+                "chat": {
+                    "id": 296382623,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "type": "private"
+                },
+                "date": 1669076487,
+                "reply_to_message": {
+                    "message_id": 35490,
+                    "from": {
+                        "id": 296382623, "is_bot": False,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "language_code": "ru"},
+                    "chat": {
+                        "id": 296382623,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "type": "private"
+                    },
+                    "date": 1669076003,
+                    "animation": {
+                        "file_name": "scrubs-dr-perrycox.mp4",
+                        "mime_type": "video/mp4",
+                        "duration": 2, "width": 220,
+                        "height": 220, "thumb": {
+                            "file_id": "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ",
+                            "file_unique_id": "AQADDAMAAuTuDVNy",
+                            "file_size": 7292, "width": 220,
+                            "height": 220},
+                        "file_id": "CgACAgQAAxkBAAKKomN8FCMAAcl0y7M_7aIYE9IkJ8g6WgACDAMAAuTuDVMjrKeBdG069CsE",
+                        "file_unique_id": "AgADDAMAAuTuDVM",
+                        "file_size": 49283},
+                    "document": {
+                        "file_name": "scrubs-dr-perrycox.mp4",
+                        "mime_type": "video/mp4",
+                        "thumb": {
+                            "file_id": "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ",
+                            "file_unique_id": "AQADDAMAAuTuDVNy",
+                            "file_size": 7292, "width": 220,
+                            "height": 220
+                        },
+                        "file_id": "CgACAgQAAxkBAAKKomN8FCMAAcl0y7M_7aIYE9IkJ8g6WgACDAMAAuTuDVMjrKeBdG069CsE",
+                        "file_unique_id": "AgADDAMAAuTuDVM",
+                        "file_size": 49283
+                    }
+                },
+                "text": "Кек"}}
+    )
+
+
+@pytest.fixture
 def reply_photo():
     return StandardBodySchema(
         **{

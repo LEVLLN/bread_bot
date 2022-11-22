@@ -111,7 +111,7 @@ pyasn1-modules==0.2.8
     # via google-auth
 pycparser==2.20
     # via cffi
-pydantic[email]==1.8.2
+pydantic[email]==1.10.2
     # via
     #   -r requirements/requirements.in
     #   fastapi
@@ -167,10 +167,8 @@ starlette==0.14.2
     # via
     #   -r requirements/requirements.in
     #   fastapi
-typing-extensions==3.10.0.0
-    # via
-    #   -r requirements/requirements.in
-    #   pydantic
+typing-extensions==4.4.0
+    # via pydantic
 urllib3==1.26.6
     # via requests
 uvicorn==0.15.0

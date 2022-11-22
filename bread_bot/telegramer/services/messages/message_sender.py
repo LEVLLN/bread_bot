@@ -4,7 +4,7 @@ from bread_bot.main.settings import MESSAGE_LEN_LIMIT
 from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.schemas.bread_bot_answers import (
     TextAnswerSchema, BaseAnswerSchema, VoiceAnswerSchema,
-    PhotoAnswerSchema, StickerAnswerSchema,
+    PhotoAnswerSchema, StickerAnswerSchema, GifAnswerSchema,
 )
 from bread_bot.utils.helpers import chunks
 
@@ -37,7 +37,7 @@ class MessageSender:
         else:
             return [message, ]
 
-    def send_messages_to_chat(self):
+    async def send_messages_to_chat(self):
         """Отправка сообщения в чат"""
         messages = [self.message, ]
         match self.message:
@@ -50,6 +50,8 @@ class MessageSender:
             case TextAnswerSchema():
                 method = self.telegram_client.send_message_method
                 messages = self._split_text_messages(self.message)
+            case GifAnswerSchema():
+                method = self.telegram_client.send_animation
             case _:
                 logger.error("Unknown type to send of obj: %s", self.message)
                 return None

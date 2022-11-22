@@ -2,13 +2,13 @@ import random
 import re
 
 from bread_bot.telegramer.exceptions.base import NextStepException
-from bread_bot.telegramer.models import AnswerPack, TextEntity, VoiceEntity, PhotoEntity, StickerEntity
+from bread_bot.telegramer.models import AnswerPack, TextEntity, VoiceEntity, PhotoEntity, StickerEntity, GifEntity
 from bread_bot.telegramer.schemas.bread_bot_answers import (
     BaseAnswerSchema,
     TextAnswerSchema,
     PhotoAnswerSchema,
     StickerAnswerSchema,
-    VoiceAnswerSchema,
+    VoiceAnswerSchema, GifAnswerSchema,
 )
 from bread_bot.telegramer.services.handlers.handler import AbstractHandler
 from bread_bot.telegramer.utils.functions import composite_mask
@@ -34,6 +34,7 @@ class AnswerHandler(AbstractHandler):
                 AnswerPack.sticker_entities,
                 AnswerPack.voice_entities,
                 AnswerPack.photo_entities,
+                AnswerPack.gif_entities,
             ]
         )
         if not answer_pack:
@@ -66,7 +67,7 @@ class AnswerHandler(AbstractHandler):
                 regex = f"^({composite_mask(list(answer_pack_by_keys.keys()))})$"
             case _:
                 raise NextStepException("Неподходящий тип данных")
-        groups = re.findall(regex, self.message_service.message.text, re.IGNORECASE)
+        groups = re.findall(regex, self.message_service.message.text.lower(), re.IGNORECASE)
         if len(groups) == 0:
             raise NextStepException("Подходящих ключей не найдено")
         return groups
@@ -77,10 +78,7 @@ class AnswerHandler(AbstractHandler):
 
         answer_pack: AnswerPack = await self.get_answer_pack()
         # Отработка шансов только для подстрок
-        if (
-                reaction_type == AnswerEntityTypesEnum.SUBSTRING
-                and not random.random() < answer_pack.answer_chance / 100
-        ):
+        if random.random() > answer_pack.answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
         answer_pack_by_keys = await self.get_entities_by_keys(answer_pack=answer_pack, reaction_type=reaction_type)
@@ -105,11 +103,13 @@ class AnswerHandler(AbstractHandler):
             case TextEntity():
                 return TextAnswerSchema(**base_message_params, text=result.value)
             case PhotoEntity():
-                return PhotoAnswerSchema(**base_message_params, photo=result.value, capture=result.description)
+                return PhotoAnswerSchema(**base_message_params, photo=result.value, caption=result.description)
             case StickerEntity():
                 return StickerAnswerSchema(**base_message_params, sticker=result.value)
             case VoiceEntity():
                 return VoiceAnswerSchema(**base_message_params, voice=result.value)
+            case GifEntity():
+                return GifAnswerSchema(**base_message_params, animation=result.value)
             case _:
                 raise NextStepException("Полученный тип контента не подлежит ответу")
 
