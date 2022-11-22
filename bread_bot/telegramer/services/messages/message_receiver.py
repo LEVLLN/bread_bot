@@ -36,11 +36,14 @@ class MessageReceiver:
             except NextStepException:
                 return None
             except RaiseUpException as raise_ex:
-                return TextAnswerSchema(
-                    text=str(raise_ex),
-                    chat_id=self.request_body.message.chat.id,
-                    reply_to_message_id=self.request_body.message.message_id,
-                )
+                if self.request_body and self.request_body.message and self.request_body.message.chat:
+                    return TextAnswerSchema(
+                        text=str(raise_ex),
+                        chat_id=self.request_body.message.chat.id,
+                        reply_to_message_id=self.request_body.message.message_id,
+                    )
+                else:
+                    return None
             except Exception as e:
                 logger.error("Error while handle process", exc_info=e)
                 return None
