@@ -95,6 +95,27 @@ class TestAnswerHandler:
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "my_concrete_value"
 
+    async def test_process_concrete_gif_entity(
+            self,
+            db,
+            substring_answer_handler,
+            prepare_data,
+            gif_entity_factory,
+            based_pack,
+    ):
+        await gif_entity_factory(
+            key="concrete_key",
+            value="my_concrete_value",
+            pack_id=based_pack.id,
+            reaction_type=AnswerEntityTypesEnum.SUBSTRING,
+        )
+        substring_answer_handler.message_service.message.text = "I finding concrete_key in message"
+
+        result = await substring_answer_handler.process()
+
+        assert isinstance(result, GifAnswerSchema)
+        assert result.animation == "my_concrete_value"
+
     async def test_process_substring_without_keys(self, db, substring_answer_handler, prepare_data):
         substring_answer_handler.member_service.message.text = "Without keywords message"
 

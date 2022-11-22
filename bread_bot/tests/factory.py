@@ -9,7 +9,7 @@ from bread_bot.telegramer.models import (
     TextEntity,
     VoiceEntity,
     StickerEntity,
-    PhotoEntity,
+    PhotoEntity, GifEntity,
 )
 
 
@@ -103,6 +103,21 @@ async def sticker_entity_factory(db):
 async def photo_entity_factory(db):
     async def _factory(key, value, reaction_type, pack_id, **kwargs):
         return await PhotoEntity.async_add_by_kwargs(
+            db=db,
+            key=key,
+            value=value,
+            reaction_type=reaction_type,
+            pack_id=pack_id,
+            **kwargs,
+        )
+
+    yield _factory
+
+
+@pytest.fixture
+async def gif_entity_factory(db):
+    async def _factory(key, value, reaction_type, pack_id, **kwargs):
+        return await GifEntity.async_add_by_kwargs(
             db=db,
             key=key,
             value=value,

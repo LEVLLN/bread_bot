@@ -47,7 +47,7 @@ class AnswerHandler(AbstractHandler):
         answer_pack_by_keys = {}
         entities = (
                 answer_pack.text_entities + answer_pack.sticker_entities +
-                answer_pack.photo_entities + answer_pack.photo_entities
+                answer_pack.photo_entities + answer_pack.voice_entities + answer_pack.gif_entities
         )
         for entity in entities:
             if entity.reaction_type != reaction_type:
