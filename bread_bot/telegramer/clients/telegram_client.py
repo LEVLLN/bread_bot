@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 class TelegramClient(BaseHTTPClient):
     def __init__(self):
+        self.send_video = "sendVideo"
+        self.send_video_note = "sendVideoNote"
         self.send_animation = "sendAnimation"
         self.send_message_method = "sendMessage"
         self.send_voice_method = "sendVoice"

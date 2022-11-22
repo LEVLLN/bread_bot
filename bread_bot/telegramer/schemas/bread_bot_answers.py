@@ -30,3 +30,11 @@ class StickerAnswerSchema(BaseAnswerSchema):
 
 class GifAnswerSchema(BaseAnswerSchema):
     animation: str
+
+
+class VideoAnswerSchema(BaseAnswerSchema):
+    video: str
+
+
+class VideoNoteAnswerSchema(BaseAnswerSchema):
+    video_note: str

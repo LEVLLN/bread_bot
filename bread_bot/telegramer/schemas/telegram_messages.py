@@ -35,6 +35,14 @@ class GifSchema(BaseModel):
     file_id: Optional[str]
 
 
+class VideoSchema(BaseModel):
+    file_id: Optional[str]
+
+
+class VideoNoteSchema(BaseModel):
+    file_id: Optional[str]
+
+
 class BaseMessageSchema(BaseModel):
     message_id: int
     source: MemberSchema = Field(..., alias='from')
@@ -46,6 +54,8 @@ class BaseMessageSchema(BaseModel):
     sticker: Optional[StickerSchema] = None
     caption: Optional[str] = None
     animation: Optional[GifSchema] = None
+    video: Optional[VideoSchema] = None
+    video_note: Optional[VideoNoteSchema] = None
 
 
 class MessageSchema(BaseMessageSchema):

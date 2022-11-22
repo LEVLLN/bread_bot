@@ -5,6 +5,7 @@ from bread_bot.telegramer.clients.telegram_client import TelegramClient
 from bread_bot.telegramer.schemas.bread_bot_answers import (
     TextAnswerSchema, BaseAnswerSchema, VoiceAnswerSchema,
     PhotoAnswerSchema, StickerAnswerSchema, GifAnswerSchema,
+    VideoAnswerSchema, VideoNoteAnswerSchema,
 )
 from bread_bot.utils.helpers import chunks
 
@@ -47,11 +48,15 @@ class MessageSender:
                 method = self.telegram_client.send_photo_method
             case StickerAnswerSchema():
                 method = self.telegram_client.send_sticker_method
+            case GifAnswerSchema():
+                method = self.telegram_client.send_animation
+            case VideoAnswerSchema():
+                method = self.telegram_client.send_video
+            case VideoNoteAnswerSchema():
+                method = self.telegram_client.send_video_note
             case TextAnswerSchema():
                 method = self.telegram_client.send_message_method
                 messages = self._split_text_messages(self.message)
-            case GifAnswerSchema():
-                method = self.telegram_client.send_animation
             case _:
                 logger.error("Unknown type to send of obj: %s", self.message)
                 return None

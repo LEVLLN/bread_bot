@@ -38,6 +38,14 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel,
         "VoiceEntity",
         back_populates="answer_packs"
     )
+    video_entities = relationship(
+        "VideoEntity",
+        back_populates="answer_packs"
+    )
+    video_note_entities = relationship(
+        "VideoNoteEntity",
+        back_populates="answer_packs"
+    )
 
     @classmethod
     async def get_by_chat_id(cls, db, chat_id: int, select_in_loads: list = None):

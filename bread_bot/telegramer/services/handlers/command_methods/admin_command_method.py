@@ -8,6 +8,8 @@ from bread_bot.telegramer.models import (
     PhotoEntity,
     StickerEntity,
     GifEntity,
+    VideoEntity,
+    VideoNoteEntity,
 )
 from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.telegramer.schemas.commands import (
@@ -16,7 +18,6 @@ from bread_bot.telegramer.schemas.commands import (
     ValueCommandSchema,
     ValueParameterCommandSchema,
 )
-from bread_bot.telegramer.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.telegramer.services.handlers.command_methods.base_command_method import BaseCommandMethod
 from bread_bot.telegramer.utils.structs import (
     AdminCommandsEnum,
@@ -99,25 +100,30 @@ class AdminCommandMethod(BaseCommandMethod):
         reply = self.message_service.message.reply
         description: str | None = None
 
-        match reply:
-            case BaseMessageSchema(photo=[], sticker=None, text="" | None, animation=None,):
-                value = reply.voice.file_id
-                entity_class = VoiceEntity
-            case BaseMessageSchema(voice=None, sticker=None, text="" | None, animation=None,):
-                value = reply.photo[0].file_id
-                entity_class = PhotoEntity
-                description = reply.caption
-            case BaseMessageSchema(photo=[], voice=None, text="" | None, animation=None,):
-                value = reply.sticker.file_id
-                entity_class = StickerEntity
-            case BaseMessageSchema(photo=[], voice=None, sticker=None, animation=None,):
-                value = reply.text
-                entity_class = TextEntity
-            case BaseMessageSchema(photo=[], voice=None, sticker=None, text="" | None,):
-                value = reply.animation.file_id
-                entity_class = GifEntity
-            case _:
-                raise RaiseUpException("Данный тип данных не поддерживается")
+        if reply.voice:
+            value = reply.voice.file_id
+            entity_class = VoiceEntity
+        elif reply.photo:
+            value = reply.photo[0].file_id
+            entity_class = PhotoEntity
+            description = reply.caption
+        elif reply.sticker:
+            value = reply.sticker.file_id
+            entity_class = StickerEntity
+        elif reply.video:
+            value = reply.video.file_id
+            entity_class = VideoEntity
+        elif reply.video_note:
+            value = reply.video_note.file_id
+            entity_class = VideoNoteEntity
+        elif reply.animation:
+            value = reply.animation.file_id
+            entity_class = GifEntity
+        elif reply.text:
+            value = reply.text
+            entity_class = TextEntity
+        else:
+            raise RaiseUpException("Данный тип данных не поддерживается")
         for key in self.command_instance.value_list:
             await self.add(
                 key=key,
@@ -137,7 +143,8 @@ class AdminCommandMethod(BaseCommandMethod):
         if answer_pack is None:
             return self._return_answer("У чата нет ни одного пакета под управлением")
 
-        for entity_class in (TextEntity, VoiceEntity, PhotoEntity, StickerEntity, GifEntity):
+        for entity_class in (TextEntity, VoiceEntity, PhotoEntity, StickerEntity,
+                             GifEntity, VideoEntity, VideoNoteEntity):
             match self.command_instance:
                 case KeyValueParameterCommandSchema():
                     await entity_class.async_delete(

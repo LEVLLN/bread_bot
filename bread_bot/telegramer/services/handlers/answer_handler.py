@@ -2,13 +2,25 @@ import random
 import re
 
 from bread_bot.telegramer.exceptions.base import NextStepException
-from bread_bot.telegramer.models import AnswerPack, TextEntity, VoiceEntity, PhotoEntity, StickerEntity, GifEntity
+from bread_bot.telegramer.models import (
+    AnswerPack,
+    TextEntity,
+    VoiceEntity,
+    PhotoEntity,
+    StickerEntity,
+    GifEntity,
+    VideoEntity,
+    VideoNoteEntity,
+)
 from bread_bot.telegramer.schemas.bread_bot_answers import (
     BaseAnswerSchema,
     TextAnswerSchema,
     PhotoAnswerSchema,
     StickerAnswerSchema,
-    VoiceAnswerSchema, GifAnswerSchema,
+    VoiceAnswerSchema,
+    GifAnswerSchema,
+    VideoAnswerSchema,
+    VideoNoteAnswerSchema,
 )
 from bread_bot.telegramer.services.handlers.handler import AbstractHandler
 from bread_bot.telegramer.utils.functions import composite_mask
@@ -35,6 +47,8 @@ class AnswerHandler(AbstractHandler):
                 AnswerPack.voice_entities,
                 AnswerPack.photo_entities,
                 AnswerPack.gif_entities,
+                AnswerPack.video_entities,
+                AnswerPack.video_note_entities,
             ]
         )
         if not answer_pack:
@@ -110,6 +124,10 @@ class AnswerHandler(AbstractHandler):
                 return VoiceAnswerSchema(**base_message_params, voice=result.value)
             case GifEntity():
                 return GifAnswerSchema(**base_message_params, animation=result.value)
+            case VideoEntity():
+                return VideoAnswerSchema(**base_message_params, video=result.value)
+            case VideoNoteEntity():
+                return VideoNoteAnswerSchema(**base_message_params, video_note=result.value)
             case _:
                 raise NextStepException("Полученный тип контента не подлежит ответу")
 

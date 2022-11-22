@@ -3,3 +3,5 @@ from bread_bot.telegramer.models.answer_entities.photo_answer_entities import Ph
 from bread_bot.telegramer.models.answer_entities.sticker_answer_entities import StickerEntity
 from bread_bot.telegramer.models.answer_entities.text_answer_entities import TextEntity
 from bread_bot.telegramer.models.answer_entities.voice_answer_entities import VoiceEntity
+from bread_bot.telegramer.models.answer_entities.video_answer_entities import VideoEntity
+from bread_bot.telegramer.models.answer_entities.video_note_answer_entities import VideoNoteEntity
