@@ -7,8 +7,7 @@ asyncpg==0.24.0
 fastapi==0.68.1
 pydantic==1.10.2
 starlette==0.14.2
-typing-extensions==3.10.0.0
-pydantic[email]==1.8.2
+pydantic[email]==1.10.2
 # uvicorn
 PyYAML==5.4.1
 asgiref==3.4.0

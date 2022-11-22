@@ -21,8 +21,12 @@ class VoiceAnswerSchema(BaseAnswerSchema):
 
 class PhotoAnswerSchema(BaseAnswerSchema):
     photo: str
-    capture: str | None = None
+    caption: str | None = None
 
 
 class StickerAnswerSchema(BaseAnswerSchema):
     sticker: str
+
+
+class GifAnswerSchema(BaseAnswerSchema):
+    animation: str

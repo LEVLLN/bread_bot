@@ -17,7 +17,8 @@ from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
     ChatMemberBodySchema
-from bread_bot.telegramer.services.messages.message_handler import process_telegram_message
+from bread_bot.telegramer.services.messages.message_receiver import MessageReceiver
+from bread_bot.telegramer.services.messages.message_sender import MessageSender
 from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 from bread_bot.utils.dependencies import get_async_session
 
@@ -36,7 +37,12 @@ async def handle_message(
         request_body: StandardBodySchema,
         db: AsyncSession = Depends(get_async_session)
 ):
-    await process_telegram_message(db=db, request_body=request_body)
+    message_receiver = MessageReceiver(db=db, request_body=request_body)
+    message = await message_receiver.receive()
+    if not message:
+        return RESPONSE_OK
+    message_sender = MessageSender(message=message)
+    await message_sender.send_messages_to_chat()
     return RESPONSE_OK
 
 

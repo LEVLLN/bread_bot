@@ -8,7 +8,7 @@ from bread_bot.telegramer.models import (
     TextEntity,
     PhotoEntity,
     VoiceEntity,
-    StickerEntity,
+    StickerEntity, GifEntity,
 )
 from bread_bot.telegramer.schemas.commands import (
     KeyValueParameterCommandSchema, ValueListCommandSchema,
@@ -221,6 +221,36 @@ class TestRemember(BaseAdminCommand):
         assert photo_message_service.message.reply.photo[0].file_id == entities[0].value
         assert entities[0].reaction_type == reaction_type
         assert entities[0].description is None
+
+    @pytest.mark.parametrize(
+        "command, reaction_type",
+        [
+            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+        ]
+    )
+    async def test_gif_reply(
+            self,
+            db,
+            based_pack,
+            admin_command_method,
+            command_instance,
+            reply_gif,
+            command,
+            reaction_type,
+    ):
+        admin_command_method.message_service.message.reply = reply_gif.message.reply
+        admin_command_method.command_instance.command = command
+        result = await admin_command_method.execute()
+
+        entities = await GifEntity.async_filter(
+            db, where=GifEntity.pack_id == based_pack.id,
+        )
+        assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert entities is not None
+        assert command_instance.value_list == [entity.key for entity in entities]
+        assert reply_gif.message.reply.animation.file_id == entities[0].value
+        assert entities[0].reaction_type == reaction_type
 
     @pytest.mark.parametrize(
         "command, reaction_type",

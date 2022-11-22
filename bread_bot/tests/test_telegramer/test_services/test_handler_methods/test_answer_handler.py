@@ -7,6 +7,7 @@ from bread_bot.telegramer.schemas.bread_bot_answers import (
     StickerAnswerSchema,
     VoiceAnswerSchema,
     PhotoAnswerSchema,
+    GifAnswerSchema,
 )
 from bread_bot.telegramer.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
 from bread_bot.telegramer.utils.structs import AnswerEntityTypesEnum
@@ -47,7 +48,7 @@ class TestAnswerHandler:
 
     @pytest.fixture
     async def substring_answer_handler(self, db, member_service, message_service, prepare_data):
-        message_service.message.text = "My text consists of my_key and test test test"
+        message_service.message.text = "My text consists of My_key and test test test"
         substring_answer_handler = SubstringAnswerHandler(next_handler=None)
         substring_answer_handler.member_service = member_service
         substring_answer_handler.message_service = message_service
@@ -65,7 +66,13 @@ class TestAnswerHandler:
 
     async def test_process_substring(self, db, substring_answer_handler, prepare_data):
         result = await substring_answer_handler.process()
-        assert type(result) in (TextAnswerSchema, PhotoAnswerSchema, VoiceAnswerSchema, StickerAnswerSchema)
+        assert type(result) in (
+            TextAnswerSchema,
+            PhotoAnswerSchema,
+            VoiceAnswerSchema,
+            StickerAnswerSchema,
+            GifAnswerSchema,
+        )
 
     async def test_process_concrete_substring(
             self,
@@ -115,7 +122,13 @@ class TestAnswerHandler:
 
     async def test_process_trigger(self, db, trigger_answer_handler, prepare_data):
         result = await trigger_answer_handler.process()
-        assert type(result) in (TextAnswerSchema, PhotoAnswerSchema, VoiceAnswerSchema, StickerAnswerSchema)
+        assert type(result) in (
+            TextAnswerSchema,
+            PhotoAnswerSchema,
+            VoiceAnswerSchema,
+            StickerAnswerSchema,
+            GifAnswerSchema,
+        )
 
     @pytest.mark.parametrize(
         "message_text",
