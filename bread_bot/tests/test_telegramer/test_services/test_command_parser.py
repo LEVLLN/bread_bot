@@ -172,6 +172,16 @@ class TestCommandParser:
                     )
             ),
             (
+                    "Хлеб запомни значение my_key",
+                    ValueListCommandSchema(
+                        header="Хлеб",
+                        command=AdminCommandsEnum.REMEMBER,
+                        rest_text="",
+                        value_list=["my_key"],
+                        raw_command="запомни значение",
+                    )
+            ),
+            (
                     "Хлеб запомни my_value",
                     ValueListCommandSchema(
                         header="Хлеб",

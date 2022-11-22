@@ -44,7 +44,7 @@ class CommandSettings:
             ]
         ),
         CommandSettingsSchema(
-            aliases=["запомни", "запомни значение", "запомни подстроку", "подстрока"],
+            aliases=["запомни значение", "запомни подстроку", "подстрока", "запомни",],
             command=AdminCommandsEnum.REMEMBER,
             to_find_for_values=True,
             to_find_for_values_list=True,
