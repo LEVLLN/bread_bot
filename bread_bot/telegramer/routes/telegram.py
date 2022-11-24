@@ -2,7 +2,6 @@ import logging
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 from starlette.requests import Request
@@ -11,15 +10,13 @@ import markdown
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.telegramer.clients.telegram_client import TelegramClient
-from bread_bot.telegramer.models import LocalMeme, Chat, Member
-from bread_bot.telegramer.schemas.api_models import LocalMemeSchema, \
-    SendMessageSchema, ChatSchema, MemberDBSchema
+from bread_bot.telegramer.models import Chat, Member
+from bread_bot.telegramer.schemas.api_models import SendMessageSchema, ChatSchema, MemberDBSchema
 from bread_bot.telegramer.schemas.telegram_messages import \
     StandardBodySchema, \
     ChatMemberBodySchema
 from bread_bot.telegramer.services.messages.message_receiver import MessageReceiver
 from bread_bot.telegramer.services.messages.message_sender import MessageSender
-from bread_bot.telegramer.utils.structs import LocalMemeTypesEnum
 from bread_bot.utils.dependencies import get_async_session
 
 logger = logging.getLogger(__name__)
@@ -51,54 +48,6 @@ async def color_home(request: Request):
     with open("./About.md", "r", encoding="utf-8") as input_file:
         text = input_file.read()
     return markdown.markdown(text)
-
-
-@router.post('/set_local_meme',
-             dependencies=[Depends(get_current_active_admin_user)])
-async def set_local_meme(
-        request_body: LocalMemeSchema,
-        db: AsyncSession = Depends(get_async_session)
-):
-    local_meme = await LocalMeme.async_first(
-        db=db,
-        where=(LocalMeme.type == request_body.type) &
-              (LocalMeme.chat_id == request_body.chat_id),
-    )
-    if not local_meme:
-        await LocalMeme.async_add_by_schema(
-            db=db,
-            instance_schema=request_body,
-        )
-    else:
-        local_meme.data = request_body.data
-        await LocalMeme.async_add(db, local_meme)
-    return RESPONSE_OK
-
-
-@router.get('/get_local_memes/{chat_id}',
-            dependencies=[Depends(get_current_active_admin_user)],
-            response_model=List[LocalMemeSchema]
-            )
-async def get_local_meme(
-        chat_id: int,
-        meme_type: Optional[str] = None,
-        db: AsyncSession = Depends(get_async_session)
-):
-    condition = [LocalMeme.chat_id == chat_id, ]
-    if meme_type is not None \
-            and getattr(LocalMemeTypesEnum, meme_type, None):
-        condition.append(LocalMeme.type == meme_type)
-
-    local_memes = await LocalMeme.async_filter(
-        db=db,
-        where=and_(*condition)
-    )
-    if not local_memes:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='Не найдено данных'
-        )
-    return local_memes
 
 
 @router.post('/send_message',

@@ -16,6 +16,3 @@ from bread_bot.telegramer.models.chats_entities import (
     Member,
     ChatToMember,
 )
-from bread_bot.telegramer.models.local_memes import LocalMeme
-from bread_bot.telegramer.models.properties import Property
-from bread_bot.telegramer.models.stats import Stats

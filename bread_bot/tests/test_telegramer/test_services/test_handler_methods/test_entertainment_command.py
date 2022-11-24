@@ -108,7 +108,6 @@ class TestEntertainmentCommand:
                     "   Пример 1: Хлеб удали подстроки my_key\n"
                     "   Пример 2: Хлеб удали триггер my_key\n"
                     "   Пример 3: Хлеб удали подстроки my_key=my_value\n"
-                    "   Пример 4: Хлеб удали подстроки my_key_1, my_key_2, my_key_3\n"
             ),
             (
                     "процент",

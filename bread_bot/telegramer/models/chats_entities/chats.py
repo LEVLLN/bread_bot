@@ -19,14 +19,6 @@ class Chat(mixins.AbstractIsActiveBaseModel,
     is_voice_trigger = Column(Boolean, default=False, nullable=False)
     answer_chance = Column(SmallInteger, default=100, nullable=False)
 
-    stats = relationship(
-        'Stats',
-        back_populates='chat',
-        cascade='all, delete-orphan')
-    local_memes = relationship(
-        'LocalMeme',
-        back_populates='chat',
-        cascade='all, delete-orphan')
     members = relationship(
         'ChatToMember',
         back_populates='chat')

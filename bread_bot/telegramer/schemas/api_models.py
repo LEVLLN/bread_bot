@@ -1,17 +1,8 @@
-from typing import Dict, List, Union, Optional
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from bread_bot.telegramer.schemas.telegram_messages import MemberSchema
-
-
-class LocalMemeSchema(BaseModel):
-    type: str
-    chat_id: int
-    data: Union[Dict, List]
-
-    class Config:
-        orm_mode = True
 
 
 class SendMessageSchema(BaseModel):
