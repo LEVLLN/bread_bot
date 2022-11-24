@@ -1,10 +1,10 @@
 import pytest
 
-from bread_bot.telegramer.exceptions.commands import (
+from bread_bot.common.exceptions.commands import (
     NotAvailableCommandException,
     CommandParseException,
 )
-from bread_bot.telegramer.schemas.commands import (
+from bread_bot.common.schemas.commands import (
     ParameterCommandSchema,
     ValueListCommandSchema,
     KeyValueParameterCommandSchema,
@@ -12,8 +12,8 @@ from bread_bot.telegramer.schemas.commands import (
     CommandSchema,
     ValueCommandSchema,
 )
-from bread_bot.telegramer.services.commands.command_parser import CommandParser
-from bread_bot.telegramer.utils.structs import (
+from bread_bot.common.services.commands.command_parser import CommandParser
+from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,

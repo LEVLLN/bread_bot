@@ -9,7 +9,7 @@ APP_VERSION = os.getenv('VERSION', '1.0.0')
 DEBUG = os.getenv('DEBUG', 'false') == 'true'
 APP_MODULES = [
     'auth',
-    'telegramer',
+    'common',
 ]
 # Uvicorn
 PORT = int(os.getenv('PORT', 8080))

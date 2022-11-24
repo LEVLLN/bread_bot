@@ -1,6 +1,6 @@
 import pytest
 
-from bread_bot.telegramer.models import (
+from bread_bot.common.models import (
     Member,
     Chat,
     TextEntity,

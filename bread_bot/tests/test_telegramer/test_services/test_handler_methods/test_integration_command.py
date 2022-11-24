@@ -1,16 +1,16 @@
 import pytest
 
-from bread_bot.telegramer.clients.baneks_client import BaneksClient
-from bread_bot.telegramer.clients.evil_insult_client import EvilInsultClient
-from bread_bot.telegramer.clients.forismatic_client import ForismaticClient
-from bread_bot.telegramer.clients.great_advice import GreatAdviceClient
-from bread_bot.telegramer.exceptions.base import RaiseUpException
-from bread_bot.telegramer.schemas.api_models import GreatAdviceResponse, ForismaticQuote, EvilInsultResponse
-from bread_bot.telegramer.schemas.commands import (
+from bread_bot.common.clients.baneks_client import BaneksClient
+from bread_bot.common.clients.evil_insult_client import EvilInsultClient
+from bread_bot.common.clients.forismatic_client import ForismaticClient
+from bread_bot.common.clients.great_advice import GreatAdviceClient
+from bread_bot.common.exceptions.base import RaiseUpException
+from bread_bot.common.schemas.api_models import GreatAdviceResponse, ForismaticQuote, EvilInsultResponse
+from bread_bot.common.schemas.commands import (
     CommandSchema,
 )
-from bread_bot.telegramer.services.handlers.command_methods.integration_command_method import IntegrationCommandMethod
-from bread_bot.telegramer.utils.structs import IntegrationCommandsEnum
+from bread_bot.common.services.handlers.command_methods.integration_command_method import IntegrationCommandMethod
+from bread_bot.common.utils.structs import IntegrationCommandsEnum
 
 
 class TestIntegrationCommand:

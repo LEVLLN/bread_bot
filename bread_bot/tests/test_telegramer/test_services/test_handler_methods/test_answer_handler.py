@@ -1,16 +1,16 @@
 import pytest
 
-from bread_bot.telegramer.exceptions.base import NextStepException
-from bread_bot.telegramer.models import AnswerPack, AnswerPacksToChats
-from bread_bot.telegramer.schemas.bread_bot_answers import (
+from bread_bot.common.exceptions.base import NextStepException
+from bread_bot.common.models import AnswerPack, AnswerPacksToChats
+from bread_bot.common.schemas.bread_bot_answers import (
     TextAnswerSchema,
     StickerAnswerSchema,
     VoiceAnswerSchema,
     PhotoAnswerSchema,
     GifAnswerSchema,
 )
-from bread_bot.telegramer.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
-from bread_bot.telegramer.utils.structs import AnswerEntityTypesEnum
+from bread_bot.common.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
+from bread_bot.common.utils.structs import AnswerEntityTypesEnum
 
 
 class TestAnswerHandler:

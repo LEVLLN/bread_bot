@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy import and_
 
-from bread_bot.telegramer.exceptions.base import RaiseUpException
-from bread_bot.telegramer.models import (
+from bread_bot.common.exceptions.base import RaiseUpException
+from bread_bot.common.models import (
     AnswerPack,
     AnswerPacksToChats,
     TextEntity,
@@ -10,13 +10,13 @@ from bread_bot.telegramer.models import (
     VoiceEntity,
     StickerEntity, GifEntity,
 )
-from bread_bot.telegramer.schemas.commands import (
+from bread_bot.common.schemas.commands import (
     KeyValueParameterCommandSchema, ValueListCommandSchema,
     ValueParameterCommandSchema, CommandSchema, ValueCommandSchema,
 )
-from bread_bot.telegramer.services.handlers.command_methods.admin_command_method import AdminCommandMethod
-from bread_bot.telegramer.services.messages.message_service import MessageService
-from bread_bot.telegramer.utils.structs import (
+from bread_bot.common.services.handlers.command_methods.admin_command_method import AdminCommandMethod
+from bread_bot.common.services.messages.message_service import MessageService
+from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     CommandAnswerParametersEnum,
     AnswerEntityTypesEnum, ANSWER_ENTITY_MAP,

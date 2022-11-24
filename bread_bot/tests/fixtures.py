@@ -3,9 +3,9 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 
 from bread_bot.main.database.base import DeclarativeBase
-from bread_bot.telegramer.schemas.telegram_messages import StandardBodySchema
-from bread_bot.telegramer.services.member_service import MemberService
-from bread_bot.telegramer.services.messages.message_service import MessageService
+from bread_bot.common.schemas.telegram_messages import StandardBodySchema
+from bread_bot.common.services.member_service import MemberService
+from bread_bot.common.services.messages.message_service import MessageService
 
 
 @pytest.fixture

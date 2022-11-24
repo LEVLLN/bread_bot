@@ -4,18 +4,18 @@ import pytest
 import respx
 from httpx import Response
 
-from bread_bot.telegramer.exceptions.base import RaiseUpException
-from bread_bot.telegramer.models import (
+from bread_bot.common.exceptions.base import RaiseUpException
+from bread_bot.common.models import (
     AnswerPack,
     AnswerPacksToChats,
     Chat, ChatToMember,
 )
-from bread_bot.telegramer.schemas.commands import (
+from bread_bot.common.schemas.commands import (
     CommandSchema,
 )
-from bread_bot.telegramer.schemas.telegram_messages import ChatMemberBodySchema, MemberSchema
-from bread_bot.telegramer.services.handlers.command_methods.member_command_method import MemberCommandMethod
-from bread_bot.telegramer.utils.structs import MemberCommandsEnum
+from bread_bot.common.schemas.telegram_messages import ChatMemberBodySchema, MemberSchema
+from bread_bot.common.services.handlers.command_methods.member_command_method import MemberCommandMethod
+from bread_bot.common.utils.structs import MemberCommandsEnum
 
 
 class TestMemberCommands:

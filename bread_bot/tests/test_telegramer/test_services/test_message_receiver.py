@@ -1,14 +1,14 @@
 import pytest
 
-from bread_bot.telegramer.exceptions.base import RaiseUpException, NextStepException
-from bread_bot.telegramer.models import AnswerPack, AnswerPacksToChats
-from bread_bot.telegramer.schemas.bread_bot_answers import TextAnswerSchema
-from bread_bot.telegramer.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
-from bread_bot.telegramer.services.handlers.command_handler import CommandHandler
-from bread_bot.telegramer.services.handlers.handler import EmptyResultHandler
-from bread_bot.telegramer.services.messages.message_receiver import MessageReceiver
-from bread_bot.telegramer.services.messages.message_service import MessageService
-from bread_bot.telegramer.utils.structs import AnswerEntityTypesEnum
+from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
+from bread_bot.common.models import AnswerPack, AnswerPacksToChats
+from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
+from bread_bot.common.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
+from bread_bot.common.services.handlers.command_handler import CommandHandler
+from bread_bot.common.services.handlers.handler import EmptyResultHandler
+from bread_bot.common.services.messages.message_receiver import MessageReceiver
+from bread_bot.common.services.messages.message_service import MessageService
+from bread_bot.common.utils.structs import AnswerEntityTypesEnum
 
 
 @pytest.fixture

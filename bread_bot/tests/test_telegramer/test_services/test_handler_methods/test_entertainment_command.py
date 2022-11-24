@@ -1,11 +1,11 @@
 import pytest
 
-from bread_bot.telegramer.schemas.commands import (
+from bread_bot.common.schemas.commands import (
     ValueListCommandSchema, CommandSchema,
 )
-from bread_bot.telegramer.services.handlers.command_methods.entertainment_command_method import \
+from bread_bot.common.services.handlers.command_methods.entertainment_command_method import \
     EntertainmentCommandMethod
-from bread_bot.telegramer.utils.structs import EntertainmentCommandsEnum
+from bread_bot.common.utils.structs import EntertainmentCommandsEnum
 
 
 class TestEntertainmentCommand:
