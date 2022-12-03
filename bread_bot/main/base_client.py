@@ -40,7 +40,7 @@ class BaseHTTPClient:
         :param data: Payload данные запроса в dict
         :return: Объект ответа httpx.Response
         """
-        if isinstance(data, RequestData):
+        if isinstance(data, dict):
             data = json.dumps(data, ensure_ascii=False)
         start_time = time.time()
         exception_object = None

@@ -1,7 +1,11 @@
 import uvicorn
 
-from bread_bot.main.settings import APP_NAME, PORT, \
-    DEBUG, WORKERS_COUNT, SERVER_RELOAD
+from bread_bot.main.settings import (
+    APP_NAME,
+    PORT,
+    WORKERS_COUNT,
+    SERVER_RELOAD,
+)
 
 if __name__ == '__main__':
     uvicorn.run(
@@ -9,7 +13,6 @@ if __name__ == '__main__':
         host='0.0.0.0',
         port=PORT,
         reload=SERVER_RELOAD,
-        debug=DEBUG,
         workers=WORKERS_COUNT,
         access_log=False,
     )

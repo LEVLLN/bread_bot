@@ -4,5 +4,4 @@ WORKDIR /code
 
 COPY . /code/
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements/requirements.txt && \
- pip install --no-cache-dir --upgrade -r /code/requirements/requirements.txt
+RUN pip install poetry && poetry install --only main
