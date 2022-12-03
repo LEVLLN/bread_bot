@@ -84,9 +84,10 @@ APP_MODULES = [
 
 # Web
 FastAPI использует в качестве веб-сервера uvicorn. Есть несколько вариантов запуска приложения:
-```commandline
+```shell
 uvicorn bread_bot.main.webserver:app
-или
+```
+```shell
 python server.py
 ```
 
@@ -126,8 +127,8 @@ poetry install --only main
 # QUICK START
 Для начала везде, где Вы видите слово `bread_bot` - тут может оказаться наименование вашего микросервиса. Ну логично, да?
 Необходимо установить все зависимости в проекте:
-```commandline
-pip install -r requirements/dev.txt
+```shell
+pip install poetry && poetry install
 ```
 Представьте на секунду, что вы уже поставили PostgreSQL. И теперь нужно создать БД с пользователем и паролем:
 ```postgresql
@@ -136,49 +137,51 @@ CREATE ROLE bread_bot with LOGIN PASSWORD 'my_password';
 GRANT ALL PRIVILEGES ON DATABASE bread_bot TO bread_bot;
 ```
 Миграция схемы баз данных
-```commandline
+```shell
 alembic upgrade head
 ```
 Откат миграции базы данных
-```commandline
+```shell
 alembic downgrade -1
 ```
 Авто-генерация схемы базы данных
-```commandline
+```shell
 alembic revision --autogenerate -m 'my migration message'
 ```
 Запускаем локально веб-сервер
-```commandline
+```shell
 uvicorn bread_bot.main.webserver:app --reload
+```
 или так:
+```shell
 python server.py
 ```
 Запустить проверку codestyle проекта (А эта проверка будет работать и при CI)
-```commandline
+```shell
 flake8
 ```
 Запустить тесты:
-```commandline
+```shell
 pytest bread_bot/tests
 ```
 Запустить создания данных по покрытию тестами
-```commandline
+```shell
 coverage run -m pytest bread_bot/tests
 ```
 Запустить вывод отчета по покрытию тестами
-```commandline
+```shell
 coverage report -m 
 ```
 Запустить вывод отчета в html формате
-```commandline
+```shell
 coverage html 
 ```
 Удалить данные отчета
-```commandline
+```shell
 coverage erase
 ```
 Можно использовать последовательность:
-```commandline
+```shell
 coverage erase && coverage run pytest bread_bot/tests && coverage html
 ```
 Функциональность бота описана в [About.md](About.md)
