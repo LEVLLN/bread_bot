@@ -30,6 +30,4 @@ jobs:
         poetry install --only main
         poetry install --only dev
         poetry config virtualenvs.create false
-    - name: Test with pytest
-      run: |
-        pytest bread_bot
+        pytest bread_bot/
