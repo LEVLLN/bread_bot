@@ -31,7 +31,7 @@ class TelegramClient(BaseHTTPClient):
         self.set_webhook_method = "setWebhook"
         self.get_webhook_info_method = "getWebhookInfo"
         self.get_chat_method = "getChatAdministrators"
-        self.base_url = f"https://api.telegram.org/bot {settings.TELEGRAM_BOT_TOKEN}"
+        self.base_url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}"
         self.headers = {
             "Content-type": "application/json",
             "Accept": "text/plain",
