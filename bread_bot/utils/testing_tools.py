@@ -7,9 +7,7 @@ from bread_bot.main.webserver import app
 from bread_bot.utils.dependencies import get_sync_session, get_async_session
 
 # Синхронные механизмы БД
-test_sync_engine = create_engine(
-    'sqlite:///:memory:?check_same_thread=False'
-)
+test_sync_engine = create_engine("sqlite:///:memory:?check_same_thread=False")
 TestSyncLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
@@ -43,7 +41,7 @@ def dependency_override_get_sync_session():
 
 # Асинхронные механизмы БД
 test_async_engine = create_async_engine(
-    'sqlite+aiosqlite:///:memory:?check_same_thread=False',
+    "sqlite+aiosqlite:///:memory:?check_same_thread=False",
 )
 TestAsyncSessionLocal = sessionmaker(
     test_async_engine,
@@ -76,11 +74,9 @@ async def dependency_override_get_async_session() -> AsyncSession:
 
 # FastApi настройки
 
-TEST_SERVER_URL = 'http://test'
+TEST_SERVER_URL = "http://test"
 
 test_app = app
 
-test_app.dependency_overrides[get_sync_session] \
-    = dependency_override_get_sync_session
-test_app.dependency_overrides[get_async_session] \
-    = dependency_override_get_async_session
+test_app.dependency_overrides[get_sync_session] = dependency_override_get_sync_session
+test_app.dependency_overrides[get_async_session] = dependency_override_get_async_session

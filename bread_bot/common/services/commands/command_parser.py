@@ -93,7 +93,7 @@ class CommandParser:
         """
         try:
             parameter, rest = self.parse_properties(self.command_settings.available_parameters, rest)
-        except (IndexError, TypeError) as e:
+        except (IndexError, TypeError):
             raise CommandParseException("Не найдены параметры команды")
         else:
             return self.command_settings_service.parameters_value_to_enum[parameter.strip().lower()], rest

@@ -22,7 +22,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
 
     def get_chance(self):
         return super()._return_answer(
-            f"Есть вероятность {self.command_instance.rest_text} - " f"{str(random.randint(0, 100))}%"
+            f"Есть вероятность {self.command_instance.rest_text} - {str(random.randint(0, 100))}%"
         )
 
     def choose_variant(self):
@@ -57,11 +57,11 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         if command.available_parameters:
             result += f"   Параметры: {', '.join(command.available_parameters)}\n"
         if command.to_find_for_values:
-            result += f"   - Можно указать значение или ключ\n"
+            result += "   - Можно указать значение или ключ\n"
         if command.to_find_for_key_values:
-            result += f"   - Можно указать ключ и значение в виде: my_key=my_value\n"
+            result += "   - Можно указать ключ и значение в виде: my_key=my_value\n"
         if command.to_find_for_values_list:
-            result += f"   - Можно указать список значений, перечисляя через ',' / 'или'\n"
+            result += "   - Можно указать список значений, перечисляя через ',' / 'или'\n"
         for i, example in enumerate(command.examples, 1):
             result += f"   Пример {i}: {example}\n"
 

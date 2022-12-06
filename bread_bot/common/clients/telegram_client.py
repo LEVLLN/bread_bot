@@ -31,7 +31,7 @@ class TelegramClient(BaseHTTPClient):
         self.set_webhook_method = "setWebhook"
         self.get_webhook_info_method = "getWebhookInfo"
         self.get_chat_method = "getChatAdministrators"
-        self.base_url = f"https://api.telegram.org/bot" f"{settings.TELEGRAM_BOT_TOKEN}"
+        self.base_url = f"https://api.telegram.org/bot {settings.TELEGRAM_BOT_TOKEN}"
         self.headers = {
             "Content-type": "application/json",
             "Accept": "text/plain",
@@ -62,7 +62,7 @@ class TelegramClient(BaseHTTPClient):
                 method = self.send_sticker_method
             case TextAnswerSchema():
                 method = self.send_message_method
-            case __:
+            case _:
                 logger.error("Unknown type to send of obj: %s", schema)
                 return None
 

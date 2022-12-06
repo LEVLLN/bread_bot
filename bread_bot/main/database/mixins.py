@@ -1,8 +1,15 @@
 import datetime
 import logging
 
-from sqlalchemy import Column, Integer, DateTime, inspect, Boolean, select, \
-    delete
+from sqlalchemy import (
+    Column,
+    Integer,
+    DateTime,
+    inspect,
+    Boolean,
+    select,
+    delete,
+)
 from sqlalchemy.engine import ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session, declared_attr, selectinload
@@ -10,7 +17,6 @@ from sqlalchemy.orm import Session, declared_attr, selectinload
 from bread_bot.main.database.base import DeclarativeBase
 from bread_bot.utils.dependencies import OffsetQueryParams
 from bread_bot.utils.helpers import chunks
-
 
 logger = logging.getLogger(__name__)
 
@@ -32,31 +38,25 @@ class BaseModel(DeclarativeBase):
     def __tablename__(cls):
         return cls.__name__.lower()
 
-    id = Column(Integer,
-                nullable=False,
-                primary_key=True,
-                autoincrement=True)
-    created_at = Column(DateTime(timezone=False),
-                        nullable=False,
-                        default=datetime.datetime.now)
-    updated_at = Column(DateTime(timezone=False),
-                        nullable=False,
-                        default=datetime.datetime.now,
-                        onupdate=datetime.datetime.now)
+    id = Column(Integer, nullable=False, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime(timezone=False), nullable=False, default=datetime.datetime.now)
+    updated_at = Column(
+        DateTime(timezone=False), nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+    )
 
     def __repr__(self):
         return "<{0.__class__.__name__}(id={0.id!r})>".format(self)
 
     def as_dict(self) -> dict:
-        return {c.key: getattr(self, c.key)
-                for c in inspect(self).mapper.column_attrs}
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
 class CRUDMixin(object):
     """
     Различные методы, которые упрощают реализацию запросов
     """
-    __table_args__ = {'extend_existing': True}
+
+    __table_args__ = {"extend_existing": True}
 
     async def commit(self, db: AsyncSession):
         try:
@@ -67,13 +67,13 @@ class CRUDMixin(object):
 
     @classmethod
     async def _async_filter(
-            cls,
-            db: AsyncSession,
-            where,
-            select_in_load,
-            order_by,
-            limit,
-            for_update,
+        cls,
+        db: AsyncSession,
+        where,
+        select_in_load,
+        order_by,
+        limit,
+        for_update,
     ) -> ScalarResult:
         """
         Составление select запроса с фильтрами и ограничениями
@@ -86,30 +86,22 @@ class CRUDMixin(object):
         """
         expression = select(cls, for_update)
         if where is not None:
-            expression = expression.where(
-                where
-            )
+            expression = expression.where(where)
         if select_in_load is not None:
-            expression = expression.options(
-                selectinload(select_in_load)
-            )
+            expression = expression.options(selectinload(select_in_load))
         if order_by is not None:
-            expression = expression.order_by(
-                order_by
-            )
+            expression = expression.order_by(order_by)
         if limit is not None:
-            expression = expression.limit(
-                limit
-            )
+            expression = expression.limit(limit)
         logger.debug(expression)
         result = await db.execute(expression)
         return result.scalars()
 
     @classmethod
     async def async_delete(
-            cls,
-            db: AsyncSession,
-            where,
+        cls,
+        db: AsyncSession,
+        where,
     ) -> bool:
         """
         Удаление объектов
@@ -119,9 +111,7 @@ class CRUDMixin(object):
         """
         expression = delete(cls)
         if where is not None:
-            expression = expression.where(
-                where
-            )
+            expression = expression.where(where)
         logger.debug(expression)
 
         result = await db.execute(expression)
@@ -136,13 +126,13 @@ class CRUDMixin(object):
 
     @classmethod
     async def async_filter(
-            cls,
-            db: AsyncSession,
-            where=None,
-            select_in_load=None,
-            order_by=None,
-            limit=None,
-            for_update=False,
+        cls,
+        db: AsyncSession,
+        where=None,
+        select_in_load=None,
+        order_by=None,
+        limit=None,
+        for_update=False,
     ):
         scalars = await cls._async_filter(
             db,
@@ -158,13 +148,13 @@ class CRUDMixin(object):
 
     @classmethod
     async def async_first(
-            cls,
-            db: AsyncSession,
-            where=None,
-            select_in_load=None,
-            order_by=None,
-            for_update=False,
-    ) -> 'CRUDMixin':
+        cls,
+        db: AsyncSession,
+        where=None,
+        select_in_load=None,
+        order_by=None,
+        for_update=False,
+    ) -> "CRUDMixin":
         scalars = await cls._async_filter(
             db,
             where,
@@ -184,36 +174,27 @@ class CRUDMixin(object):
 
         :return: list[EntityModelClass]
         """
-        result = await db.execute(
-            select(cls)
-        )
+        result = await db.execute(select(cls))
         res = result.scalars().all()
         await db.flush()
         return res
 
     @classmethod
     async def async_offset_records(
-            cls,
-            db: AsyncSession,
-            offset_params: OffsetQueryParams,
+        cls,
+        db: AsyncSession,
+        offset_params: OffsetQueryParams,
     ):
         """
         Async get all objects with offset
 
         :return: list[EntityModelClass][offset.skip:offset.limit]
         """
-        result = await db.execute(
-            select(cls).offset(offset_params.skip).limit(offset_params.limit)
-        )
+        result = await db.execute(select(cls).offset(offset_params.skip).limit(offset_params.limit))
         return result.scalars().all()
 
     @classmethod
-    async def async_add_all(
-            cls,
-            db: AsyncSession,
-            instances: list,
-            chunk_size=1000
-    ):
+    async def async_add_all(cls, db: AsyncSession, instances: list, chunk_size=1000):
         """
         Async Bulk Create/Update by instances
         """
@@ -225,15 +206,14 @@ class CRUDMixin(object):
                 await db.rollback()
                 raise exc
             else:
-                logger.info('Созданы/Обновлён объекты %s: %s',
-                            cls.__name__, instances)
+                logger.info("Созданы/Обновлён объекты %s: %s", cls.__name__, instances)
 
     @classmethod
     async def async_add(
-            cls,
-            db: AsyncSession,
-            instance: 'CRUDMixin',
-    ) -> 'CRUDMixin':
+        cls,
+        db: AsyncSession,
+        instance: "CRUDMixin",
+    ) -> "CRUDMixin":
         """
         Async Create/Update by instance
         """
@@ -247,9 +227,9 @@ class CRUDMixin(object):
             try:
                 await db.refresh(instance)
             except Exception:
-                logger.debug(f'Невозможно обновить объект: {instance}')
+                logger.debug(f"Невозможно обновить объект: {instance}")
                 return instance
-            logger.info(f'Создан/Обновлён {cls.__name__}: {instance}')
+            logger.info(f"Создан/Обновлён {cls.__name__}: {instance}")
             return instance
 
     @classmethod
@@ -273,19 +253,11 @@ class CRUDMixin(object):
 
     @classmethod
     def offset_records(cls, db: Session, offset_params: OffsetQueryParams):
-        return db \
-            .query(cls) \
-            .filter() \
-            .offset(offset_params.skip) \
-            .limit(offset_params.limit) \
-            .all()
+        return db.query(cls).filter().offset(offset_params.skip).limit(offset_params.limit).all()
 
     @classmethod
     def all(cls, db: Session):
-        return db \
-            .query(cls) \
-            .filter() \
-            .all()
+        return db.query(cls).filter().all()
 
     @classmethod
     def sync_add(cls, db: Session, instance):
@@ -296,7 +268,7 @@ class CRUDMixin(object):
             db.rollback()
             raise exc
         else:
-            logger.info(f'Создан/Обновлён {cls.__name__}: {instance}')
+            logger.info(f"Создан/Обновлён {cls.__name__}: {instance}")
             return instance
 
     @classmethod

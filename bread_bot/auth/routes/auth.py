@@ -35,7 +35,7 @@ async def create_user(user_schema: UserCreateSchema, db: AsyncSession = Depends(
     try:
         user = await User.async_add_by_schema(db, user_schema)
     except Exception as e:
-        logger.info(f"Не удалось создать пользователя " f"по причине: {str(e)}")
+        logger.info(f"Не удалось создать пользователя по причине: {str(e)}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ошибка регистрации пользователя")
     else:
         return user

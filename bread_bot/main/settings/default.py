@@ -31,10 +31,8 @@ DATABASE_SETTINGS = {
     }
 }
 
-DATABASE_URI = "postgresql+psycopg2://" "{user}:{password}@{host}:{port}/{database}".format(
-    **DATABASE_SETTINGS["default"]
-)
-ASYNC_DATABASE_URI = "postgresql+asyncpg://" "{user}:{password}@{host}:{port}/{database}".format(
+DATABASE_URI = "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}".format(**DATABASE_SETTINGS["default"])
+ASYNC_DATABASE_URI = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}".format(
     **DATABASE_SETTINGS["default"]
 )
 

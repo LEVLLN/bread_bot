@@ -28,6 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install --with dev
+      - name: Flake8 check
+        run: |
+          poetry run flake8
       - name: Test with pytest
         run: |
           poetry run pytest bread_bot

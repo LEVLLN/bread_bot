@@ -1,8 +1,8 @@
 from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, select, and_, SmallInteger
 from sqlalchemy.orm import relationship, selectinload
 
-from bread_bot.main.database import mixins
 from bread_bot.common.models.answer_packs_entities.answer_packs_to_chats import AnswerPacksToChats
+from bread_bot.main.database import mixins
 
 
 class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUDMixin):

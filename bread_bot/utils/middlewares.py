@@ -23,12 +23,12 @@ from bread_bot.main.settings import PORT
 from bread_bot.utils.json_logger import EMPTY_VALUE
 from bread_bot.utils.utils_schemas import RequestJsonLogSchema
 
-HTTP_HOST = attributes_helper.COMMON_ATTRIBUTES['HTTP_HOST']
-HTTP_METHOD = attributes_helper.COMMON_ATTRIBUTES['HTTP_METHOD']
-HTTP_PATH = attributes_helper.COMMON_ATTRIBUTES['HTTP_PATH']
-HTTP_ROUTE = attributes_helper.COMMON_ATTRIBUTES['HTTP_ROUTE']
-HTTP_URL = attributes_helper.COMMON_ATTRIBUTES['HTTP_URL']
-HTTP_STATUS_CODE = attributes_helper.COMMON_ATTRIBUTES['HTTP_STATUS_CODE']
+HTTP_HOST = attributes_helper.COMMON_ATTRIBUTES["HTTP_HOST"]
+HTTP_METHOD = attributes_helper.COMMON_ATTRIBUTES["HTTP_METHOD"]
+HTTP_PATH = attributes_helper.COMMON_ATTRIBUTES["HTTP_PATH"]
+HTTP_ROUTE = attributes_helper.COMMON_ATTRIBUTES["HTTP_ROUTE"]
+HTTP_URL = attributes_helper.COMMON_ATTRIBUTES["HTTP_URL"]
+HTTP_STATUS_CODE = attributes_helper.COMMON_ATTRIBUTES["HTTP_STATUS_CODE"]
 
 logger = logging.getLogger(__name__)
 
@@ -70,18 +70,19 @@ class LoggingMiddleware:
     """
     Middleware для обработки запросов и ответов с целью журналирования
     """
+
     @staticmethod
     async def get_protocol(request: Request) -> str:
-        protocol = str(request.scope.get('type', ''))
-        http_version = str(request.scope.get('http_version', ''))
-        if protocol.lower() == 'http' and http_version:
-            return f'{protocol.upper()}/{http_version}'
+        protocol = str(request.scope.get("type", ""))
+        http_version = str(request.scope.get("http_version", ""))
+        if protocol.lower() == "http" and http_version:
+            return f"{protocol.upper()}/{http_version}"
         return EMPTY_VALUE
 
     @staticmethod
     async def set_body(request: Request, body: bytes) -> None:
         async def receive() -> Message:
-            return {'type': 'http.request', 'body': body}
+            return {"type": "http.request", "body": body}
 
         request._receive = receive
 
@@ -90,10 +91,7 @@ class LoggingMiddleware:
         await self.set_body(request, body)
         return body
 
-    async def __call__(
-            self, request: Request, call_next: RequestResponseEndpoint,
-            *args, **kwargs
-    ):
+    async def __call__(self, request: Request, call_next: RequestResponseEndpoint, *args, **kwargs):
         start_time = time.time()
         exception_object = None
         # Request Side
@@ -111,15 +109,13 @@ class LoggingMiddleware:
         except json.decoder.JSONDecodeError:
             pass
 
-        server: tuple = request.get('server', ('localhost', PORT))
+        server: tuple = request.get("server", ("localhost", PORT))
         request_headers: dict = dict(request.headers.items())
         # Response Side
         try:
             response = await call_next(request)
         except Exception as ex:
-            response_body = bytes(
-                http.HTTPStatus.INTERNAL_SERVER_ERROR.phrase.encode()
-            )
+            response_body = bytes(http.HTTPStatus.INTERNAL_SERVER_ERROR.phrase.encode())
             response = Response(
                 content=response_body,
                 status_code=http.HTTPStatus.INTERNAL_SERVER_ERROR.real,
@@ -128,14 +124,14 @@ class LoggingMiddleware:
             response_headers = {}
         else:
             response_headers = dict(response.headers.items())
-            response_body = b''
+            response_body = b""
             async for chunk in response.body_iterator:
                 response_body += chunk
             response = Response(
                 content=response_body,
                 status_code=response.status_code,
                 headers=dict(response.headers),
-                media_type=response.media_type
+                media_type=response.media_type,
             )
         duration: int = math.ceil((time.time() - start_time) * 1000)
 
@@ -146,34 +142,35 @@ class LoggingMiddleware:
 
         request_json_fields = RequestJsonLogSchema(
             request_uri=str(request.url),
-            request_referer=request_headers.get('referer', EMPTY_VALUE),
+            request_referer=request_headers.get("referer", EMPTY_VALUE),
             request_protocol=await self.get_protocol(request),
             request_method=request.method,
             request_path=request.url.path,
-            request_host=f'{server[0]}:{server[1]}',
-            request_size=int(request_headers.get('content-length', 0)),
-            request_content_type=request_headers.get(
-                'content-type', EMPTY_VALUE),
+            request_host=f"{server[0]}:{server[1]}",
+            request_size=int(request_headers.get("content-length", 0)),
+            request_content_type=request_headers.get("content-type", EMPTY_VALUE),
             request_headers=json.dumps(request_headers, ensure_ascii=False),
             request_body=request_body,
-            request_direction='in',
+            request_direction="in",
             remote_ip=request.client[0],
             remote_port=request.client[1],
             response_status_code=response.status_code,
-            response_size=int(response_headers.get('content-length', 0)),
+            response_size=int(response_headers.get("content-length", 0)),
             response_headers=json.dumps(response_headers, ensure_ascii=False),
             response_body=response_body,
-            duration=duration
+            duration=duration,
         ).dict()
-        message = f'{"Ошибка" if exception_object else "Ответ"} ' \
-                  f'с кодом {response.status_code} ' \
-                  f'на запрос {request.method} \"{str(request.url)}\", ' \
-                  f'за {duration} мс'
+        message = (
+            f'{"Ошибка" if exception_object else "Ответ"} '
+            f"с кодом {response.status_code} "
+            f'на запрос {request.method} "{str(request.url)}", '
+            f"за {duration} мс"
+        )
         logger.info(
             message,
             extra={
-                'request_json_fields': request_json_fields,
-                'to_mask': True,
+                "request_json_fields": request_json_fields,
+                "to_mask": True,
             },
             exc_info=exception_object,
         )
@@ -186,31 +183,23 @@ class OpenCensusFastAPIMiddleware:
     """
 
     def __init__(
-            self,
-            app: ASGIApp,
-            excludelist_paths=None,
-            excludelist_hostnames=None,
-            sampler=None,
-            exporter=None,
-            propagator=None,
+        self,
+        app: ASGIApp,
+        excludelist_paths=None,
+        excludelist_hostnames=None,
+        sampler=None,
+        exporter=None,
+        propagator=None,
     ) -> None:
         self.app = app
         self.excludelist_paths = excludelist_paths
         self.excludelist_hostnames = excludelist_hostnames
         self.sampler = sampler or samplers.AlwaysOnSampler()
         self.exporter = exporter or DefaultExporter()
-        self.propagator = (
-                propagator
-                or trace_context_http_header_format.TraceContextPropagator()
-        )
+        self.propagator = propagator or trace_context_http_header_format.TraceContextPropagator()
 
     async def __call__(self, request: Request, call_next):
-
-        # Do not trace if the url is in the exclude list
-        if utils.disable_tracing_url(
-                url=str(request.url),
-                excludelist_paths=self.excludelist_paths
-        ):
+        if utils.disable_tracing_url(url=str(request.url), excludelist_paths=self.excludelist_paths):
             return await call_next(request)
 
         try:
@@ -246,11 +235,9 @@ class OpenCensusFastAPIMiddleware:
                 HTTP_URL,
                 str(request.url),
             )
-            execution_context.set_opencensus_attr(
-                'excludelist_hostnames', self.excludelist_hostnames
-            )
+            execution_context.set_opencensus_attr("excludelist_hostnames", self.excludelist_hostnames)
         except Exception as ex:
-            logger.error('Failed to trace request', exc_info=ex)
+            logger.error("Failed to trace request", exc_info=ex)
 
         response = await call_next(request)
         try:
@@ -259,7 +246,7 @@ class OpenCensusFastAPIMiddleware:
                 response.status_code,
             )
         except Exception as ex:
-            logger.error('Failed to trace response', exc_info=ex)
+            logger.error("Failed to trace response", exc_info=ex)
         finally:
             fastapi_tracer.end_span()
             return response
