@@ -24,6 +24,7 @@ class CommandSchema(BaseModel):
         rest_text = "дня"
         raw_command = "анекдот"
     """
+
     header: str = Field(..., title="Способ обращения к боту")
     command: AdminCommandsEnum | MemberCommandsEnum | EntertainmentCommandsEnum | IntegrationCommandsEnum
     raw_command: str = Field(..., title="Оригинальный текст команды")
@@ -41,6 +42,7 @@ class ParameterCommandSchema(CommandSchema):
         rest_text = ""
         raw_command = "покажи"
     """
+
     parameter: CommandAnswerParametersEnum
 
 
@@ -55,6 +57,7 @@ class ValueListCommandSchema(CommandSchema):
         rest_text = ""
         raw_command = "выбери"
     """
+
     value_list: conlist(str, min_items=1)
 
 
@@ -69,6 +72,7 @@ class ValueCommandSchema(CommandSchema):
         rest_text = ""
         raw_command = "процент срабатывания"
     """
+
     value: str = Field(..., min_length=1)
 
 
@@ -84,6 +88,7 @@ class ValueParameterCommandSchema(ParameterCommandSchema):
         rest_text = ""
         raw_command = "запомни"
     """
+
     value: str = Field(..., min_length=1)
 
 
@@ -99,6 +104,7 @@ class ValueListParameterCommandSchema(ParameterCommandSchema):
         rest_text = ""
         raw_command = "запомни"
     """
+
     value_list: list[str]
 
 
@@ -115,6 +121,7 @@ class KeyValueParameterCommandSchema(ValueParameterCommandSchema):
         rest_text = ""
         raw_command = "добавь"
     """
+
     key: str = Field(..., min_length=1)
 
 
@@ -122,10 +129,10 @@ class CommandSettingsSchema(BaseModel):
     """
     Схема настройки команды
     """
+
     command: AdminCommandsEnum | EntertainmentCommandsEnum | MemberCommandsEnum | IntegrationCommandsEnum
     aliases: list[str] = Field(..., title="Список вызовов команды на русском языке")
-    available_parameters: list[CommandAnswerParametersEnum] | None = \
-        Field(None, title="Допустимые параметры к команде")
+    available_parameters: list[CommandAnswerParametersEnum] | None = Field(None, title="Допустимые параметры к команде")
     to_find_for_values_list: bool = Field(False, title="Ожидание списка значений")
     to_find_for_values: bool = Field(False, title="Ожидание одного значения")
     to_find_for_key_values: bool = Field(False, title="Ожидание структуры ключ=значение")

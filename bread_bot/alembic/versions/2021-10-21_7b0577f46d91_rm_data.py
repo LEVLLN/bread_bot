@@ -8,8 +8,8 @@ Create Date: 2021-10-21 16:28:12.436649
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = '7b0577f46d91'
-down_revision = '6723aab504cd'
+revision = "7b0577f46d91"
+down_revision = "6723aab504cd"
 branch_labels = None
 depends_on = None
 

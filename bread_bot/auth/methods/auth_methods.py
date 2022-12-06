@@ -12,9 +12,9 @@ from bread_bot.auth.schemas.auth import TokenDataSchema
 from bread_bot.main.settings import SECRET_KEY, ALGORITHM
 from bread_bot.utils.dependencies import get_async_session
 
-pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def verify_password(plain_password: str, hashed_password: str):
@@ -45,8 +45,8 @@ async def authenticate_user(db: AsyncSession, username: str, password: str):
 
 
 async def create_access_token(
-        data: dict,
-        expires_delta: Optional[timedelta] = None,
+    data: dict,
+    expires_delta: Optional[timedelta] = None,
 ):
     """
     Создание токена на указанный срок по логину и паролю
@@ -56,7 +56,7 @@ async def create_access_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({'exp': expire})
+    to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         claims=to_encode,
         key=SECRET_KEY,
@@ -65,20 +65,18 @@ async def create_access_token(
     return encoded_jwt
 
 
-async def get_current_user(
-        db: AsyncSession = Depends(get_async_session),
-        token: str = Depends(oauth2_scheme)) -> User:
+async def get_current_user(db: AsyncSession = Depends(get_async_session), token: str = Depends(oauth2_scheme)) -> User:
     """
     Dependency: Логин по токену
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail='Could not validate credentials',
-        headers={'WWW-Authenticate': 'Bearer'},
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get('sub')
+        username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
         token_data = TokenDataSchema(username=username)
@@ -93,8 +91,7 @@ async def get_current_user(
     return user
 
 
-async def get_current_active_user(
-        current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
     """
     Dependency: Логин по токену + проверка пользователя на активность
     """
@@ -103,12 +100,11 @@ async def get_current_active_user(
     return current_user
 
 
-async def get_current_active_admin_user(
-        current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_admin_user(current_user: User = Depends(get_current_user)) -> User:
     """
     Dependency: Логин по токену + проверка
     пользователя на активность + Проверка на активность
     """
     if not current_user.is_admin:
-        raise HTTPException(status_code=403, detail='Access Denied')
+        raise HTTPException(status_code=403, detail="Access Denied")
     return await get_current_active_user(current_user=current_user)

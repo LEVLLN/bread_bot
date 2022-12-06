@@ -23,19 +23,20 @@ class BashOrgClient(BaseHTTPClient):
             method="GET",
             url=self.casual_url,
             headers={
-                'Accept': '*/*',
-            }
+                "Accept": "*/*",
+            },
         )
         return response.text
 
     async def get_text(self) -> Optional[str]:
         try:
             html = await self.get_quote()
-            text = BeautifulSoup(html, "html.parser") \
-                .find(name="div", recursive=True, id="quotes") \
-                .div \
-                .find("div", **{"class": None}) \
+            text = (
+                BeautifulSoup(html, "html.parser")
+                .find(name="div", recursive=True, id="quotes")
+                .div.find("div", **{"class": None})
                 .get_text(separator="\n")
+            )
         except Exception as e:
             logger.error(str(e))
             return None

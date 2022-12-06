@@ -5,11 +5,11 @@ from bread_bot.common.models.answer_entities.base_answer_entities import BaseEnt
 
 
 class PhotoEntity(BaseEntity):
-    __tablename__ = 'photo_entities'
+    __tablename__ = "photo_entities"
     pack_id = Column(
         Integer,
-        ForeignKey('answer_packs.id', ondelete='CASCADE'),
+        ForeignKey("answer_packs.id", ondelete="CASCADE"),
     )
     description = Column(Text, nullable=True)
 
-    answer_packs = relationship('AnswerPack', back_populates='photo_entities')
+    answer_packs = relationship("AnswerPack", back_populates="photo_entities")

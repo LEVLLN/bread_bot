@@ -1,8 +1,7 @@
 from bread_bot.common.exceptions.base import NextStepException
 from bread_bot.common.schemas.bread_bot_answers import BaseAnswerSchema, TextAnswerSchema
 from bread_bot.common.services.commands.command_parser import CommandParser
-from bread_bot.common.services.handlers.command_methods.entertainment_command_method import \
-    EntertainmentCommandMethod
+from bread_bot.common.services.handlers.command_methods.entertainment_command_method import EntertainmentCommandMethod
 from bread_bot.common.services.handlers.command_methods.integration_command_method import IntegrationCommandMethod
 from bread_bot.common.services.handlers.command_methods.member_command_method import MemberCommandMethod
 from bread_bot.common.services.handlers.handler import AbstractHandler
@@ -17,9 +16,7 @@ from bread_bot.common.utils.structs import (
 
 class CommandHandler(AbstractHandler):
     async def condition(self) -> bool:
-        return (self.message_service
-                and self.message_service.message
-                and self.message_service.message.text)
+        return self.message_service and self.message_service.message and self.message_service.message.text
 
     async def process(self) -> BaseAnswerSchema:
         if not await self.condition():

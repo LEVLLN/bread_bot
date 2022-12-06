@@ -22,8 +22,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
 
     def get_chance(self):
         return super()._return_answer(
-            f"Есть вероятность {self.command_instance.rest_text} - "
-            f"{str(random.randint(0, 100))}%")
+            f"Есть вероятность {self.command_instance.rest_text} - " f"{str(random.randint(0, 100))}%"
+        )
 
     def choose_variant(self):
         return super()._return_answer(random.choice(self.command_instance.value_list).strip())

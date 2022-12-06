@@ -13,7 +13,6 @@ class EvilInsultClient(BaseHTTPClient):
             query_params={
                 "lang": "en",
                 "type": "json",
-            }
+            },
         )
         return EvilInsultResponse(**response.json())
-

@@ -34,7 +34,7 @@ class AdminCommandMethod(BaseCommandMethod):
                     key=self.command_instance.key,
                     value=self.command_instance.value,
                     entity_class=TextEntity,
-                    reaction_type=ANSWER_ENTITY_MAP[self.command_instance.parameter]
+                    reaction_type=ANSWER_ENTITY_MAP[self.command_instance.parameter],
                 )
             case AdminCommandsEnum.SHOW:
                 return await self.show()
@@ -53,12 +53,12 @@ class AdminCommandMethod(BaseCommandMethod):
         raise RaiseUpException("Функция временно отключена")
 
     async def add(
-            self,
-            key: str,
-            value: str,
-            entity_class: any,
-            reaction_type: AnswerEntityTypesEnum,
-            description: str | None = None,
+        self,
+        key: str,
+        value: str,
+        entity_class: any,
+        reaction_type: AnswerEntityTypesEnum,
+        description: str | None = None,
     ):
         """Команда Добавить"""
         self._check_length_key(reaction_type, key)
@@ -73,7 +73,7 @@ class AdminCommandMethod(BaseCommandMethod):
                 entity_class.key == key.lower(),
                 entity_class.value == value,
                 entity_class.pack_id == answer_pack.id,
-                entity_class.reaction_type == reaction_type
+                entity_class.reaction_type == reaction_type,
             ),
             for_update=True,
         )
@@ -86,12 +86,7 @@ class AdminCommandMethod(BaseCommandMethod):
             )
             if description is not None:
                 instance_params.update(dict(description=description))
-            await entity_class.async_add(
-                db=self.db,
-                instance=entity_class(
-                    **instance_params
-                )
-            )
+            await entity_class.async_add(db=self.db, instance=entity_class(**instance_params))
         return self._return_answer()
 
     async def remember(self, reaction_type: AnswerEntityTypesEnum = AnswerEntityTypesEnum.SUBSTRING):
@@ -143,8 +138,15 @@ class AdminCommandMethod(BaseCommandMethod):
         if answer_pack is None:
             return self._return_answer("У чата нет ни одного пакета под управлением")
 
-        for entity_class in (TextEntity, VoiceEntity, PhotoEntity, StickerEntity,
-                             GifEntity, VideoEntity, VideoNoteEntity):
+        for entity_class in (
+            TextEntity,
+            VoiceEntity,
+            PhotoEntity,
+            StickerEntity,
+            GifEntity,
+            VideoEntity,
+            VideoNoteEntity,
+        ):
             match self.command_instance:
                 case KeyValueParameterCommandSchema():
                     await entity_class.async_delete(
@@ -153,8 +155,8 @@ class AdminCommandMethod(BaseCommandMethod):
                             entity_class.key == self.command_instance.key,
                             entity_class.value == self.command_instance.value,
                             entity_class.pack_id == answer_pack.id,
-                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter]
-                        )
+                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
+                        ),
                     )
                 case ValueParameterCommandSchema():
                     await entity_class.async_delete(
@@ -162,8 +164,8 @@ class AdminCommandMethod(BaseCommandMethod):
                         where=and_(
                             entity_class.key == self.command_instance.value,
                             entity_class.pack_id == answer_pack.id,
-                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter]
-                        )
+                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
+                        ),
                     )
                 case _:
                     raise RaiseUpException("Введены неправильные значения")

@@ -28,8 +28,8 @@ class MemberDBSchema(MemberSchema):
 
 
 class ForismaticQuote(BaseModel):
-    text: str = Field(..., alias='quoteText')
-    author: Optional[str] = Field('Unknown', alias='quoteAuthor')
+    text: str = Field(..., alias="quoteText")
+    author: Optional[str] = Field("Unknown", alias="quoteAuthor")
 
     class Config:
         allow_population_by_field_name = True

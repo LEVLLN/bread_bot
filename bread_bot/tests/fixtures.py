@@ -39,18 +39,18 @@ def request_body_message():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "ru"
+                    "language_code": "ru",
                 },
                 "chat": {
                     "id": 134,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 12343,
-                "text": "Test"
-            }
+                "text": "Test",
+            },
         }
     )
 
@@ -68,14 +68,14 @@ def reply_voice():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "en"
+                    "language_code": "en",
                 },
                 "chat": {
                     "id": 296382623,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 1655506631,
                 "reply_to_message": {
@@ -86,14 +86,14 @@ def reply_voice():
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "language_code": "en"
+                        "language_code": "en",
                     },
                     "chat": {
                         "id": 296382623,
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "type": "private"
+                        "type": "private",
                     },
                     "date": 1655506619,
                     "voice": {
@@ -101,11 +101,11 @@ def reply_voice():
                         "mime_type": "audio/ogg",
                         "file_id": "AwACAgIAAxkBAAI2SmKtBrufIcWi95pc7qz3NkFNPnZNAAI5HwACp3ZpSdqwY0ZTyPojJAQ",
                         "file_unique_id": "AgADOR8AAqd2aUk",
-                        "file_size": 11599
-                    }
+                        "file_size": 11599,
+                    },
                 },
-                "text": "1234567"
-            }
+                "text": "1234567",
+            },
         }
     )
 
@@ -123,59 +123,69 @@ def reply_gif():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "ru"
+                    "language_code": "ru",
                 },
                 "chat": {
                     "id": 296382623,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 1669076487,
                 "reply_to_message": {
                     "message_id": 35490,
                     "from": {
-                        "id": 296382623, "is_bot": False,
+                        "id": 296382623,
+                        "is_bot": False,
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "language_code": "ru"},
+                        "language_code": "ru",
+                    },
                     "chat": {
                         "id": 296382623,
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "type": "private"
+                        "type": "private",
                     },
                     "date": 1669076003,
                     "animation": {
                         "file_name": "scrubs-dr-perrycox.mp4",
                         "mime_type": "video/mp4",
-                        "duration": 2, "width": 220,
-                        "height": 220, "thumb": {
+                        "duration": 2,
+                        "width": 220,
+                        "height": 220,
+                        "thumb": {
                             "file_id": "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ",
                             "file_unique_id": "AQADDAMAAuTuDVNy",
-                            "file_size": 7292, "width": 220,
-                            "height": 220},
+                            "file_size": 7292,
+                            "width": 220,
+                            "height": 220,
+                        },
                         "file_id": "CgACAgQAAxkBAAKKomN8FCMAAcl0y7M_7aIYE9IkJ8g6WgACDAMAAuTuDVMjrKeBdG069CsE",
                         "file_unique_id": "AgADDAMAAuTuDVM",
-                        "file_size": 49283},
+                        "file_size": 49283,
+                    },
                     "document": {
                         "file_name": "scrubs-dr-perrycox.mp4",
                         "mime_type": "video/mp4",
                         "thumb": {
                             "file_id": "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ",
                             "file_unique_id": "AQADDAMAAuTuDVNy",
-                            "file_size": 7292, "width": 220,
-                            "height": 220
+                            "file_size": 7292,
+                            "width": 220,
+                            "height": 220,
                         },
                         "file_id": "CgACAgQAAxkBAAKKomN8FCMAAcl0y7M_7aIYE9IkJ8g6WgACDAMAAuTuDVMjrKeBdG069CsE",
                         "file_unique_id": "AgADDAMAAuTuDVM",
-                        "file_size": 49283
-                    }
+                        "file_size": 49283,
+                    },
                 },
-                "text": "Кек"}}
+                "text": "Кек",
+            },
+        }
     )
 
 
@@ -192,14 +202,14 @@ def reply_photo():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "en"
+                    "language_code": "en",
                 },
                 "chat": {
                     "id": 296382623,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 1655506631,
                 "reply_to_message": {
@@ -210,14 +220,14 @@ def reply_photo():
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "language_code": "en"
+                        "language_code": "en",
                     },
                     "chat": {
                         "id": 296382623,
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "type": "private"
+                        "type": "private",
                     },
                     "date": 1655570499,
                     "photo": [
@@ -226,31 +236,33 @@ def reply_photo():
                             "file_unique_id": "AQADUb0xG6d2cUl4",
                             "file_size": 1433,
                             "width": 69,
-                            "height": 90},
+                            "height": 90,
+                        },
                         {
                             "file_id": "IAAxkBAAI2f2KuAAFDf8weZSPvhJfqXj_NHirgAwACUb0xG6d2cUn78sce7lCKywEAAwIAA20AAyQE",
                             "file_unique_id": "AQADUb0xG6d2cUly",
                             "file_size": 15067,
                             "width": 245,
-                            "height": 320
+                            "height": 320,
                         },
                         {
                             "file_id": "IAAxkBAAI2f2KuAAFDf8weZSPvhJfqXj_NHirgAwACUb0xG6d2cUn78sce7lCKywEAAwIAA3gAAyQE",
                             "file_unique_id": "AQADUb0xG6d2cUl9",
                             "file_size": 51944,
                             "width": 612,
-                            "height": 800},
+                            "height": 800,
+                        },
                         {
                             "file_id": "IAAxkBAAI2f2KuAAFDf8weZSPvhJfqXj_NHirgAwACUb0xG6d2cUn78sce7lCKywEAAwIAA3kAAyQE",
                             "file_unique_id": "AQADUb0xG6d2cUl-",
                             "file_size": 85690,
                             "width": 979,
-                            "height": 1280
-                        }
-                    ]
+                            "height": 1280,
+                        },
+                    ],
                 },
-                "text": "12345"
-            }
+                "text": "12345",
+            },
         }
     )
 
@@ -268,13 +280,14 @@ def reply_photo_with_caption():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "en"},
+                    "language_code": "en",
+                },
                 "chat": {
                     "id": 296382623,
-                    'first_name': 'Tester',
-                    'last_name': 'Testerov',
-                    'username': 'Test_test',
-                    "type": "private"
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "type": "private",
                 },
                 "date": 1668554167,
                 "reply_to_message": {
@@ -282,17 +295,17 @@ def reply_photo_with_caption():
                     "from": {
                         "id": 296382623,
                         "is_bot": False,
-                        'first_name': 'Tester',
-                        'last_name': 'Testerov',
-                        'username': 'Test_test',
-                        "language_code": "en"
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "language_code": "en",
                     },
                     "chat": {
                         "id": 296382623,
-                        'first_name': 'Tester',
-                        'last_name': 'Testerov',
-                        'username': 'Test_test',
-                        "type": "private"
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "type": "private",
                     },
                     "date": 1668552671,
                     "photo": [
@@ -301,26 +314,27 @@ def reply_photo_with_caption():
                             "file_unique_id": "AQADkcIxGw17oEt4",
                             "file_size": 2105,
                             "width": 71,
-                            "height": 90
+                            "height": 90,
                         },
                         {
                             "file_id": "AgACAgIAAxkBAAKGUmN0F99KZ-AAKRwjEbDXugS4arUhjBh3b3AQADAgADbQADKwQ",
                             "file_unique_id": "AQADkcIxGw17oEty",
                             "file_size": 31202,
                             "width": 252,
-                            "height": 320},
+                            "height": 320,
+                        },
                         {
                             "file_id": "AgACAgIAAxkBAAKGUmN0F99KZ-AAKRwjEbDXugS4arUhjBh3b3AQADAgADeAADKwQ",
                             "file_unique_id": "AQADkcIxGw17oEt9",
                             "file_size": 80331,
                             "width": 475,
-                            "height": 604
-                        }
+                            "height": 604,
+                        },
                     ],
-                    "caption": "some_message_good"
+                    "caption": "some_message_good",
                 },
-                "text": "lololol"
-            }
+                "text": "lololol",
+            },
         }
     )
 
@@ -338,14 +352,14 @@ def reply_sticker():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "en"
+                    "language_code": "en",
                 },
                 "chat": {
                     "id": 296382623,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 1655506631,
                 "reply_to_message": {
@@ -356,14 +370,14 @@ def reply_sticker():
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "language_code": "en"
+                        "language_code": "en",
                     },
                     "chat": {
                         "id": 296382623,
                         "first_name": "Tester",
                         "last_name": "Testerov",
                         "username": "Test_test",
-                        "type": "private"
+                        "type": "private",
                     },
                     "date": 1655570499,
                     "sticker": {
@@ -375,15 +389,18 @@ def reply_sticker():
                         "is_video": False,
                         "thumb": {
                             "file_id": "AAMCAgADGQEAAja1Yq-UNR6YPAf6qnuwQiapV9kWpW0AAn4BAAJ0-FQb4PyXRewndEgBAAdtAAMkBA",
-                            "file_unique_id": "AQADfgEAAnT4VBty", "file_size": 17784, "width": 320, "height": 320
+                            "file_unique_id": "AQADfgEAAnT4VBty",
+                            "file_size": 17784,
+                            "width": 320,
+                            "height": 320,
                         },
                         "file_id": "CAACAgIAAxkBAAI2tWKvlDUemDwH-qp7sEImqVfZFqVtAAJ-AQACdPhUG-D8l0XsJ3RIJAQ",
                         "file_unique_id": "AgADfgEAAnT4VBs",
-                        "file_size": 28628
-                    }
+                        "file_size": 28628,
+                    },
                 },
-                "text": "12345"
-            }
+                "text": "12345",
+            },
         }
     )
 
@@ -410,18 +427,18 @@ def request_body_edited_message():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "ru"
+                    "language_code": "ru",
                 },
                 "chat": {
                     "id": 134,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 12343,
-                "text": "Test"
-            }
+                "text": "Test",
+            },
         }
     )
 
@@ -439,22 +456,22 @@ def request_body_voice_message():
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "language_code": "ru"
+                    "language_code": "ru",
                 },
                 "chat": {
                     "id": 134,
                     "first_name": "Tester",
                     "last_name": "Testerov",
                     "username": "Test_test",
-                    "type": "private"
+                    "type": "private",
                 },
                 "date": 12343,
                 "voice": {
                     "duration": 4,
                     "mime_type": "some_type",
                     "file_id": "some_file_id",
-                }
-            }
+                },
+            },
         }
     )
 

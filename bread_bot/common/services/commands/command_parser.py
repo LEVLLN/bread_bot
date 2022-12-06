@@ -39,6 +39,7 @@ class CommandParser:
                 return func(self)
             except ValidationError:
                 raise CommandParseException("Введены неправильные значения")
+
         return wrapper
 
     @staticmethod
@@ -46,11 +47,7 @@ class CommandParser:
         """
         Парсинг свойств исходного текста и отделение ключевого значения
         """
-        first_item, second_item = re.findall(
-            f"^({composite_mask(keys)}).?\\s?(.+)?",
-            source_text,
-            re.IGNORECASE
-        )[0]
+        first_item, second_item = re.findall(f"^({composite_mask(keys)}).?\\s?(.+)?", source_text, re.IGNORECASE)[0]
         return first_item.strip(), second_item.strip()
 
     @staticmethod
@@ -65,10 +62,10 @@ class CommandParser:
             if len(parameter_list) <= 1:
                 parameter_list = rest.split(",")
         except ValueError:
-            parameter_list = [rest, ]
-        return list(
-            map(lambda x: x.strip(), parameter_list)
-        )
+            parameter_list = [
+                rest,
+            ]
+        return list(map(lambda x: x.strip(), parameter_list))
 
     def _find_header(self) -> Tuple[str, str]:
         """
@@ -90,10 +87,7 @@ class CommandParser:
         else:
             return command.strip().lower(), rest
 
-    def _find_parameters(
-            self,
-            rest: str
-    ) -> Tuple[CommandAnswerParametersEnum, str]:
+    def _find_parameters(self, rest: str) -> Tuple[CommandAnswerParametersEnum, str]:
         """
         Поиск параметров
         """
@@ -117,9 +111,9 @@ class CommandParser:
             self.main_parameters["raw_command"] = command
 
     def _handle_parameter_key_value(
-            self,
-            rest: str,
-            to_raise_exception: bool,
+        self,
+        rest: str,
+        to_raise_exception: bool,
     ) -> KeyValueParameterCommandSchema | ValueParameterCommandSchema:
         """
         Получение команды с параметром, значением или ключом и значением

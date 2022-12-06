@@ -6,7 +6,8 @@ from sqlalchemy import and_
 from bread_bot.common.clients.telegram_client import TelegramClient
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import (
-    ChatToMember, Member,
+    ChatToMember,
+    Member,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.telegram_messages import MemberSchema
@@ -46,7 +47,8 @@ class MemberCommandMethod(BaseCommandMethod):
                 Member.id is not None,
                 Member.username is not None,
             ),
-            select_in_load=ChatToMember.member)
+            select_in_load=ChatToMember.member,
+        )
         for chat_to_member in chat_to_members:
             if chat_to_member.member and not chat_to_member.member.is_bot:
                 member = chat_to_member.member
@@ -61,7 +63,7 @@ class MemberCommandMethod(BaseCommandMethod):
         return result
 
     async def _get_admin_members(self) -> dict:
-        """Получение администраторов группы """
+        """Получение администраторов группы"""
         response = await TelegramClient().get_chat(self.member_service.chat.chat_id)
         result = {}
         for chat in response.result:
@@ -77,7 +79,9 @@ class MemberCommandMethod(BaseCommandMethod):
     async def get_members(self) -> list[MemberSchema]:
         """Получить пользователей чата"""
         if self.member_service.chat.chat_id > 0:
-            return [self.message_service.message.source, ]
+            return [
+                self.message_service.message.source,
+            ]
         admin_members, members = await asyncio.gather(
             self._get_chat_members(),
             self._get_admin_members(),
@@ -133,4 +137,5 @@ class MemberCommandMethod(BaseCommandMethod):
             raise RaiseUpException("В группе недостаточно пользователей для образования пары!")
         return super()._return_answer(
             f"Парочку {self.command_instance.rest_text} образовали: "
-            f"{self.get_username(members[0])} и {self.get_username(members[1])}")
+            f"{self.get_username(members[0])} и {self.get_username(members[1])}"
+        )

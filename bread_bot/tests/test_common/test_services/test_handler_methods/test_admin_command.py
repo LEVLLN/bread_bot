@@ -8,18 +8,23 @@ from bread_bot.common.models import (
     TextEntity,
     PhotoEntity,
     VoiceEntity,
-    StickerEntity, GifEntity,
+    StickerEntity,
+    GifEntity,
 )
 from bread_bot.common.schemas.commands import (
-    KeyValueParameterCommandSchema, ValueListCommandSchema,
-    ValueParameterCommandSchema, CommandSchema, ValueCommandSchema,
+    KeyValueParameterCommandSchema,
+    ValueListCommandSchema,
+    ValueParameterCommandSchema,
+    CommandSchema,
+    ValueCommandSchema,
 )
 from bread_bot.common.services.handlers.command_methods.admin_command_method import AdminCommandMethod
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     CommandAnswerParametersEnum,
-    AnswerEntityTypesEnum, ANSWER_ENTITY_MAP,
+    AnswerEntityTypesEnum,
+    ANSWER_ENTITY_MAP,
 )
 
 
@@ -32,17 +37,17 @@ class BaseAdminCommand:
             instance=AnswerPacksToChats(
                 chat_id=admin_command_method.member_service.chat.id,
                 pack_id=answer_pack.id,
-            )
+            ),
         )
         yield answer_pack
 
     @pytest.fixture
     async def admin_command_method(
-            self,
-            db,
-            message_service,
-            member_service,
-            command_instance,
+        self,
+        db,
+        message_service,
+        member_service,
+        command_instance,
     ):
         yield AdminCommandMethod(
             db=db,
@@ -54,14 +59,16 @@ class BaseAdminCommand:
 
 class TestAdd(BaseAdminCommand):
     @pytest.fixture
-    async def command_instance(self, ):
+    async def command_instance(
+        self,
+    ):
         yield KeyValueParameterCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.ADD,
             parameter=CommandAnswerParametersEnum.TRIGGER,
             key="my_key",
             value="my_value",
-            raw_command="добавь"
+            raw_command="добавь",
         )
 
     @pytest.fixture
@@ -73,13 +80,13 @@ class TestAdd(BaseAdminCommand):
                 value=admin_command_method.command_instance.value,
                 reaction_type="TRIGGER",
                 pack_id=based_pack.id,
-            )
+            ),
         )
 
     async def test_raise_condition(
-            self,
-            admin_command_method,
-            command_instance,
+        self,
+        admin_command_method,
+        command_instance,
     ):
         admin_command_method.command_instance.parameter = CommandAnswerParametersEnum.SUBSTRING
         command_instance.key = "1"
@@ -94,10 +101,7 @@ class TestAdd(BaseAdminCommand):
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_entity = await TextEntity.async_first(
-            db=db,
-            where=and_(TextEntity.pack_id == answer_pack.id)
-        )
+        text_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
 
         assert answer_pack
         assert text_entity.key == admin_command_method.command_instance.key
@@ -111,10 +115,7 @@ class TestAdd(BaseAdminCommand):
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_entity = await TextEntity.async_first(
-            db=db,
-            where=and_(TextEntity.pack_id == answer_pack.id)
-        )
+        text_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
 
         assert answer_pack
         assert text_entity.key == admin_command_method.command_instance.key
@@ -128,10 +129,7 @@ class TestAdd(BaseAdminCommand):
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_answer_entity = await TextEntity.async_first(
-            db=db,
-            where=and_(TextEntity.pack_id == answer_pack.id)
-        )
+        text_answer_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
 
         create_mocker.assert_not_called()
         assert text_answer_entity == text_answer_entity
@@ -142,10 +140,7 @@ class TestAdd(BaseAdminCommand):
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_answer_entity = await TextEntity.async_first(
-            db=db,
-            where=and_(TextEntity.pack_id == answer_pack.id)
-        )
+        text_answer_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
 
         create_mocker.assert_called_once()
         assert text_answer_entity == text_answer_entity
@@ -160,7 +155,9 @@ class TestRemember(BaseAdminCommand):
         yield message_service
 
     @pytest.fixture
-    async def command_instance(self, ):
+    async def command_instance(
+        self,
+    ):
         yield ValueListCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.REMEMBER,
@@ -169,10 +166,10 @@ class TestRemember(BaseAdminCommand):
         )
 
     async def test_raise_short_key(
-            self,
-            admin_command_method,
-            command_instance,
-            photo_message_service,
+        self,
+        admin_command_method,
+        command_instance,
+        photo_message_service,
     ):
         command_instance.value_list = ["1", "212"]
         admin_command_method.message_service = photo_message_service
@@ -182,9 +179,9 @@ class TestRemember(BaseAdminCommand):
         assert e.value.args[0] == "Ключ для подстроки не может быть меньше 3-х символов"
 
     async def test_raise_not_reply(
-            self,
-            admin_command_method,
-            command_instance,
+        self,
+        admin_command_method,
+        command_instance,
     ):
         admin_command_method.command_instance = command_instance
         with pytest.raises(RaiseUpException) as e:
@@ -196,24 +193,25 @@ class TestRemember(BaseAdminCommand):
         [
             (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
             (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
-        ]
+        ],
     )
     async def test_photo_reply(
-            self,
-            db,
-            based_pack,
-            admin_command_method,
-            command_instance,
-            photo_message_service,
-            command,
-            reaction_type,
+        self,
+        db,
+        based_pack,
+        admin_command_method,
+        command_instance,
+        photo_message_service,
+        command,
+        reaction_type,
     ):
         admin_command_method.message_service = photo_message_service
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await PhotoEntity.async_filter(
-            db, where=PhotoEntity.pack_id == based_pack.id,
+            db,
+            where=PhotoEntity.pack_id == based_pack.id,
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -227,24 +225,25 @@ class TestRemember(BaseAdminCommand):
         [
             (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
             (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
-        ]
+        ],
     )
     async def test_gif_reply(
-            self,
-            db,
-            based_pack,
-            admin_command_method,
-            command_instance,
-            reply_gif,
-            command,
-            reaction_type,
+        self,
+        db,
+        based_pack,
+        admin_command_method,
+        command_instance,
+        reply_gif,
+        command,
+        reaction_type,
     ):
         admin_command_method.message_service.message.reply = reply_gif.message.reply
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await GifEntity.async_filter(
-            db, where=GifEntity.pack_id == based_pack.id,
+            db,
+            where=GifEntity.pack_id == based_pack.id,
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -257,18 +256,18 @@ class TestRemember(BaseAdminCommand):
         [
             (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
             (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
-        ]
+        ],
     )
     async def test_photo_reply_with_capture(
-            self,
-            db,
-            based_pack,
-            admin_command_method,
-            command_instance,
-            message_service,
-            reply_photo_with_caption,
-            command,
-            reaction_type,
+        self,
+        db,
+        based_pack,
+        admin_command_method,
+        command_instance,
+        message_service,
+        reply_photo_with_caption,
+        command,
+        reaction_type,
     ):
         message_service.message.reply = reply_photo_with_caption.message.reply
         admin_command_method.message_service = message_service
@@ -276,7 +275,8 @@ class TestRemember(BaseAdminCommand):
         result = await admin_command_method.execute()
 
         entities = await PhotoEntity.async_filter(
-            db, where=PhotoEntity.pack_id == based_pack.id,
+            db,
+            where=PhotoEntity.pack_id == based_pack.id,
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -290,24 +290,25 @@ class TestRemember(BaseAdminCommand):
         [
             (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
             (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
-        ]
+        ],
     )
     async def test_voice_reply(
-            self,
-            db,
-            based_pack,
-            admin_command_method,
-            command_instance,
-            reply_voice,
-            command,
-            reaction_type,
+        self,
+        db,
+        based_pack,
+        admin_command_method,
+        command_instance,
+        reply_voice,
+        command,
+        reaction_type,
     ):
         admin_command_method.message_service.message.reply = reply_voice.message.reply
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await VoiceEntity.async_filter(
-            db, where=VoiceEntity.pack_id == based_pack.id,
+            db,
+            where=VoiceEntity.pack_id == based_pack.id,
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -320,24 +321,25 @@ class TestRemember(BaseAdminCommand):
         [
             (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
             (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
-        ]
+        ],
     )
     async def test_sticker_reply(
-            self,
-            db,
-            based_pack,
-            admin_command_method,
-            command_instance,
-            reply_sticker,
-            command,
-            reaction_type,
+        self,
+        db,
+        based_pack,
+        admin_command_method,
+        command_instance,
+        reply_sticker,
+        command,
+        reaction_type,
     ):
         admin_command_method.message_service.message.reply = reply_sticker.message.reply
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
         entities = await StickerEntity.async_filter(
-            db, where=StickerEntity.pack_id == based_pack.id,
+            db,
+            where=StickerEntity.pack_id == based_pack.id,
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -348,7 +350,9 @@ class TestRemember(BaseAdminCommand):
 
 class TestDelete(BaseAdminCommand):
     @pytest.fixture
-    async def command_instance(self, ):
+    async def command_instance(
+        self,
+    ):
         yield ValueParameterCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.DELETE,
@@ -358,7 +362,9 @@ class TestDelete(BaseAdminCommand):
         )
 
     @pytest.fixture
-    async def command_key_value_instance(self, ):
+    async def command_key_value_instance(
+        self,
+    ):
         yield KeyValueParameterCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.DELETE,
@@ -379,7 +385,7 @@ class TestDelete(BaseAdminCommand):
             StickerEntity,
             PhotoEntity,
             VoiceEntity,
-        ]
+        ],
     )
     @pytest.mark.parametrize(
         "parameter",
@@ -388,18 +394,20 @@ class TestDelete(BaseAdminCommand):
             CommandAnswerParametersEnum.SUBSTRING,
             CommandAnswerParametersEnum.TRIGGER,
             CommandAnswerParametersEnum.TRIGGER_LIST,
-        ]
+        ],
     )
     async def test(self, db, admin_command_method, command_instance, based_pack, expected_model, parameter):
         admin_command_method.command_instance.parameter = parameter
         entities = []
         for key in ["other_key", command_instance.value]:
-            entities.append(expected_model(
-                key=key,
-                value="something",
-                reaction_type=ANSWER_ENTITY_MAP[parameter],
-                pack_id=based_pack.id,
-            ))
+            entities.append(
+                expected_model(
+                    key=key,
+                    value="something",
+                    reaction_type=ANSWER_ENTITY_MAP[parameter],
+                    pack_id=based_pack.id,
+                )
+            )
         await expected_model.async_add_all(db, entities)
 
         pre_expected = await expected_model.async_filter(db, where=expected_model.pack_id == based_pack.id)
@@ -415,7 +423,13 @@ class TestDelete(BaseAdminCommand):
         assert expected[0].reaction_type == ANSWER_ENTITY_MAP[parameter]
         assert expected[0].pack_id == based_pack.id
 
-    async def test_key_value(self, db, admin_command_method, command_key_value_instance, based_pack, ):
+    async def test_key_value(
+        self,
+        db,
+        admin_command_method,
+        command_key_value_instance,
+        based_pack,
+    ):
         admin_command_method.command_instance = command_key_value_instance
         entity = TextEntity(
             key=command_key_value_instance.key,
@@ -425,7 +439,12 @@ class TestDelete(BaseAdminCommand):
         )
         await TextEntity.async_add(db, entity)
 
-        assert await TextEntity.async_first(db, ) == entity
+        assert (
+            await TextEntity.async_first(
+                db,
+            )
+            == entity
+        )
         result = await admin_command_method.execute()
         expected = await TextEntity.async_filter(db, where=TextEntity.pack_id == based_pack.id)
 
@@ -435,7 +454,9 @@ class TestDelete(BaseAdminCommand):
 
 class TestAnswerChance(BaseAdminCommand):
     @pytest.fixture
-    async def command_instance(self, ):
+    async def command_instance(
+        self,
+    ):
         yield CommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.ANSWER_CHANCE,
@@ -443,7 +464,9 @@ class TestAnswerChance(BaseAdminCommand):
         )
 
     @pytest.fixture
-    async def command_value_instance(self, ):
+    async def command_value_instance(
+        self,
+    ):
         yield ValueCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.ANSWER_CHANCE,
@@ -458,25 +481,22 @@ class TestAnswerChance(BaseAdminCommand):
             "20",
             "80",
             "15",
-        ]
+        ],
     )
     async def test_set_answer_chance(
-            self,
-            db,
-            admin_command_method,
-            command_value_instance,
-            based_pack,
-            answer_chance,
+        self,
+        db,
+        admin_command_method,
+        command_value_instance,
+        based_pack,
+        answer_chance,
     ):
         command_value_instance.value = answer_chance
         admin_command_method.command_instance = command_value_instance
         assert based_pack.answer_chance == 100
 
         result = await admin_command_method.execute()
-        excepted_answer_pack = await AnswerPack.async_first(
-            db=db,
-            where=AnswerPack.id == based_pack.id
-        )
+        excepted_answer_pack = await AnswerPack.async_first(db=db, where=AnswerPack.id == based_pack.id)
 
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert excepted_answer_pack.answer_chance == int(answer_chance)
@@ -488,15 +508,15 @@ class TestAnswerChance(BaseAdminCommand):
             "20",
             "80",
             "15",
-        ]
+        ],
     )
     async def test_get_answer_chance(
-            self,
-            db,
-            admin_command_method,
-            command_instance,
-            based_pack,
-            answer_chance,
+        self,
+        db,
+        admin_command_method,
+        command_instance,
+        based_pack,
+        answer_chance,
     ):
         based_pack.answer_chance = answer_chance
         await AnswerPack.async_add(db, based_pack)
@@ -517,25 +537,22 @@ class TestAnswerChance(BaseAdminCommand):
             "100.1",
             "",
             None,
-        ]
+        ],
     )
     async def test_invalid_value(
-            self,
-            db,
-            admin_command_method,
-            command_value_instance,
-            based_pack,
-            answer_chance,
+        self,
+        db,
+        admin_command_method,
+        command_value_instance,
+        based_pack,
+        answer_chance,
     ):
         command_value_instance.value = answer_chance
         admin_command_method.command_instance = command_value_instance
         assert based_pack.answer_chance == 100
 
         result = await admin_command_method.execute()
-        excepted_answer_pack = await AnswerPack.async_first(
-            db=db,
-            where=AnswerPack.id == based_pack.id
-        )
+        excepted_answer_pack = await AnswerPack.async_first(db=db, where=AnswerPack.id == based_pack.id)
 
         assert result.text == "Некорректное значение. Необходимо ввести число от 0 до 100"
         assert excepted_answer_pack.answer_chance == 100

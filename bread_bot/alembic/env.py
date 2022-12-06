@@ -7,10 +7,11 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from bread_bot.main import settings
-from bread_bot.main.settings import APP_MODULES, APP_NAME
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 from bread_bot.main.database.base import DeclarativeBase
+from bread_bot.main.settings import APP_MODULES, APP_NAME
 
 config = context.config
 
@@ -18,10 +19,9 @@ config = context.config
 def get_project_models_metadata():
     metadata_list = []
     for app_module in APP_MODULES:
-        module = importlib \
-            .import_module(f'{APP_NAME}.{app_module}.models')
+        module = importlib.import_module(f"{APP_NAME}.{app_module}.models")
         for name, obj in inspect.getmembers(module):
-            if inspect.isclass(obj) and hasattr(obj, 'metadata'):
+            if inspect.isclass(obj) and hasattr(obj, "metadata"):
                 metadata_list.append(obj.metadata)
                 break
     return metadata_list
@@ -37,6 +37,7 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 get_project_models_metadata()
 target_metadata = [DeclarativeBase.metadata]
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -75,7 +76,7 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    config.set_main_option('sqlalchemy.url', settings.DATABASE_URI)
+    config.set_main_option("sqlalchemy.url", settings.DATABASE_URI)
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
@@ -83,9 +84,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

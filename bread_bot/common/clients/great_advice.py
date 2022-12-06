@@ -1,8 +1,7 @@
 import logging
-from urllib.parse import urljoin
 
-from bread_bot.main.base_client import BaseHTTPClient
 from bread_bot.common.schemas.api_models import GreatAdviceResponse
+from bread_bot.main.base_client import BaseHTTPClient
 
 logger = logging.getLogger(__name__)
 

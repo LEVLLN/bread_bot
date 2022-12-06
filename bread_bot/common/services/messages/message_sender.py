@@ -3,9 +3,14 @@ import logging
 from bread_bot.main.settings import MESSAGE_LEN_LIMIT
 from bread_bot.common.clients.telegram_client import TelegramClient
 from bread_bot.common.schemas.bread_bot_answers import (
-    TextAnswerSchema, BaseAnswerSchema, VoiceAnswerSchema,
-    PhotoAnswerSchema, StickerAnswerSchema, GifAnswerSchema,
-    VideoAnswerSchema, VideoNoteAnswerSchema,
+    TextAnswerSchema,
+    BaseAnswerSchema,
+    VoiceAnswerSchema,
+    PhotoAnswerSchema,
+    StickerAnswerSchema,
+    GifAnswerSchema,
+    VideoAnswerSchema,
+    VideoNoteAnswerSchema,
 )
 from bread_bot.utils.helpers import chunks
 
@@ -14,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class MessageSender:
     """Сервис отправки сообщений"""
+
     def __init__(self, message: BaseAnswerSchema):
         self.message: BaseAnswerSchema = message
         self.telegram_client: TelegramClient = TelegramClient()
@@ -21,8 +27,8 @@ class MessageSender:
     @staticmethod
     def _split_text_messages(message: BaseAnswerSchema | TextAnswerSchema) -> list[TextAnswerSchema]:
         """
-            У одного сообщения есть лимит по символам
-            Если сообщение превышает лимит - необходимо его разделить на несколько сообщений
+        У одного сообщения есть лимит по символам
+        Если сообщение превышает лимит - необходимо его разделить на несколько сообщений
         """
         result = []
         if len(message.text) > MESSAGE_LEN_LIMIT:
@@ -36,11 +42,15 @@ class MessageSender:
                 )
             return result
         else:
-            return [message, ]
+            return [
+                message,
+            ]
 
     async def send_messages_to_chat(self):
         """Отправка сообщения в чат"""
-        messages = [self.message, ]
+        messages = [
+            self.message,
+        ]
         match self.message:
             case VoiceAnswerSchema():
                 method = self.telegram_client.send_voice_method

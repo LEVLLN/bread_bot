@@ -4,10 +4,8 @@ from sqlalchemy.orm import Session
 from bread_bot.main.database import mixins
 
 
-class User(mixins.AbstractIsActiveBaseModel,
-           mixins.BaseModel,
-           mixins.CRUDMixin):
-    __tablename__ = 'users'
+class User(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUDMixin):
+    __tablename__ = "users"
     username = Column(String(255), nullable=False, unique=True)
     first_name = Column(String(255))
     surname = Column(String(255))
@@ -16,5 +14,5 @@ class User(mixins.AbstractIsActiveBaseModel,
     is_admin = Column(Boolean, nullable=False, default=False)
 
     @classmethod
-    def get_user(cls, db: Session, username: str) -> 'User':
-        return cls.first(db, **{'username': username})
+    def get_user(cls, db: Session, username: str) -> "User":
+        return cls.first(db, **{"username": username})

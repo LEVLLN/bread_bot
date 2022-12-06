@@ -19,22 +19,22 @@ from bread_bot.common.utils.structs import (
 )
 
 COMMAND_INSTANCE_TYPE = (
-        CommandSchema |
-        ValueCommandSchema |
-        ValueListCommandSchema |
-        ValueListParameterCommandSchema |
-        ParameterCommandSchema |
-        KeyValueParameterCommandSchema
+    CommandSchema
+    | ValueCommandSchema
+    | ValueListCommandSchema
+    | ValueListParameterCommandSchema
+    | ParameterCommandSchema
+    | KeyValueParameterCommandSchema
 )
 
 
 class BaseCommandMethod:
     def __init__(
-            self,
-            db: AsyncSession,
-            command_instance: COMMAND_INSTANCE_TYPE,
-            message_service: MessageService,
-            member_service: MemberService,
+        self,
+        db: AsyncSession,
+        command_instance: COMMAND_INSTANCE_TYPE,
+        message_service: MessageService,
+        member_service: MemberService,
     ):
         self.db: AsyncSession = db
         self.command_instance: COMMAND_INSTANCE_TYPE = command_instance

@@ -5,10 +5,10 @@ from bread_bot.common.models.answer_entities.base_answer_entities import BaseEnt
 
 
 class VideoEntity(BaseEntity):
-    __tablename__ = 'video_entities'
+    __tablename__ = "video_entities"
     pack_id = Column(
         Integer,
-        ForeignKey('answer_packs.id', ondelete='CASCADE'),
+        ForeignKey("answer_packs.id", ondelete="CASCADE"),
     )
 
-    answer_packs = relationship('AnswerPack', back_populates='video_entities')
+    answer_packs = relationship("AnswerPack", back_populates="video_entities")

@@ -16,11 +16,11 @@ from bread_bot.common.utils.structs import IntegrationCommandsEnum
 class TestIntegrationCommand:
     @pytest.fixture
     async def integration_command_method(
-            self,
-            db,
-            message_service,
-            member_service,
-            command_instance,
+        self,
+        db,
+        message_service,
+        member_service,
+        command_instance,
     ):
         yield IntegrationCommandMethod(
             db=db,
@@ -30,20 +30,22 @@ class TestIntegrationCommand:
         )
 
     @pytest.fixture
-    async def command_instance(self, ):
+    async def command_instance(
+        self,
+    ):
         yield CommandSchema(
-            header="хлеб",
-            command=IntegrationCommandsEnum.ADVICE,
-            rest_text="some test",
-            raw_command="совет"
+            header="хлеб", command=IntegrationCommandsEnum.ADVICE, rest_text="some test", raw_command="совет"
         )
 
     async def test_advice(self, mocker, integration_command_method):
         mock = mocker.patch.object(
-            GreatAdviceClient, "get_advice", return_value=GreatAdviceResponse(
-                text='Some text',
+            GreatAdviceClient,
+            "get_advice",
+            return_value=GreatAdviceResponse(
+                text="Some text",
                 id=123,
-            ))
+            ),
+        )
 
         result = await integration_command_method.execute()
 
@@ -53,10 +55,13 @@ class TestIntegrationCommand:
     async def test_quote(self, mocker, integration_command_method):
         integration_command_method.command_instance.command = IntegrationCommandsEnum.QUOTE
         mock = mocker.patch.object(
-            ForismaticClient, "get_quote_text", return_value=ForismaticQuote(
+            ForismaticClient,
+            "get_quote_text",
+            return_value=ForismaticQuote(
                 text="Some text",
                 author="some_author",
-            ))
+            ),
+        )
 
         result = await integration_command_method.execute()
 
@@ -66,10 +71,13 @@ class TestIntegrationCommand:
     async def test_insult_without_reply(self, mocker, integration_command_method):
         integration_command_method.command_instance.command = IntegrationCommandsEnum.INSULT
         mock = mocker.patch.object(
-            EvilInsultClient, "get_evil_insult", return_value=EvilInsultResponse(
+            EvilInsultClient,
+            "get_evil_insult",
+            return_value=EvilInsultResponse(
                 insult="Some insult",
                 comment="some comment",
-            ))
+            ),
+        )
 
         result = await integration_command_method.execute()
 
@@ -80,10 +88,13 @@ class TestIntegrationCommand:
         integration_command_method.message_service.message.reply = message_service.message
         integration_command_method.command_instance.command = IntegrationCommandsEnum.INSULT
         mock = mocker.patch.object(
-            EvilInsultClient, "get_evil_insult", return_value=EvilInsultResponse(
+            EvilInsultClient,
+            "get_evil_insult",
+            return_value=EvilInsultResponse(
                 insult="Some insult",
                 comment="some comment",
-            ))
+            ),
+        )
 
         result = await integration_command_method.execute()
 

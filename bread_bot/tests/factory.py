@@ -6,7 +6,8 @@ from bread_bot.common.models import (
     TextEntity,
     VoiceEntity,
     StickerEntity,
-    PhotoEntity, GifEntity,
+    PhotoEntity,
+    GifEntity,
 )
 
 

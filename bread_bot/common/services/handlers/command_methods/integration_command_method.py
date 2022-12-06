@@ -32,7 +32,7 @@ class IntegrationCommandMethod(BaseCommandMethod):
     async def get_insult(self):
         username = None
         if self.message_service.message.reply:
-            username = f'@{self.member_service.message.reply.source.username}'
+            username = f"@{self.member_service.message.reply.source.username}"
         evil_insult = await EvilInsultClient().get_evil_insult()
         insult = f"{evil_insult.insult}\n\n© {evil_insult.comment}"
         if username:

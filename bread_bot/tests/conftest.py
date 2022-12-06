@@ -10,7 +10,7 @@ pytest_plugins = [
 ]
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def loop():
     asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
     return asyncio.new_event_loop()

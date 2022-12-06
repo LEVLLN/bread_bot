@@ -6,9 +6,9 @@ from pydantic import BaseModel, Field
 class MemberSchema(BaseModel):
     id: Optional[int] = None
     is_bot: bool
-    username: Optional[str] = ''
-    last_name: Optional[str] = ''
-    first_name: Optional[str] = ''
+    username: Optional[str] = ""
+    last_name: Optional[str] = ""
+    first_name: Optional[str] = ""
 
 
 class ChatSchema(BaseModel):
@@ -45,10 +45,10 @@ class VideoNoteSchema(BaseModel):
 
 class BaseMessageSchema(BaseModel):
     message_id: int
-    source: MemberSchema = Field(..., alias='from')
+    source: MemberSchema = Field(..., alias="from")
     chat: ChatSchema
     date: Optional[int] = None
-    text: Optional[str] = ''
+    text: Optional[str] = ""
     voice: Optional[VoiceSchema] = None
     photo: List[PhotoSchema] = []
     sticker: Optional[StickerSchema] = None
@@ -59,7 +59,7 @@ class BaseMessageSchema(BaseModel):
 
 
 class MessageSchema(BaseMessageSchema):
-    reply: Optional[BaseMessageSchema] = Field(None, alias='reply_to_message')
+    reply: Optional[BaseMessageSchema] = Field(None, alias="reply_to_message")
 
     class Config:
         allow_population_by_field_name = True

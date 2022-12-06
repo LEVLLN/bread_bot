@@ -7,12 +7,13 @@ class BaseJsonLogSchema(BaseModel):
     """
     Схема основного тела лога в формате JSON
     """
+
     thread: Union[int, str]
     level: int
     level_name: str
     message: str
     source: str
-    timestamp: str = Field(..., alias='@timestamp')
+    timestamp: str = Field(..., alias="@timestamp")
     app_name: str
     app_version: str
     app_env: str
@@ -30,6 +31,7 @@ class RequestJsonLogSchema(BaseModel):
     """
     Схема части запросов-ответов лога в формате JSON
     """
+
     request_uri: str
     request_referer: str
     request_protocol: str

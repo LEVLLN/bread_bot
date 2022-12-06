@@ -1,10 +1,6 @@
 from enum import Enum
 
-TRIGGER_WORDS = [
-    "хлебушек",
-    "хлеб",
-    "bread_bot"
-]
+TRIGGER_WORDS = ["хлебушек", "хлеб", "bread_bot"]
 
 
 class AnswerEntityTypesEnum(str, Enum):

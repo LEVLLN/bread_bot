@@ -31,10 +31,12 @@ from bread_bot.common.utils.structs import (
 
 class AnswerHandler(AbstractHandler):
     async def condition(self) -> bool:
-        return (self.message_service
-                and self.message_service.message
-                and self.message_service.message.text
-                and not self.message_service.has_edited_message)
+        return (
+            self.message_service
+            and self.message_service.message
+            and self.message_service.message.text
+            and not self.message_service.has_edited_message
+        )
 
     async def get_answer_pack(self) -> AnswerPack:
         """Получить пакет ответов для чата"""
@@ -49,7 +51,7 @@ class AnswerHandler(AbstractHandler):
                 AnswerPack.gif_entities,
                 AnswerPack.video_entities,
                 AnswerPack.video_note_entities,
-            ]
+            ],
         )
         if not answer_pack:
             raise NextStepException("Отсутствуют пакеты с ответами")
@@ -60,19 +62,21 @@ class AnswerHandler(AbstractHandler):
         """Достать все сущности и группировать по ключам"""
         answer_pack_by_keys = {}
         entities = (
-                answer_pack.text_entities +
-                answer_pack.sticker_entities +
-                answer_pack.photo_entities +
-                answer_pack.voice_entities +
-                answer_pack.gif_entities +
-                answer_pack.video_entities +
-                answer_pack.video_note_entities
+            answer_pack.text_entities
+            + answer_pack.sticker_entities
+            + answer_pack.photo_entities
+            + answer_pack.voice_entities
+            + answer_pack.gif_entities
+            + answer_pack.video_entities
+            + answer_pack.video_note_entities
         )
         for entity in entities:
             if entity.reaction_type != reaction_type:
                 continue
             if entity.key not in answer_pack_by_keys:
-                answer_pack_by_keys[entity.key] = [entity, ]
+                answer_pack_by_keys[entity.key] = [
+                    entity,
+                ]
                 continue
             answer_pack_by_keys[entity.key].append(entity)
         return answer_pack_by_keys

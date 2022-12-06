@@ -22,18 +22,18 @@ class TestAnswerHandler:
             instance=AnswerPacksToChats(
                 chat_id=member_service.chat.id,
                 pack_id=answer_pack.id,
-            )
+            ),
         )
         yield answer_pack
 
     @pytest.fixture
     async def prepare_data(
-            self,
-            text_entity_factory,
-            voice_entity_factory,
-            photo_entity_factory,
-            sticker_entity_factory,
-            based_pack,
+        self,
+        text_entity_factory,
+        voice_entity_factory,
+        photo_entity_factory,
+        sticker_entity_factory,
+        based_pack,
     ):
         for reaction_type in (AnswerEntityTypesEnum.SUBSTRING, AnswerEntityTypesEnum.TRIGGER):
             for key, value in [
@@ -75,12 +75,12 @@ class TestAnswerHandler:
         )
 
     async def test_process_concrete_substring(
-            self,
-            db,
-            substring_answer_handler,
-            prepare_data,
-            text_entity_factory,
-            based_pack,
+        self,
+        db,
+        substring_answer_handler,
+        prepare_data,
+        text_entity_factory,
+        based_pack,
     ):
         await text_entity_factory(
             key="concrete_key",
@@ -96,12 +96,12 @@ class TestAnswerHandler:
         assert result.text == "my_concrete_value"
 
     async def test_process_concrete_gif_entity(
-            self,
-            db,
-            substring_answer_handler,
-            prepare_data,
-            gif_entity_factory,
-            based_pack,
+        self,
+        db,
+        substring_answer_handler,
+        prepare_data,
+        gif_entity_factory,
+        based_pack,
     ):
         await gif_entity_factory(
             key="concrete_key",
@@ -157,7 +157,7 @@ class TestAnswerHandler:
             "my_key bla bla",
             "bla bla bla",
             "test",
-        ]
+        ],
     )
     async def test_process_trigger_not_message(self, db, trigger_answer_handler, prepare_data, message_text):
         trigger_answer_handler.message_service.message.text = message_text
@@ -167,12 +167,12 @@ class TestAnswerHandler:
         assert error.value.args[0] == "Подходящих ключей не найдено"
 
     async def test_process_concrete_trigger(
-            self,
-            db,
-            trigger_answer_handler,
-            prepare_data,
-            text_entity_factory,
-            based_pack,
+        self,
+        db,
+        trigger_answer_handler,
+        prepare_data,
+        text_entity_factory,
+        based_pack,
     ):
         await text_entity_factory(
             key="concrete_key",
@@ -188,12 +188,12 @@ class TestAnswerHandler:
         assert result.text == "my_concrete_value"
 
     async def test_chance(
-            self,
-            db,
-            substring_answer_handler,
-            prepare_data,
-            text_entity_factory,
-            based_pack,
+        self,
+        db,
+        substring_answer_handler,
+        prepare_data,
+        text_entity_factory,
+        based_pack,
     ):
         based_pack.answer_chance = 0
         await AnswerPack.async_add(db, instance=based_pack)
@@ -202,13 +202,13 @@ class TestAnswerHandler:
         assert error.value.args[0] == "Пропуск ответа по проценту срабатывания"
 
     async def test_edited(
-            self,
-            db,
-            substring_answer_handler,
-            prepare_data,
-            text_entity_factory,
-            based_pack,
-            edited_message_service,
+        self,
+        db,
+        substring_answer_handler,
+        prepare_data,
+        text_entity_factory,
+        based_pack,
+        edited_message_service,
     ):
         substring_answer_handler.message_service = edited_message_service
         with pytest.raises(NextStepException) as error:

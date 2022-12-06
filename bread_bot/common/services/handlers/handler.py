@@ -24,10 +24,10 @@ class AbstractHandler:
         return True
 
     async def handle(
-            self,
-            db: AsyncSession,
-            message_service: MessageService,
-            member_service: MemberService,
+        self,
+        db: AsyncSession,
+        message_service: MessageService,
+        member_service: MemberService,
     ) -> BaseAnswerSchema | None:
         self.db = db
         self.message_service = message_service

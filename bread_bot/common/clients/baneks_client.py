@@ -24,16 +24,22 @@ class BaneksClient(BaseHTTPClient):
             method="GET",
             url=await self.random_url,
             headers={
-                'Accept': '*/*',
-            }
+                "Accept": "*/*",
+            },
         )
         return response.text
 
     async def get_text(self) -> Optional[str]:
         try:
             html = await self.get_quote()
-            text = BeautifulSoup(html, "html.parser") \
-                .find(name="article",).find("p").get_text()
+            text = (
+                BeautifulSoup(html, "html.parser")
+                .find(
+                    name="article",
+                )
+                .find("p")
+                .get_text()
+            )
         except Exception as e:
             logger.error(str(e))
             return None

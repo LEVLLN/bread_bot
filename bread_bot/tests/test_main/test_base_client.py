@@ -10,38 +10,19 @@ from bread_bot.main.base_client import BaseHTTPClient
 class BaseHTTPClientTestCase(unittest.IsolatedAsyncioTestCase):
     @respx.mock
     async def test_request(self):
-        respx.get('https://foo.bar/').mock(
-            return_value=Response(
-                status_code=200,
-                content=json.dumps({'some_key': 'some_value'}))
+        respx.get("https://foo.bar/").mock(
+            return_value=Response(status_code=200, content=json.dumps({"some_key": "some_value"}))
         )
-        response = await BaseHTTPClient().request(
-            url='https://foo.bar/',
-            method='GET'
-        )
-        self.assertEqual(
-            response.status_code,
-            200
-        )
-        self.assertEqual(
-            response.json(),
-            {'some_key': 'some_value'}
-        )
+        response = await BaseHTTPClient().request(url="https://foo.bar/", method="GET")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"some_key": "some_value"})
 
     @respx.mock
     async def test_request_exception(self):
-        respx.get('https://foo.bar/').mock(
-            side_effect=ConnectionError('error')
-        )
-        response = await BaseHTTPClient().request(
-            url='https://foo.bar/',
-            method='GET'
-        )
-        self.assertEqual(
-            response.status_code,
-            0
-        )
+        respx.get("https://foo.bar/").mock(side_effect=ConnectionError("error"))
+        response = await BaseHTTPClient().request(url="https://foo.bar/", method="GET")
+        self.assertEqual(response.status_code, 0)
         self.assertEqual(
             response.content,
-            b'',
+            b"",
         )

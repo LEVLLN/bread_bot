@@ -5,7 +5,8 @@ from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     EntertainmentCommandsEnum,
     MemberCommandsEnum,
-    CommandAnswerParametersEnum, IntegrationCommandsEnum,
+    CommandAnswerParametersEnum,
+    IntegrationCommandsEnum,
 )
 
 
@@ -15,7 +16,7 @@ class CommandSettings:
     """
 
     def __new__(cls):
-        if not hasattr(cls, 'instance'):
+        if not hasattr(cls, "instance"):
             cls.instance = super(CommandSettings, cls).__new__(cls)
         return cls.instance
 
@@ -23,17 +24,18 @@ class CommandSettings:
     _COMMAND_SETTINGS = (
         # ADMIN COMMANDS
         CommandSettingsSchema(
-            aliases=["покажи", ],
+            aliases=[
+                "покажи",
+            ],
             command=AdminCommandsEnum.SHOW,
             available_parameters=CommandAnswerParametersEnum.list(),
             description="Показывает сохраненные данные",
-            examples=[
-                "Хлеб покажи подстроки",
-                "Хлеб покажи триггеры"
-            ]
+            examples=["Хлеб покажи подстроки", "Хлеб покажи триггеры"],
         ),
         CommandSettingsSchema(
-            aliases=["добавь", ],
+            aliases=[
+                "добавь",
+            ],
             command=AdminCommandsEnum.ADD,
             available_parameters=CommandAnswerParametersEnum.list(),
             to_find_for_key_values=True,
@@ -41,22 +43,27 @@ class CommandSettings:
             examples=[
                 "Хлеб добавь подстроку my_key=my_value",
                 "Хлеб добавь триггер my_key=my_value",
-            ]
+            ],
         ),
         CommandSettingsSchema(
-            aliases=["запомни значение", "запомни подстроку", "подстрока", "запомни",],
+            aliases=[
+                "запомни значение",
+                "запомни подстроку",
+                "подстрока",
+                "запомни",
+            ],
             command=AdminCommandsEnum.REMEMBER,
             to_find_for_values=True,
             to_find_for_values_list=True,
             description="Запоминает как подстроку из сообщения в ответе. "
-                        "Работает с картинками, картинками с описанием "
-                        "анимациями, голосовыми, стикерами, текстом, видео, видео-кружки",
+            "Работает с картинками, картинками с описанием "
+            "анимациями, голосовыми, стикерами, текстом, видео, видео-кружки",
             examples=[
                 "Хлеб запомни my_key",
                 "Хлеб запомни значение my_key",
                 "Хлеб подстрока my_key",
-                "Хлеб запомни my_key1, my_key2, my_key3"
-            ]
+                "Хлеб запомни my_key1, my_key2, my_key3",
+            ],
         ),
         CommandSettingsSchema(
             aliases=["запомни триггер", "триггер"],
@@ -64,14 +71,12 @@ class CommandSettings:
             to_find_for_values=True,
             to_find_for_values_list=True,
             description="Запоминает как триггер из сообщения в ответе",
-            examples=[
-                "Хлеб запомни триггер my_key",
-                "Хлеб триггер my_key",
-                "Хлеб триггер my_key1, my_key2, my_key3"
-            ]
+            examples=["Хлеб запомни триггер my_key", "Хлеб триггер my_key", "Хлеб триггер my_key1, my_key2, my_key3"],
         ),
         CommandSettingsSchema(
-            aliases=["удали", ],
+            aliases=[
+                "удали",
+            ],
             command=AdminCommandsEnum.DELETE,
             available_parameters=CommandAnswerParametersEnum.list(),
             to_find_for_values=True,
@@ -81,7 +86,7 @@ class CommandSettings:
                 "Хлеб удали подстроки my_key",
                 "Хлеб удали триггер my_key",
                 "Хлеб удали подстроки my_key=my_value",
-            ]
+            ],
         ),
         CommandSettingsSchema(
             aliases=["процент срабатывания", "процент"],
@@ -91,31 +96,36 @@ class CommandSettings:
             examples=[
                 "Хлеб процент",
                 "Хлеб процент 15",
-            ]
+            ],
         ),
         # MEMBER COMMANDS
         CommandSettingsSchema(
             aliases=["статистика", "стата"],
             command=MemberCommandsEnum.STATS,
-            description="(Временно недоступно) - Показ статистики"
+            description="(Временно недоступно) - Показ статистики",
         ),
         CommandSettingsSchema(
-            aliases=["парочка", "пара", ],
+            aliases=[
+                "парочка",
+                "пара",
+            ],
             command=MemberCommandsEnum.COUPLE,
             description="Образование пары из двух участников группы",
             examples=[
                 "Хлеб парочка",
                 "Хлеб парочка хороших людей",
-            ]
+            ],
         ),
         CommandSettingsSchema(
-            aliases=["топ", ],
+            aliases=[
+                "топ",
+            ],
             command=MemberCommandsEnum.TOP,
             description="Формирование топ 10 из участников группы",
             examples=[
                 "Хлеб топ",
                 "Хлеб топ хороших людей",
-            ]
+            ],
         ),
         CommandSettingsSchema(
             aliases=["кто", "у кого", "кем", "с кем", "кого", "кому", "о ком", "чья", "чьё", "чей", "чье"],
@@ -124,7 +134,7 @@ class CommandSettings:
             examples=[
                 "Хлеб кто хороший человек?",
                 "Хлеб с кем веселее всего?",
-            ]
+            ],
         ),
         CommandSettingsSchema(
             command=EntertainmentCommandsEnum.CHANCE,
@@ -132,7 +142,7 @@ class CommandSettings:
             description="Выдача вероятности события случайным образом",
             examples=[
                 "Хлеб вероятность события N",
-            ]
+            ],
         ),
         CommandSettingsSchema(
             aliases=["help", "хелп", "помощь"],
@@ -141,7 +151,7 @@ class CommandSettings:
             examples=[
                 "Хлеб help",
                 "Хлеб help запомни",
-            ]
+            ],
         ),
         CommandSettingsSchema(
             aliases=["выбери", "выбор"],
@@ -151,7 +161,7 @@ class CommandSettings:
             examples=[
                 "Хлеб выбери 1, 2, 3, 4",
                 "Хлеб выбери 1 или 2 или 3 или 4",
-            ]
+            ],
         ),
         CommandSettingsSchema(
             aliases=["цитата", "цит"],
@@ -159,32 +169,32 @@ class CommandSettings:
             description="Получение мудрой цитаты",
             examples=[
                 "Хлеб цитата",
-            ]
+            ],
         ),
         CommandSettingsSchema(
-            aliases=["insult", ],
+            aliases=[
+                "insult",
+            ],
             command=IntegrationCommandsEnum.INSULT,
             description="Оскорбление по английски на владельца сообщения из ответа",
-            examples=[
-                "Хлеб insult"
-            ]
+            examples=["Хлеб insult"],
         ),
         CommandSettingsSchema(
             aliases=["анекдот", "шутка", "анек"],
             command=IntegrationCommandsEnum.JOKE,
             description="Получение анекдота",
-            examples=[
-                "Хлеб анекдот"
-            ]
+            examples=["Хлеб анекдот"],
         ),
         CommandSettingsSchema(
-            aliases=["совет", ],
+            aliases=[
+                "совет",
+            ],
             command=IntegrationCommandsEnum.ADVICE,
             description="Получение совета",
             examples=[
                 "Хлеб совет",
                 "Хлеб совет хорошим людям",
-            ]
+            ],
         ),
     )
 
@@ -205,10 +215,7 @@ class CommandSettings:
 
     @cached_property
     def parameters_value_to_enum(self):
-        return {
-            parameter.value: parameter
-            for parameter in CommandAnswerParametersEnum.list()
-        }
+        return {parameter.value: parameter for parameter in CommandAnswerParametersEnum.list()}
 
     @property
     def command_settings(self):
