@@ -16,14 +16,17 @@ from bread_bot.common.utils.structs import AnswerEntityTypesEnum
 class TestAnswerHandler:
     @pytest.fixture
     async def based_pack(self, db, member_service):
-        answer_pack = await AnswerPack.async_add(db, instance=AnswerPack())
-        await AnswerPacksToChats.async_add(
-            db=db,
-            instance=AnswerPacksToChats(
-                chat_id=member_service.chat.id,
-                pack_id=answer_pack.id,
-            ),
-        )
+        answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
+        if not answer_pack:
+            answer_pack = await AnswerPack.async_add(db, instance=AnswerPack())
+            await AnswerPacksToChats.async_add(
+                db=db,
+                instance=AnswerPacksToChats(
+                    chat_id=member_service.chat.id,
+                    pack_id=answer_pack.id,
+                ),
+            )
+        answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
         yield answer_pack
 
     @pytest.fixture
@@ -53,6 +56,7 @@ class TestAnswerHandler:
         substring_answer_handler.member_service = member_service
         substring_answer_handler.message_service = message_service
         substring_answer_handler.db = db
+        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
         yield substring_answer_handler
 
     @pytest.fixture
@@ -62,6 +66,7 @@ class TestAnswerHandler:
         trigger_answer_handler.member_service = member_service
         trigger_answer_handler.message_service = message_service
         trigger_answer_handler.db = db
+        trigger_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
         yield trigger_answer_handler
 
     async def test_process_substring(self, db, substring_answer_handler, prepare_data):
@@ -77,16 +82,19 @@ class TestAnswerHandler:
     async def test_process_concrete_substring(
         self,
         db,
-        substring_answer_handler,
         prepare_data,
         text_entity_factory,
         based_pack,
+        substring_answer_handler,
     ):
         await text_entity_factory(
             key="concrete_key",
             value="my_concrete_value",
             pack_id=based_pack.id,
             reaction_type=AnswerEntityTypesEnum.SUBSTRING,
+        )
+        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
+            db, substring_answer_handler.member_service.chat.id
         )
         substring_answer_handler.message_service.message.text = "I finding concrete_key in message"
 
@@ -108,6 +116,9 @@ class TestAnswerHandler:
             value="my_concrete_value",
             pack_id=based_pack.id,
             reaction_type=AnswerEntityTypesEnum.SUBSTRING,
+        )
+        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
+            db, substring_answer_handler.member_service.chat.id
         )
         substring_answer_handler.message_service.message.text = "I finding concrete_key in message"
 
@@ -180,6 +191,9 @@ class TestAnswerHandler:
             pack_id=based_pack.id,
             reaction_type=AnswerEntityTypesEnum.TRIGGER,
         )
+        trigger_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
+            db, trigger_answer_handler.member_service.chat.id
+        )
         trigger_answer_handler.message_service.message.text = "concrete_key"
 
         result = await trigger_answer_handler.process()
@@ -197,6 +211,10 @@ class TestAnswerHandler:
     ):
         based_pack.answer_chance = 0
         await AnswerPack.async_add(db, instance=based_pack)
+        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
+            db,
+            substring_answer_handler.member_service.chat.id,
+        )
         with pytest.raises(NextStepException) as error:
             await substring_answer_handler.process()
         assert error.value.args[0] == "Пропуск ответа по проценту срабатывания"

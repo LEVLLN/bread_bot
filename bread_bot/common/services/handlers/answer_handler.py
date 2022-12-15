@@ -38,49 +38,6 @@ class AnswerHandler(AbstractHandler):
             and not self.message_service.has_edited_message
         )
 
-    async def get_answer_pack(self) -> AnswerPack:
-        """Получить пакет ответов для чата"""
-        answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
-            self.db,
-            self.member_service.chat.id,
-            [
-                AnswerPack.text_entities,
-                AnswerPack.sticker_entities,
-                AnswerPack.voice_entities,
-                AnswerPack.photo_entities,
-                AnswerPack.gif_entities,
-                AnswerPack.video_entities,
-                AnswerPack.video_note_entities,
-            ],
-        )
-        if not answer_pack:
-            raise NextStepException("Отсутствуют пакеты с ответами")
-        return answer_pack
-
-    @staticmethod
-    async def get_entities_by_keys(answer_pack: AnswerPack, reaction_type: AnswerEntityTypesEnum) -> dict:
-        """Достать все сущности и группировать по ключам"""
-        answer_pack_by_keys = {}
-        entities = (
-            answer_pack.text_entities
-            + answer_pack.sticker_entities
-            + answer_pack.photo_entities
-            + answer_pack.voice_entities
-            + answer_pack.gif_entities
-            + answer_pack.video_entities
-            + answer_pack.video_note_entities
-        )
-        for entity in entities:
-            if entity.reaction_type != reaction_type:
-                continue
-            if entity.key not in answer_pack_by_keys:
-                answer_pack_by_keys[entity.key] = [
-                    entity,
-                ]
-                continue
-            answer_pack_by_keys[entity.key].append(entity)
-        return answer_pack_by_keys
-
     def find_keys(self, answer_pack_by_keys: dict, reaction_type: AnswerEntityTypesEnum):
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
@@ -99,12 +56,13 @@ class AnswerHandler(AbstractHandler):
         if not await self.condition():
             raise NextStepException("Не подходит условие для обработки")
 
-        answer_pack: AnswerPack = await self.get_answer_pack()
+        if not self.default_answer_pack:
+            raise NextStepException("Отсутствуют пакеты с ответами")
         # Отработка шансов только для подстрок
-        if random.random() > answer_pack.answer_chance / 100:
+        if random.random() > self.default_answer_pack.answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
-        answer_pack_by_keys = await self.get_entities_by_keys(answer_pack=answer_pack, reaction_type=reaction_type)
+        answer_pack_by_keys = self.default_answer_pack.get_keys(reaction_type=reaction_type)
         keys = self.find_keys(answer_pack_by_keys=answer_pack_by_keys, reaction_type=reaction_type)
 
         result = None

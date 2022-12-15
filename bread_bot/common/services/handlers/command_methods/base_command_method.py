@@ -3,6 +3,7 @@ import random
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.exceptions.base import RaiseUpException
+from bread_bot.common.models import AnswerPack
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
     CommandSchema,
@@ -35,11 +36,13 @@ class BaseCommandMethod:
         command_instance: COMMAND_INSTANCE_TYPE,
         message_service: MessageService,
         member_service: MemberService,
+        default_answer_pack: AnswerPack | None = None,
     ):
         self.db: AsyncSession = db
         self.command_instance: COMMAND_INSTANCE_TYPE = command_instance
         self.member_service: MemberService = member_service
         self.message_service: MessageService = message_service
+        self.default_answer_pack: AnswerPack = default_answer_pack
 
     COMPLETE_MESSAGES = ["Сделал", "Есть, сэр!", "Выполнено", "Принял"]
 

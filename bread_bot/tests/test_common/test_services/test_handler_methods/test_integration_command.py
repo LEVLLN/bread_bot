@@ -5,6 +5,7 @@ from bread_bot.common.clients.evil_insult_client import EvilInsultClient
 from bread_bot.common.clients.forismatic_client import ForismaticClient
 from bread_bot.common.clients.great_advice import GreatAdviceClient
 from bread_bot.common.exceptions.base import RaiseUpException
+from bread_bot.common.models import AnswerPack
 from bread_bot.common.schemas.api_models import GreatAdviceResponse, ForismaticQuote, EvilInsultResponse
 from bread_bot.common.schemas.commands import (
     CommandSchema,
@@ -27,6 +28,7 @@ class TestIntegrationCommand:
             member_service=member_service,
             message_service=message_service,
             command_instance=command_instance,
+            default_answer_pack=await AnswerPack.get_by_chat_id(db, member_service.chat.id),
         )
 
     @pytest.fixture

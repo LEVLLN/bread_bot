@@ -51,6 +51,7 @@ class TestMemberCommands:
             member_service=member_service,
             message_service=message_service,
             command_instance=command_instance,
+            default_answer_pack=await AnswerPack.get_by_chat_id(db, member_service.chat.id),
         )
         member_command_method.member_service.chat.chat_id = -10000
         yield member_command_method

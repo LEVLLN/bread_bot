@@ -30,12 +30,12 @@ from bread_bot.common.utils.structs import (
 
 class BaseAdminCommand:
     @pytest.fixture
-    async def based_pack(self, db, admin_command_method):
+    async def based_pack(self, db, member_service):
         answer_pack = await AnswerPack.async_add(db, instance=AnswerPack())
         await AnswerPacksToChats.async_add(
             db=db,
             instance=AnswerPacksToChats(
-                chat_id=admin_command_method.member_service.chat.id,
+                chat_id=member_service.chat.id,
                 pack_id=answer_pack.id,
             ),
         )
@@ -48,12 +48,30 @@ class BaseAdminCommand:
         message_service,
         member_service,
         command_instance,
+        based_pack,
     ):
         yield AdminCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
             command_instance=command_instance,
+            default_answer_pack=based_pack,
+        )
+
+    @pytest.fixture
+    async def admin_command_method_without_pack(
+        self,
+        db,
+        message_service,
+        member_service,
+        command_instance,
+    ):
+        yield AdminCommandMethod(
+            db=db,
+            member_service=member_service,
+            message_service=message_service,
+            command_instance=command_instance,
+            default_answer_pack=None,
         )
 
 
@@ -110,18 +128,19 @@ class TestAdd(BaseAdminCommand):
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         create_mocker.assert_not_called()
 
-    async def test_not_existed_packs(self, db, mocker, admin_command_method):
+    async def test_not_existed_packs(self, db, mocker, admin_command_method_without_pack):
+        admin_command_method_without_pack.default_answer_pack = None
         create_mocker = mocker.spy(AnswerPack, "async_add")
-        result = await admin_command_method.execute()
+        result = await admin_command_method_without_pack.execute()
 
-        answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
+        answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method_without_pack.member_service.chat.id)
         text_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
 
         assert answer_pack
-        assert text_entity.key == admin_command_method.command_instance.key
-        assert text_entity.value == admin_command_method.command_instance.value
+        assert text_entity.key == admin_command_method_without_pack.command_instance.key
+        assert text_entity.value == admin_command_method_without_pack.command_instance.value
         assert text_entity.reaction_type == "TRIGGER"
-        assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert result.text in admin_command_method_without_pack.COMPLETE_MESSAGES
         create_mocker.assert_called_once()
 
     async def test_existed_answer_entity(self, mocker, db, based_pack, text_answer_entity, admin_command_method):
@@ -375,6 +394,7 @@ class TestDelete(BaseAdminCommand):
         )
 
     async def test_not_existed_packs(self, db, admin_command_method, command_instance):
+        admin_command_method.default_answer_pack = None
         result = await admin_command_method.execute()
         assert result.text == "У чата нет ни одного пакета под управлением"
 
@@ -431,6 +451,7 @@ class TestDelete(BaseAdminCommand):
         based_pack,
     ):
         admin_command_method.command_instance = command_key_value_instance
+        admin_command_method.default_answer_pack = based_pack
         entity = TextEntity(
             key=command_key_value_instance.key,
             value=command_key_value_instance.value,
@@ -493,6 +514,7 @@ class TestAnswerChance(BaseAdminCommand):
     ):
         command_value_instance.value = answer_chance
         admin_command_method.command_instance = command_value_instance
+        admin_command_method.default_answer_pack = based_pack
         assert based_pack.answer_chance == 100
 
         result = await admin_command_method.execute()
@@ -521,6 +543,7 @@ class TestAnswerChance(BaseAdminCommand):
         based_pack.answer_chance = answer_chance
         await AnswerPack.async_add(db, based_pack)
         admin_command_method.command_instance = command_instance
+        admin_command_method.default_answer_pack = based_pack
 
         result = await admin_command_method.execute()
 

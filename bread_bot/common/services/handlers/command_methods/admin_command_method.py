@@ -63,23 +63,23 @@ class AdminCommandMethod(BaseCommandMethod):
         """Команда Добавить"""
         self._check_length_key(reaction_type, key)
 
-        answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(self.db, self.member_service.chat.id)
-
-        if not answer_pack:
-            answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(self.db, self.member_service.chat.id)
+        if not self.default_answer_pack:
+            self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
+                self.db, self.member_service.chat.id
+            )
         entity = await entity_class.async_first(
             self.db,
             where=and_(
                 entity_class.key == key.lower(),
                 entity_class.value == value,
-                entity_class.pack_id == answer_pack.id,
+                entity_class.pack_id == self.default_answer_pack.id,
                 entity_class.reaction_type == reaction_type,
             ),
             for_update=True,
         )
         if entity is None:
             instance_params = dict(
-                pack_id=answer_pack.id,
+                pack_id=self.default_answer_pack.id,
                 key=key.lower(),
                 value=value,
                 reaction_type=reaction_type,
@@ -119,23 +119,31 @@ class AdminCommandMethod(BaseCommandMethod):
             entity_class = TextEntity
         else:
             raise RaiseUpException("Данный тип данных не поддерживается")
-        for key in self.command_instance.value_list:
-            await self.add(
-                key=key,
-                value=value,
-                entity_class=entity_class,
-                reaction_type=reaction_type,
-                description=description,
+
+        if not self.default_answer_pack:
+            self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
+                self.db, self.member_service.chat.id
             )
+        entities = []
+        for key in self.command_instance.value_list:
+            self._check_length_key(reaction_type, key)
+            instance_params = dict(
+                pack_id=self.default_answer_pack.id,
+                key=key.lower(),
+                value=value,
+                reaction_type=reaction_type,
+            )
+            if description is not None:
+                instance_params.update(dict(description=description))
+            entities.append(entity_class(**instance_params))
+
+        await entity_class.async_add_all(db=self.db, instances=entities)
+
         return self._return_answer()
 
     async def delete(self):
         """Удаление по ключам и по ключам-значениям"""
-        answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
-            db=self.db,
-            chat_id=self.member_service.chat.id,
-        )
-        if answer_pack is None:
+        if self.default_answer_pack is None:
             return self._return_answer("У чата нет ни одного пакета под управлением")
 
         for entity_class in (
@@ -154,7 +162,7 @@ class AdminCommandMethod(BaseCommandMethod):
                         where=and_(
                             entity_class.key == self.command_instance.key,
                             entity_class.value == self.command_instance.value,
-                            entity_class.pack_id == answer_pack.id,
+                            entity_class.pack_id == self.default_answer_pack.id,
                             entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
                         ),
                     )
@@ -163,7 +171,7 @@ class AdminCommandMethod(BaseCommandMethod):
                         self.db,
                         where=and_(
                             entity_class.key == self.command_instance.value,
-                            entity_class.pack_id == answer_pack.id,
+                            entity_class.pack_id == self.default_answer_pack.id,
                             entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
                         ),
                     )
@@ -172,12 +180,10 @@ class AdminCommandMethod(BaseCommandMethod):
         return self._return_answer()
 
     async def handle_answer_chance(self):
-        answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
-            db=self.db,
-            chat_id=self.member_service.chat.id,
-        )
-        if not answer_pack:
-            answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(self.db, self.member_service.chat.id)
+        if not self.default_answer_pack:
+            self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
+                self.db, self.member_service.chat.id
+            )
         match self.command_instance:
             case ValueCommandSchema():
                 chance_value = self.command_instance.value
@@ -188,10 +194,10 @@ class AdminCommandMethod(BaseCommandMethod):
                     return self._return_answer(error_message)
                 if value > 100 or value < 0:
                     return self._return_answer(error_message)
-                answer_pack.answer_chance = value
-                await AnswerPack.async_add(db=self.db, instance=answer_pack)
+                self.default_answer_pack.answer_chance = value
+                await AnswerPack.async_add(db=self.db, instance=self.default_answer_pack)
                 return self._return_answer()
             case CommandSchema():
-                return self._return_answer(str(answer_pack.answer_chance))
+                return self._return_answer(str(self.default_answer_pack.answer_chance))
             case _:
                 raise RaiseUpException("Не удалось установить процент срабатывания")

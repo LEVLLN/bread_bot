@@ -27,6 +27,7 @@ class CommandHandler(AbstractHandler):
             message_service=self.message_service,
             member_service=self.member_service,
             command_instance=command_instance,
+            default_answer_pack=self.default_answer_pack,
         )
         match command_instance.command:
             case AdminCommandsEnum():

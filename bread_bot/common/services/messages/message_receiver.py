@@ -4,6 +4,7 @@ from functools import wraps
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
+from bread_bot.common.models import AnswerPack
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema
 from bread_bot.common.schemas.telegram_messages import StandardBodySchema
 from bread_bot.common.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
@@ -56,7 +57,13 @@ class MessageReceiver:
     async def receive(self) -> BaseAnswerSchema | None:
         message_service: MessageService = MessageService(request_body=self.request_body)
         member_service: MemberService = MemberService(db=self.db, message=message_service.message)
+
         await member_service.process()
 
+        default_answer_pack: AnswerPack = await AnswerPack.get_by_chat_id(
+            db=self.db,
+            chat_id=member_service.chat.id,
+        )
+
         handler = CommandHandler(TriggerAnswerHandler(SubstringAnswerHandler(EmptyResultHandler(None))))
-        return await handler.handle(self.db, message_service, member_service)
+        return await handler.handle(self.db, message_service, member_service, default_answer_pack)
