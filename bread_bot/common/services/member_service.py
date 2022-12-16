@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -69,9 +70,13 @@ class MemberService:
             return False
         member: Member = await Member.async_first(db=self.db, where=Member.id == member_id, select_in_load=Member.chats)
         chat: Chat = await Chat.async_first(db=self.db, where=Chat.id == chat_id)
-        if not member or not chat or chat.id in [chat.chat_id for chat in member.chats]:
+        if not member or not chat:
             return False
-
+        if chat.id in [chat.chat_id for chat in member.chats]:
+            member.chats[0].updated_at = datetime.datetime.now()
+            await ChatToMember.async_add(db=self.db, instance=member.chats[0])
+            await member.commit(db=self.db)
+            return False
         member.chats.append(ChatToMember(chat_id=chat_id, member_id=member_id))
         await member.commit(db=self.db)
         logger.info("Member %s bind with chat %s", member_id, chat_id)

@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import random
 
 from sqlalchemy import and_
@@ -26,6 +27,8 @@ class MemberCommandMethod(BaseCommandMethod):
                 return await self.get_top()
             case MemberCommandsEnum.COUPLE:
                 return await self.get_couple()
+            case MemberCommandsEnum.CHANNEL:
+                return await self.get_channel()
             case _:
                 raise NextStepException("Не найдена команда")
 
@@ -46,6 +49,7 @@ class MemberCommandMethod(BaseCommandMethod):
                 Member.is_bot == False,
                 Member.id is not None,
                 Member.username is not None,
+                ChatToMember.updated_at >= datetime.datetime.now() - datetime.timedelta(days=30),
             ),
             select_in_load=ChatToMember.member,
         )
@@ -139,3 +143,7 @@ class MemberCommandMethod(BaseCommandMethod):
             f"Парочку {self.command_instance.rest_text} образовали: "
             f"{self.get_username(members[0])} и {self.get_username(members[1])}"
         )
+
+    async def get_channel(self):
+        members = await self.get_members()
+        return super()._return_answer(" ".join([f"@{member.username}" for member in members]))

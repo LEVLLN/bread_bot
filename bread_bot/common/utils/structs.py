@@ -26,6 +26,7 @@ class MemberCommandsEnum(str, Enum):
     TOP = "TOP"
     COUPLE = "COUPLE"
     STATS = "STATS"
+    CHANNEL = "CHANNEL"
 
 
 class EntertainmentCommandsEnum(str, Enum):

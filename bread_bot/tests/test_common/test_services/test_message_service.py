@@ -1,3 +1,6 @@
+import datetime
+import time
+
 import pytest
 
 from bread_bot.common.exceptions.base import NextStepException
@@ -40,3 +43,17 @@ class TestMessageHandler:
 
         assert chat_member_m2m.member.id == member_service.member.id
         assert chat_member_m2m.chat.id == member_service.chat.id
+
+    async def test_bind_member(self, db, member_service):
+        chat_member_m2m_before = await ChatToMember.async_first(db=db, where=ChatToMember.id == member_service.chat.id)
+        chat_member_m2m_before.updated_at = datetime.datetime.now()
+        chat_to_member = await ChatToMember.async_add(db, chat_member_m2m_before)
+        before_datetime = chat_to_member.updated_at
+
+        await member_service.process()
+        chat_member_m2m_after = await ChatToMember.async_first(db=db, where=ChatToMember.id == member_service.chat.id)
+        after_datetime = chat_member_m2m_after.updated_at
+
+        assert chat_member_m2m_after.id == chat_member_m2m_before.id
+        assert chat_member_m2m_after.chat.id == chat_member_m2m_before.chat.id
+        assert before_datetime != after_datetime

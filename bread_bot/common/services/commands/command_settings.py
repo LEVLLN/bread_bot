@@ -138,6 +138,16 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
+            aliases=["channel", "all", "канал"],
+            command=MemberCommandsEnum.CHANNEL,
+            description="Тегнуть всех участников в чате для привлечения внимания",
+            examples=[
+                "Хлеб channel",
+                "Хлеб all",
+                "Хлеб канал",
+            ],
+        ),
+        CommandSettingsSchema(
             command=EntertainmentCommandsEnum.CHANCE,
             aliases=["вероятность", "шанс"],
             description="Выдача вероятности события случайным образом",

@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import pytest
@@ -275,3 +276,45 @@ class TestMemberCommands:
         assert first_member.first_name + " " + first_member.last_name in result.text
         assert second_member.first_name + " " + second_member.last_name in result.text
         assert result.text.startswith("Парочку some test образовали")
+
+    async def test_channel(self, mocker, member_command_method, member_content_list):
+        member_command_method.command_instance.command = MemberCommandsEnum.CHANNEL
+        member_command_method.command_instance.raw_command = "channel"
+        member_command_method.command_instance.rest_text = ""
+        first_member = MemberSchema(**member_content_list[0]["user"])
+        second_member = MemberSchema(**member_content_list[1]["user"])
+        third_member = MemberSchema(**member_content_list[1]["user"])
+        mocker.patch.object(
+            MemberCommandMethod, "get_members", return_value=[first_member, second_member, third_member]
+        )
+        result = await member_command_method.execute()
+        assert result.text == "@uname1 @uname2 @uname2"
+
+    @pytest.mark.parametrize(
+        "days, expected",
+        [
+            (0, True),
+            (1, True),
+            (5, True),
+            (9, True),
+            (10, True),
+            (11, True),
+            (14, True),
+            (29, True),
+            (30, False),
+            (31, False),
+            (32, False),
+            (40, False),
+            (50, False),
+        ]
+    )
+    async def test_expired_member(self, db, member_command_method, days, expected):
+        member_command_method.command_instance.command = MemberCommandsEnum.CHANNEL
+        member_command_method.command_instance.raw_command = "channel"
+        member_command_method.command_instance.rest_text = ""
+        member = member_command_method.member_service.member
+        member.chats[0].updated_at = datetime.datetime.now() - datetime.timedelta(days=days)
+        await ChatToMember.async_add(db=db, instance=member.chats[0])
+        result = await member_command_method._get_chat_members()
+
+        assert bool(result) is expected
