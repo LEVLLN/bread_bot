@@ -366,6 +366,38 @@ class TestRemember(BaseAdminCommand):
         assert reply_sticker.message.reply.sticker.file_id == entities[0].value
         assert entities[0].reaction_type == reaction_type
 
+    @pytest.mark.parametrize(
+        "command, reaction_type",
+        [
+            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+        ],
+    )
+    async def test_repeat_keys(
+        self,
+        db,
+        based_pack,
+        admin_command_method,
+        command_instance,
+        reply_sticker,
+        command,
+        reaction_type,
+    ):
+        admin_command_method.message_service.message.reply = reply_sticker.message.reply
+        admin_command_method.command_instance.command = command
+        result = await admin_command_method.execute()
+        entities = await StickerEntity.async_filter(
+            db,
+            where=StickerEntity.pack_id == based_pack.id,
+        )
+        assert len(entities) == 2
+        result = await admin_command_method.execute()
+        entities = await StickerEntity.async_filter(
+            db,
+            where=StickerEntity.pack_id == based_pack.id,
+        )
+        assert len(entities) == 2
+
 
 class TestDelete(BaseAdminCommand):
     @pytest.fixture

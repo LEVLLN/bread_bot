@@ -125,8 +125,18 @@ class AdminCommandMethod(BaseCommandMethod):
                 self.db, self.member_service.chat.id
             )
         entities = []
+        keys_to_skip = [
+            entity.key
+            for entity in await entity_class.async_filter(
+                db=self.db,
+                where=and_(entity_class.key.in_(self.command_instance.value_list), entity_class.value == value),
+            )
+        ]
+
         for key in self.command_instance.value_list:
             self._check_length_key(reaction_type, key)
+            if key in keys_to_skip:
+                continue
             instance_params = dict(
                 pack_id=self.default_answer_pack.id,
                 key=key.lower(),
