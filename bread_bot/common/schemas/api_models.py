@@ -9,6 +9,8 @@ class SendMessageSchema(BaseModel):
     chat_id: int
     message: str
 
+class ReleaseNotesSchema(BaseModel):
+    message: str
 
 class ChatSchema(BaseModel):
     chat_id: int
