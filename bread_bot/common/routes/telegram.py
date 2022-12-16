@@ -98,11 +98,9 @@ async def admins_of_chat(
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
+
 @router.post("/release_notes", dependencies=[Depends(get_current_active_admin_user)])
-async def release_notes(
-        message: ReleaseNotesSchema,
-        db: AsyncSession = Depends(get_async_session)
-):
+async def release_notes(message: ReleaseNotesSchema, db: AsyncSession = Depends(get_async_session)):
     chats = await Chat.async_filter(db, where=Chat.chat_id < 0)
     telegram_client = TelegramClient()
     for chat in chats:
@@ -114,4 +112,3 @@ async def release_notes(
         except Exception:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Произошла ошибка отправки сообщения")
     return RESPONSE_OK
-
