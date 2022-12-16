@@ -3,7 +3,6 @@ import re
 
 from bread_bot.common.exceptions.base import NextStepException
 from bread_bot.common.models import (
-    AnswerPack,
     TextEntity,
     VoiceEntity,
     PhotoEntity,

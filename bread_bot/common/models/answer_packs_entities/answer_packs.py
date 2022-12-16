@@ -1,4 +1,3 @@
-from functools import lru_cache, cached_property
 from typing import Any
 
 from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, select, and_, SmallInteger
@@ -83,13 +82,13 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUD
     def get_keys(self, reaction_type: str) -> dict[str, Any]:
         answer_pack_by_keys = {}
         entities = (
-                self.text_entities
-                + self.sticker_entities
-                + self.photo_entities
-                + self.voice_entities
-                + self.gif_entities
-                + self.video_entities
-                + self.video_note_entities
+            self.text_entities
+            + self.sticker_entities
+            + self.photo_entities
+            + self.voice_entities
+            + self.gif_entities
+            + self.video_entities
+            + self.video_note_entities
         )
         for entity in entities:
             if entity.reaction_type != reaction_type:
