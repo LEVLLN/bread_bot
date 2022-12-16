@@ -1,5 +1,10 @@
+import asyncio
+import functools
+import operator
 import random
 import re
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.exceptions.base import NextStepException
 from bread_bot.common.models import (
@@ -10,7 +15,9 @@ from bread_bot.common.models import (
     GifEntity,
     VideoEntity,
     VideoNoteEntity,
+    AnswerPack,
 )
+from bread_bot.common.models.answer_entities.base_answer_entities import BaseEntity
 from bread_bot.common.schemas.bread_bot_answers import (
     BaseAnswerSchema,
     TextAnswerSchema,
@@ -26,6 +33,48 @@ from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
     AnswerEntityTypesEnum,
 )
+
+
+def async_lru_cache_decorator(async_function):
+    @functools.lru_cache
+    def cached_async_function(*args, **kwargs):
+        coroutine = async_function(*args, **kwargs)
+        return asyncio.ensure_future(coroutine)
+
+    return cached_async_function
+
+
+def async_lru_cache(*lru_cache_args, **lru_cache_kwargs):
+    def async_lru_cache_decorator(async_function):
+        @functools.lru_cache(*lru_cache_args, **lru_cache_kwargs)
+        def cached_async_function(*args, **kwargs):
+            coroutine = async_function(*args, **kwargs)
+            return asyncio.ensure_future(coroutine)
+
+        return cached_async_function
+
+    return async_lru_cache_decorator
+
+
+@async_lru_cache(maxsize=512)
+async def get_entities(db: AsyncSession, answer_pack: AnswerPack) -> list[BaseEntity]:
+    params = []
+    for entity_class in [
+        TextEntity,
+        GifEntity,
+        VideoEntity,
+        VideoNoteEntity,
+        PhotoEntity,
+        StickerEntity,
+        VoiceEntity,
+    ]:
+        params.append(
+            entity_class.async_filter(
+                db,
+                where=entity_class.pack_id == answer_pack.id,
+            )
+        )
+    return list(functools.reduce(operator.iconcat, await asyncio.gather(*params), []))
 
 
 class AnswerHandler(AbstractHandler):
@@ -61,7 +110,18 @@ class AnswerHandler(AbstractHandler):
         if random.random() > self.default_answer_pack.answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
-        answer_pack_by_keys = self.default_answer_pack.get_keys(reaction_type=reaction_type)
+        answer_pack_by_keys = {}
+        for entity in await get_entities(db=self.db, answer_pack=self.default_answer_pack):
+            if entity.reaction_type != reaction_type:
+                continue
+            if entity.key not in answer_pack_by_keys:
+                answer_pack_by_keys[entity.key] = [
+                    entity,
+                ]
+                continue
+            answer_pack_by_keys[entity.key].append(entity)
+        if not answer_pack_by_keys:
+            raise NextStepException("Нет значений")
         keys = self.find_keys(answer_pack_by_keys=answer_pack_by_keys, reaction_type=reaction_type)
 
         result = None

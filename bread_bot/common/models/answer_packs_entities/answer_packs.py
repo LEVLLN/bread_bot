@@ -1,7 +1,5 @@
-from typing import Any
-
-from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, select, and_, SmallInteger
-from sqlalchemy.orm import relationship, selectinload
+from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, and_, SmallInteger
+from sqlalchemy.orm import relationship
 
 from bread_bot.common.models.answer_packs_entities.answer_packs_to_chats import AnswerPacksToChats
 from bread_bot.main.database import mixins
@@ -25,28 +23,18 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUD
     video_note_entities = relationship("VideoNoteEntity", back_populates="answer_packs")
 
     @classmethod
-    async def get_by_chat_id(cls, db, chat_id: int, select_in_loads: list = None):
-        select_in_loads = [
-            cls.text_entities,
-            cls.sticker_entities,
-            cls.voice_entities,
-            cls.photo_entities,
-            cls.gif_entities,
-            cls.video_entities,
-            cls.video_note_entities,
-        ]
-        statement = (
-            select(AnswerPack)
-            .where(and_(AnswerPack.name == "based", AnswerPack.is_private == True))
-            .join(AnswerPacksToChats)
-            .where(AnswerPacksToChats.chat_id == chat_id)
-        )
-        if select_in_loads is not None:
-            for sil in select_in_loads:
-                statement = statement.options(selectinload(sil))
-        async with db as session:
-            answer_packs_qs = await session.execute(statement)
-            return answer_packs_qs.scalars().first()
+    async def get_by_chat_id(cls, db, chat_id: int):
+        answer_chat = await AnswerPacksToChats.async_first(db=db, where=AnswerPacksToChats.chat_id == chat_id)
+        if answer_chat:
+            answer_pack = await AnswerPack.async_first(
+                db=db,
+                where=and_(
+                    AnswerPack.name == "based", AnswerPack.is_private == True, AnswerPack.id == answer_chat.pack_id
+                ),
+            )
+            return answer_pack
+        else:
+            return None
 
     @classmethod
     async def create_by_chat_id(cls, db, chat_id: int):
@@ -59,44 +47,3 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUD
             ),
         )
         return answer_pack
-
-    @classmethod
-    async def get_or_create_by_chat_id(cls, db, chat_id: int):
-        answer_pack = await cls.get_by_chat_id(
-            db=db,
-            chat_id=chat_id,
-            select_in_loads=[
-                AnswerPack.text_entities,
-                AnswerPack.sticker_entities,
-                AnswerPack.voice_entities,
-                AnswerPack.photo_entities,
-                AnswerPack.gif_entities,
-                AnswerPack.video_entities,
-                AnswerPack.video_note_entities,
-            ],
-        )
-        if answer_pack is None:
-            answer_pack = await cls.create_by_chat_id(db=db, chat_id=chat_id)
-        return answer_pack
-
-    def get_keys(self, reaction_type: str) -> dict[str, Any]:
-        answer_pack_by_keys = {}
-        entities = (
-            self.text_entities
-            + self.sticker_entities
-            + self.photo_entities
-            + self.voice_entities
-            + self.gif_entities
-            + self.video_entities
-            + self.video_note_entities
-        )
-        for entity in entities:
-            if entity.reaction_type != reaction_type:
-                continue
-            if entity.key not in answer_pack_by_keys:
-                answer_pack_by_keys[entity.key] = [
-                    entity,
-                ]
-                continue
-            answer_pack_by_keys[entity.key].append(entity)
-        return answer_pack_by_keys

@@ -36,7 +36,7 @@ async_null_pool_engine = create_async_engine(
 )
 
 AsyncSessionLocal = sessionmaker(
-    bind=async_null_pool_engine,
+    bind=async_engine,
     class_=AsyncSession,
     expire_on_commit=False,
     autoflush=False,
