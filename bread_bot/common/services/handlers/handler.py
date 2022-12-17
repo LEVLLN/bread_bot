@@ -44,6 +44,7 @@ class AbstractHandler:
             if self._next_handler is not None:
                 return await self._next_handler.handle(db, message_service, member_service, default_answer_pack)
         else:
+            logger.info("Отработал %s", self.__class__.__name__)
             return result
 
         raise NextStepException("Остановка обработки")

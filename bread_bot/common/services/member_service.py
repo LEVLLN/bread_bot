@@ -72,7 +72,7 @@ class MemberService:
         chat: Chat = await Chat.async_first(db=self.db, where=Chat.id == chat_id)
         if not member or not chat:
             return False
-        if chat.id in [chat.chat_id for chat in member.chats]:
+        if member.chats and chat.id in [chat.chat_id for chat in member.chats]:
             member.chats[0].updated_at = datetime.datetime.now()
             await ChatToMember.async_add(db=self.db, instance=member.chats[0])
             await member.commit(db=self.db)
