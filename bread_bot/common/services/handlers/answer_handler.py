@@ -90,9 +90,9 @@ class AnswerHandler(AbstractHandler):
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
             case AnswerEntityTypesEnum.SUBSTRING:
-                regex = f"({composite_mask(list(answer_pack_by_keys.keys()), split=True)})"
+                regex = f"({composite_mask(sorted(list(answer_pack_by_keys.keys()), key=len), split=True)})"
             case AnswerEntityTypesEnum.TRIGGER:
-                regex = f"^({composite_mask(list(answer_pack_by_keys.keys()))})$"
+                regex = f"^({composite_mask(sorted(list(answer_pack_by_keys.keys()), key=len))})$"
             case _:
                 raise NextStepException("Неподходящий тип данных")
         groups = re.findall(regex, self.message_service.message.text.lower(), re.IGNORECASE)
