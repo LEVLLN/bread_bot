@@ -96,7 +96,7 @@ class TestAnswerHandler:
         substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
             db, substring_answer_handler.member_service.chat.id
         )
-        substring_answer_handler.message_service.message.text = "I finding concrete_keys in message"
+        substring_answer_handler.message_service.message.text = "I finding concrete_key in message"
 
         result = await substring_answer_handler.process()
 
