@@ -20,7 +20,7 @@ from bread_bot.utils.dependencies import get_async_session
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
-    tags=["telegram"],
+    tags=["common"],
     responses={404: {"description": "Not found"}},
 )
 
@@ -36,13 +36,6 @@ async def handle_message(request_body: StandardBodySchema, db: AsyncSession = De
     message_sender = MessageSender(message=message)
     await message_sender.send_messages_to_chat()
     return RESPONSE_OK
-
-
-@router.get("/help", response_class=HTMLResponse)
-async def color_home(request: Request):
-    with open("./About.md", "r", encoding="utf-8") as input_file:
-        text = input_file.read()
-    return markdown.markdown(text)
 
 
 @router.post("/send_message", dependencies=[Depends(get_current_active_admin_user)])
