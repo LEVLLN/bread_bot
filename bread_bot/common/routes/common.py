@@ -31,8 +31,7 @@ RESPONSE_OK = "OK"
 async def handle_message(request_body: StandardBodySchema, db: AsyncSession = Depends(get_async_session)):
     message_receiver = MessageReceiver(db=db, request_body=request_body)
     message = await message_receiver.receive()
-    if not message:
-        return RESPONSE_OK
+
     message_sender = MessageSender(message=message)
     await message_sender.send_messages_to_chat()
     return RESPONSE_OK

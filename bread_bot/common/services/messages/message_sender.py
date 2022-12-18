@@ -48,6 +48,8 @@ class MessageSender:
 
     async def send_messages_to_chat(self):
         """Отправка сообщения в чат"""
+        if not self.message:
+            return None
         messages = [
             self.message,
         ]
