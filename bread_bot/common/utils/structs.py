@@ -7,6 +7,14 @@ class AnswerEntityTypesEnum(str, Enum):
     TRIGGER = "TRIGGER"
     SUBSTRING = "SUBSTRING"
 
+class AnswerEntityContentTypesEnum(str, Enum):
+    TEXT = "TEXT"
+    VOICE = "VOICE"
+    PICTURE = "PICTURE"
+    ANIMATION = "ANIMATION"
+    VIDEO = "VIDEO"
+    VIDEO_NOTE = "VIDEO_NOTE"
+    STICKER = "STICKER"
 
 class AdminCommandsEnum(str, Enum):
     SHOW = "SHOW"

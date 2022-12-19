@@ -5,3 +5,4 @@ from bread_bot.common.models.answer_entities.text_answer_entities import TextEnt
 from bread_bot.common.models.answer_entities.voice_answer_entities import VoiceEntity
 from bread_bot.common.models.answer_entities.video_answer_entities import VideoEntity
 from bread_bot.common.models.answer_entities.video_note_answer_entities import VideoNoteEntity
+from bread_bot.common.models.answer_entities.answer_entities import AnswerEntity
