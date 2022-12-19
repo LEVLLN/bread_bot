@@ -13,6 +13,7 @@ revision = "f6f10d508983"
 down_revision = "09a1f6973cfe"
 branch_labels = None
 depends_on = None
+from sqlalchemy.dialects.postgresql import ENUM
 
 
 def upgrade():
@@ -25,10 +26,14 @@ def upgrade():
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.Column("key", sa.String(length=255), nullable=False),
         sa.Column("value", sa.Text(), nullable=False),
-        sa.Column("reaction_type", sa.Enum("TRIGGER", "SUBSTRING", name="answerentitytypesenum"), nullable=False),
+        sa.Column(
+            "reaction_type",
+            ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
+            nullable=False,
+        ),
         sa.Column(
             "content_type",
-            sa.Enum(
+            ENUM(
                 "TEXT",
                 "VOICE",
                 "PICTURE",
