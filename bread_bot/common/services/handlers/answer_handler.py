@@ -34,13 +34,13 @@ class AnswerHandler(AbstractHandler):
             and not self.message_service.has_edited_message
         )
 
-    def find_keys(self, answer_pack_by_keys: dict, reaction_type: AnswerEntityTypesEnum):
+    def find_keys(self, keys: list, reaction_type: AnswerEntityTypesEnum):
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
             case AnswerEntityTypesEnum.SUBSTRING:
-                regex = f"({composite_mask(list(answer_pack_by_keys.keys()), split=True)})"
+                regex = f"({composite_mask(keys, split=True)})"
             case AnswerEntityTypesEnum.TRIGGER:
-                regex = f"^({composite_mask(list(answer_pack_by_keys.keys()))})$"
+                regex = f"^({composite_mask(keys)})$"
             case _:
                 raise NextStepException("Неподходящий тип данных")
         groups = re.findall(regex, self.message_service.message.text.lower(), re.IGNORECASE)
@@ -58,36 +58,27 @@ class AnswerHandler(AbstractHandler):
         if random.random() > self.default_answer_pack.answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
-        answer_pack_by_keys = {}
-        entities = await AnswerEntity.async_filter(
-            self.db,
-            where=and_(
-                AnswerEntity.pack_id == self.default_answer_pack.id,
-                AnswerEntity.reaction_type == reaction_type,
-            ),
+        answer_keys = await AnswerEntity.get_keys(
+            db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
         )
-        for entity in entities:
-            if entity.key not in answer_pack_by_keys:
-                answer_pack_by_keys[entity.key] = [
-                    entity,
-                ]
-                continue
-            answer_pack_by_keys[entity.key].append(entity)
-        if not answer_pack_by_keys:
-            raise NextStepException("Нет значений")
-        keys = self.find_keys(answer_pack_by_keys=answer_pack_by_keys, reaction_type=reaction_type)
-
-        result: None = None
+        keys = self.find_keys(keys=answer_keys, reaction_type=reaction_type)
+        results = None
         for key in keys:
-            try:
-                results = answer_pack_by_keys[key]
-            except KeyError:
-                continue
-            result: AnswerEntity = random.choice(results)
-            break
-        if result is None:
+            results = await AnswerEntity.async_filter(
+                db=self.db,
+                where=and_(
+                    AnswerEntity.pack_id == self.default_answer_pack.id,
+                    AnswerEntity.reaction_type == reaction_type,
+                    AnswerEntity.key == key,
+                ),
+            )
+            if results:
+                break
+
+        if results is None:
             raise NextStepException("Значения не найдено")
 
+        result: AnswerEntity = random.choice(results)
         base_message_params = dict(
             reply_to_message_id=self.message_service.message.message_id,
             chat_id=self.message_service.message.chat.id,

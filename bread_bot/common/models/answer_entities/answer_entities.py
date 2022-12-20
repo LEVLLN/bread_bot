@@ -1,4 +1,7 @@
-from sqlalchemy import Column, String, Text, Integer, ForeignKey, Enum
+from functools import lru_cache
+
+from sqlalchemy import Column, String, Text, Integer, ForeignKey, Enum, select, and_
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
 from bread_bot.common.utils.structs import AnswerEntityTypesEnum, AnswerEntityContentTypesEnum
@@ -29,3 +32,14 @@ class AnswerEntity(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CR
             f"value: '{self.value}', "
             f"pack_id: {self.pack_id}>"
         )
+
+    @classmethod
+    async def get_keys(cls, db: AsyncSession, pack_id: int, reaction_type: AnswerEntityTypesEnum):
+        statement = select(cls.key).where(
+            and_(
+                cls.reaction_type == reaction_type,
+                cls.pack_id == pack_id,
+            )
+        )
+        result = await db.execute(statement)
+        return result.scalars().all()
