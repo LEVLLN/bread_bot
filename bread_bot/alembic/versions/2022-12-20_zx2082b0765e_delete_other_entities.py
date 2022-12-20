@@ -40,7 +40,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
@@ -60,7 +60,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
@@ -80,7 +80,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
@@ -101,7 +101,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
@@ -121,7 +121,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
@@ -139,7 +139,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
@@ -159,7 +159,7 @@ def downgrade():
         sa.Column("value", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column(
             "reaction_type",
-            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum"),
+            postgresql.ENUM("TRIGGER", "SUBSTRING", name="answerentitytypesenum", create_type=False),
             autoincrement=False,
             nullable=False,
         ),
