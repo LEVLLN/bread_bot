@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from sqlalchemy import Column, String, Text, Integer, ForeignKey, Enum, select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
