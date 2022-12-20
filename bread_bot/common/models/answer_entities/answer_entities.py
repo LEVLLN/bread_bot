@@ -18,7 +18,7 @@ class AnswerEntity(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CR
         ForeignKey("answer_packs.id", ondelete="CASCADE"),
     )
 
-    answer_packs = relationship("AnswerPack", back_populates="gif_entities")
+    answer_packs = relationship("AnswerPack", back_populates="answer_entities")
 
     def __repr__(self):
         return (

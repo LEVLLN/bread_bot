@@ -21,6 +21,7 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUD
     voice_entities = relationship("VoiceEntity", back_populates="answer_packs")
     video_entities = relationship("VideoEntity", back_populates="answer_packs")
     video_note_entities = relationship("VideoNoteEntity", back_populates="answer_packs")
+    answer_entities = relationship("AnswerEntity", back_populates="answer_packs")
 
     @classmethod
     async def get_by_chat_id(cls, db, chat_id: int):
