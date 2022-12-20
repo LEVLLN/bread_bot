@@ -28,11 +28,7 @@ from bread_bot.common.utils.structs import (
 class AnswerHandler(AbstractHandler):
     @property
     def condition(self) -> bool:
-        return (
-            self.message_service
-            and self.message_service.message
-            and self.message_service.message.text
-        )
+        return self.message_service and self.message_service.message and self.message_service.message.text
 
     def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
         """Поиск ключей из БД среди сообщения"""
