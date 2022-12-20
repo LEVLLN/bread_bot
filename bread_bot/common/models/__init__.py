@@ -1,6 +1,4 @@
-from bread_bot.common.models.answer_entities import (
-    AnswerEntity,
-)
+from bread_bot.common.models.answer_entities import AnswerEntity
 from bread_bot.common.models.answer_packs_entities import (
     AnswerPack,
     AnswerPacksToChats,
