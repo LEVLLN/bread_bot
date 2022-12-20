@@ -1,12 +1,9 @@
 import logging
 from typing import List
 
-import markdown
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from starlette.requests import Request
-from starlette.responses import HTMLResponse
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.common.clients.telegram_client import TelegramClient

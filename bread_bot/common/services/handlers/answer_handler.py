@@ -1,23 +1,12 @@
-import asyncio
-import functools
-import operator
 import random
 import re
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import and_
 
 from bread_bot.common.exceptions.base import NextStepException
 from bread_bot.common.models import (
-    TextEntity,
-    VoiceEntity,
-    PhotoEntity,
-    StickerEntity,
-    GifEntity,
-    VideoEntity,
-    VideoNoteEntity,
-    AnswerPack,
+    AnswerEntity,
 )
-from bread_bot.common.models.answer_entities.base_answer_entities import BaseEntity
 from bread_bot.common.schemas.bread_bot_answers import (
     BaseAnswerSchema,
     TextAnswerSchema,
@@ -32,49 +21,8 @@ from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
     AnswerEntityTypesEnum,
+    AnswerEntityContentTypesEnum,
 )
-
-
-def async_lru_cache_decorator(async_function):
-    @functools.lru_cache
-    def cached_async_function(*args, **kwargs):
-        coroutine = async_function(*args, **kwargs)
-        return asyncio.ensure_future(coroutine)
-
-    return cached_async_function
-
-
-def async_lru_cache(*lru_cache_args, **lru_cache_kwargs):
-    def async_lru_cache_decorator(async_function):
-        @functools.lru_cache(*lru_cache_args, **lru_cache_kwargs)
-        def cached_async_function(*args, **kwargs):
-            coroutine = async_function(*args, **kwargs)
-            return asyncio.ensure_future(coroutine)
-
-        return cached_async_function
-
-    return async_lru_cache_decorator
-
-
-@async_lru_cache(maxsize=512)
-async def get_entities(db: AsyncSession, answer_pack: AnswerPack) -> list[BaseEntity]:
-    params = []
-    for entity_class in [
-        TextEntity,
-        GifEntity,
-        VideoEntity,
-        VideoNoteEntity,
-        PhotoEntity,
-        StickerEntity,
-        VoiceEntity,
-    ]:
-        params.append(
-            entity_class.async_filter(
-                db,
-                where=entity_class.pack_id == answer_pack.id,
-            )
-        )
-    return list(functools.reduce(operator.iconcat, await asyncio.gather(*params), []))
 
 
 class AnswerHandler(AbstractHandler):
@@ -111,9 +59,14 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
         answer_pack_by_keys = {}
-        for entity in await get_entities(db=self.db, answer_pack=self.default_answer_pack):
-            if entity.reaction_type != reaction_type:
-                continue
+        entities = await AnswerEntity.async_filter(
+            self.db,
+            where=and_(
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.reaction_type == reaction_type,
+            ),
+        )
+        for entity in entities:
             if entity.key not in answer_pack_by_keys:
                 answer_pack_by_keys[entity.key] = [
                     entity,
@@ -124,13 +77,13 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Нет значений")
         keys = self.find_keys(answer_pack_by_keys=answer_pack_by_keys, reaction_type=reaction_type)
 
-        result = None
+        result: None = None
         for key in keys:
             try:
                 results = answer_pack_by_keys[key]
             except KeyError:
                 continue
-            result = random.choice(results)
+            result: AnswerEntity = random.choice(results)
             break
         if result is None:
             raise NextStepException("Значения не найдено")
@@ -139,20 +92,20 @@ class AnswerHandler(AbstractHandler):
             reply_to_message_id=self.message_service.message.message_id,
             chat_id=self.message_service.message.chat.id,
         )
-        match result:
-            case TextEntity():
+        match result.content_type:
+            case AnswerEntityContentTypesEnum.TEXT:
                 return TextAnswerSchema(**base_message_params, text=result.value)
-            case PhotoEntity():
+            case AnswerEntityContentTypesEnum.PICTURE:
                 return PhotoAnswerSchema(**base_message_params, photo=result.value, caption=result.description)
-            case StickerEntity():
+            case AnswerEntityContentTypesEnum.STICKER:
                 return StickerAnswerSchema(**base_message_params, sticker=result.value)
-            case VoiceEntity():
+            case AnswerEntityContentTypesEnum.VOICE:
                 return VoiceAnswerSchema(**base_message_params, voice=result.value)
-            case GifEntity():
+            case AnswerEntityContentTypesEnum.ANIMATION:
                 return GifAnswerSchema(**base_message_params, animation=result.value)
-            case VideoEntity():
+            case AnswerEntityContentTypesEnum.VIDEO:
                 return VideoAnswerSchema(**base_message_params, video=result.value)
-            case VideoNoteEntity():
+            case AnswerEntityContentTypesEnum.VIDEO_NOTE:
                 return VideoNoteAnswerSchema(**base_message_params, video_note=result.value)
             case _:
                 raise NextStepException("Полученный тип контента не подлежит ответу")

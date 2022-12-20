@@ -5,11 +5,7 @@ from bread_bot.common.exceptions.base import RaiseUpException
 from bread_bot.common.models import (
     AnswerPack,
     AnswerPacksToChats,
-    TextEntity,
-    PhotoEntity,
-    VoiceEntity,
-    StickerEntity,
-    GifEntity,
+    AnswerEntity,
 )
 from bread_bot.common.schemas.commands import (
     KeyValueParameterCommandSchema,
@@ -25,6 +21,7 @@ from bread_bot.common.utils.structs import (
     CommandAnswerParametersEnum,
     AnswerEntityTypesEnum,
     ANSWER_ENTITY_MAP,
+    AnswerEntityContentTypesEnum,
 )
 
 
@@ -91,13 +88,14 @@ class TestAdd(BaseAdminCommand):
 
     @pytest.fixture
     async def text_answer_entity(self, db, based_pack, member_service, admin_command_method):
-        yield await TextEntity.async_add(
+        yield await AnswerEntity.async_add(
             db=db,
-            instance=TextEntity(
+            instance=AnswerEntity(
                 key=admin_command_method.command_instance.key,
                 value=admin_command_method.command_instance.value,
                 reaction_type="TRIGGER",
                 pack_id=based_pack.id,
+                content_type=AnswerEntityContentTypesEnum.TEXT,
             ),
         )
 
@@ -119,7 +117,7 @@ class TestAdd(BaseAdminCommand):
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
+        text_entity = await AnswerEntity.async_first(db=db, where=and_(AnswerEntity.pack_id == answer_pack.id))
 
         assert answer_pack
         assert text_entity.key == admin_command_method.command_instance.key
@@ -134,7 +132,7 @@ class TestAdd(BaseAdminCommand):
         result = await admin_command_method_without_pack.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method_without_pack.member_service.chat.id)
-        text_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
+        text_entity = await AnswerEntity.async_first(db=db, where=and_(AnswerEntity.pack_id == answer_pack.id))
 
         assert answer_pack
         assert text_entity.key == admin_command_method_without_pack.command_instance.key
@@ -144,22 +142,28 @@ class TestAdd(BaseAdminCommand):
         create_mocker.assert_called_once()
 
     async def test_existed_answer_entity(self, mocker, db, based_pack, text_answer_entity, admin_command_method):
-        create_mocker = mocker.spy(TextEntity, "async_add")
+        create_mocker = mocker.spy(AnswerEntity, "async_add")
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_answer_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
+        text_answer_entity = await AnswerEntity.async_first(
+            db=db,
+            where=and_(
+                AnswerEntity.pack_id == answer_pack.id,
+                AnswerEntity.content_type == AnswerEntityContentTypesEnum.TEXT,
+            ),
+        )
 
         create_mocker.assert_not_called()
         assert text_answer_entity == text_answer_entity
         assert result.text in admin_command_method.COMPLETE_MESSAGES
 
     async def test_not_existed_answer_entity(self, mocker, db, based_pack, admin_command_method):
-        create_mocker = mocker.spy(TextEntity, "async_add")
+        create_mocker = mocker.spy(AnswerEntity, "async_add")
         result = await admin_command_method.execute()
 
         answer_pack = await AnswerPack.get_by_chat_id(db, admin_command_method.member_service.chat.id)
-        text_answer_entity = await TextEntity.async_first(db=db, where=and_(TextEntity.pack_id == answer_pack.id))
+        text_answer_entity = await AnswerEntity.async_first(db=db, where=and_(AnswerEntity.pack_id == answer_pack.id))
 
         create_mocker.assert_called_once()
         assert text_answer_entity == text_answer_entity
@@ -228,9 +232,9 @@ class TestRemember(BaseAdminCommand):
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
-        entities = await PhotoEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=PhotoEntity.pack_id == based_pack.id,
+            where=AnswerEntity.pack_id == based_pack.id,
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -260,9 +264,12 @@ class TestRemember(BaseAdminCommand):
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
-        entities = await GifEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=GifEntity.pack_id == based_pack.id,
+            where=and_(
+                AnswerEntity.pack_id == based_pack.id,
+                AnswerEntity.content_type == AnswerEntityContentTypesEnum.ANIMATION,
+            ),
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -293,9 +300,12 @@ class TestRemember(BaseAdminCommand):
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
-        entities = await PhotoEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=PhotoEntity.pack_id == based_pack.id,
+            where=and_(
+                AnswerEntity.pack_id == based_pack.id,
+                AnswerEntity.content_type == AnswerEntityContentTypesEnum.PICTURE,
+            ),
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -325,9 +335,11 @@ class TestRemember(BaseAdminCommand):
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
-        entities = await VoiceEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=VoiceEntity.pack_id == based_pack.id,
+            where=and_(
+                AnswerEntity.pack_id == based_pack.id, AnswerEntity.content_type == AnswerEntityContentTypesEnum.VOICE
+            ),
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -356,9 +368,11 @@ class TestRemember(BaseAdminCommand):
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
 
-        entities = await StickerEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=StickerEntity.pack_id == based_pack.id,
+            where=and_(
+                AnswerEntity.pack_id == based_pack.id, AnswerEntity.content_type == AnswerEntityContentTypesEnum.STICKER
+            ),
         )
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert entities is not None
@@ -386,15 +400,17 @@ class TestRemember(BaseAdminCommand):
         admin_command_method.message_service.message.reply = reply_sticker.message.reply
         admin_command_method.command_instance.command = command
         result = await admin_command_method.execute()
-        entities = await StickerEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=StickerEntity.pack_id == based_pack.id,
+            where=and_(
+                AnswerEntity.pack_id == based_pack.id, AnswerEntity.content_type == AnswerEntityContentTypesEnum.STICKER
+            ),
         )
         assert len(entities) == 2
         result = await admin_command_method.execute()
-        entities = await StickerEntity.async_filter(
+        entities = await AnswerEntity.async_filter(
             db,
-            where=StickerEntity.pack_id == based_pack.id,
+            where=AnswerEntity.pack_id == based_pack.id,
         )
         assert len(entities) == 2
 
@@ -433,10 +449,16 @@ class TestDelete(BaseAdminCommand):
     @pytest.mark.parametrize(
         "expected_model",
         [
-            TextEntity,
-            StickerEntity,
-            PhotoEntity,
-            VoiceEntity,
+            AnswerEntity,
+        ],
+    )
+    @pytest.mark.parametrize(
+        "content_type",
+        [
+            AnswerEntityContentTypesEnum.TEXT,
+            AnswerEntityContentTypesEnum.STICKER,
+            AnswerEntityContentTypesEnum.VOICE,
+            AnswerEntityContentTypesEnum.PICTURE,
         ],
     )
     @pytest.mark.parametrize(
@@ -448,7 +470,9 @@ class TestDelete(BaseAdminCommand):
             CommandAnswerParametersEnum.TRIGGER_LIST,
         ],
     )
-    async def test(self, db, admin_command_method, command_instance, based_pack, expected_model, parameter):
+    async def test(
+        self, db, admin_command_method, command_instance, based_pack, expected_model, parameter, content_type
+    ):
         admin_command_method.command_instance.parameter = parameter
         entities = []
         for key in ["other_key", command_instance.value]:
@@ -458,6 +482,7 @@ class TestDelete(BaseAdminCommand):
                     value="something",
                     reaction_type=ANSWER_ENTITY_MAP[parameter],
                     pack_id=based_pack.id,
+                    content_type=content_type,
                 )
             )
         await expected_model.async_add_all(db, entities)
@@ -467,7 +492,9 @@ class TestDelete(BaseAdminCommand):
         assert pre_expected == entities
 
         result = await admin_command_method.execute()
-        expected = await expected_model.async_filter(db, where=expected_model.pack_id == based_pack.id)
+        expected = await expected_model.async_filter(
+            db, where=and_(expected_model.pack_id == based_pack.id, expected_model.content_type == content_type)
+        )
 
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert len(expected) == 1
@@ -484,22 +511,23 @@ class TestDelete(BaseAdminCommand):
     ):
         admin_command_method.command_instance = command_key_value_instance
         admin_command_method.default_answer_pack = based_pack
-        entity = TextEntity(
+        entity = AnswerEntity(
             key=command_key_value_instance.key,
             value=command_key_value_instance.value,
             reaction_type=ANSWER_ENTITY_MAP[command_key_value_instance.parameter],
             pack_id=based_pack.id,
+            content_type=AnswerEntityContentTypesEnum.TEXT,
         )
-        await TextEntity.async_add(db, entity)
+        await AnswerEntity.async_add(db, entity)
 
         assert (
-            await TextEntity.async_first(
+            await AnswerEntity.async_first(
                 db,
             )
             == entity
         )
         result = await admin_command_method.execute()
-        expected = await TextEntity.async_filter(db, where=TextEntity.pack_id == based_pack.id)
+        expected = await AnswerEntity.async_filter(db, where=AnswerEntity.pack_id == based_pack.id)
 
         assert result.text in admin_command_method.COMPLETE_MESSAGES
         assert expected == []

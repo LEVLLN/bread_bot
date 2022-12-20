@@ -3,13 +3,7 @@ from sqlalchemy import and_
 from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
 from bread_bot.common.models import (
     AnswerPack,
-    TextEntity,
-    VoiceEntity,
-    PhotoEntity,
-    StickerEntity,
-    GifEntity,
-    VideoEntity,
-    VideoNoteEntity,
+    AnswerEntity,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
@@ -23,6 +17,7 @@ from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
     AnswerEntityTypesEnum,
+    AnswerEntityContentTypesEnum,
 )
 
 
@@ -33,7 +28,7 @@ class AdminCommandMethod(BaseCommandMethod):
                 return await self.add(
                     key=self.command_instance.key,
                     value=self.command_instance.value,
-                    entity_class=TextEntity,
+                    content_type=AnswerEntityContentTypesEnum.TEXT,
                     reaction_type=ANSWER_ENTITY_MAP[self.command_instance.parameter],
                 )
             case AdminCommandsEnum.SHOW:
@@ -56,7 +51,7 @@ class AdminCommandMethod(BaseCommandMethod):
         self,
         key: str,
         value: str,
-        entity_class: any,
+        content_type: AnswerEntityContentTypesEnum,
         reaction_type: AnswerEntityTypesEnum,
         description: str | None = None,
     ):
@@ -67,13 +62,14 @@ class AdminCommandMethod(BaseCommandMethod):
             self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
                 self.db, self.member_service.chat.id
             )
-        entity = await entity_class.async_first(
+        entity = await AnswerEntity.async_first(
             self.db,
             where=and_(
-                entity_class.key == key.lower(),
-                entity_class.value == value,
-                entity_class.pack_id == self.default_answer_pack.id,
-                entity_class.reaction_type == reaction_type,
+                AnswerEntity.key == key.lower(),
+                AnswerEntity.value == value,
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.reaction_type == reaction_type,
+                AnswerEntity.content_type == content_type,
             ),
             for_update=True,
         )
@@ -83,10 +79,11 @@ class AdminCommandMethod(BaseCommandMethod):
                 key=key.lower(),
                 value=value,
                 reaction_type=reaction_type,
+                content_type=content_type,
             )
             if description is not None:
                 instance_params.update(dict(description=description))
-            await entity_class.async_add(db=self.db, instance=entity_class(**instance_params))
+            await AnswerEntity.async_add(db=self.db, instance=AnswerEntity(**instance_params))
         return self._return_answer()
 
     async def remember(self, reaction_type: AnswerEntityTypesEnum = AnswerEntityTypesEnum.SUBSTRING):
@@ -97,26 +94,26 @@ class AdminCommandMethod(BaseCommandMethod):
 
         if reply.voice:
             value = reply.voice.file_id
-            entity_class = VoiceEntity
+            content_type = AnswerEntityContentTypesEnum.VOICE
         elif reply.photo:
             value = reply.photo[0].file_id
-            entity_class = PhotoEntity
             description = reply.caption
+            content_type = AnswerEntityContentTypesEnum.PICTURE
         elif reply.sticker:
             value = reply.sticker.file_id
-            entity_class = StickerEntity
+            content_type = AnswerEntityContentTypesEnum.STICKER
         elif reply.video:
             value = reply.video.file_id
-            entity_class = VideoEntity
+            content_type = AnswerEntityContentTypesEnum.VIDEO
         elif reply.video_note:
             value = reply.video_note.file_id
-            entity_class = VideoNoteEntity
+            content_type = AnswerEntityContentTypesEnum.VIDEO_NOTE
         elif reply.animation:
             value = reply.animation.file_id
-            entity_class = GifEntity
+            content_type = AnswerEntityContentTypesEnum.ANIMATION
         elif reply.text:
             value = reply.text
-            entity_class = TextEntity
+            content_type = AnswerEntityContentTypesEnum.TEXT
         else:
             raise RaiseUpException("Данный тип данных не поддерживается")
 
@@ -127,9 +124,13 @@ class AdminCommandMethod(BaseCommandMethod):
         entities = []
         keys_to_skip = [
             entity.key
-            for entity in await entity_class.async_filter(
+            for entity in await AnswerEntity.async_filter(
                 db=self.db,
-                where=and_(entity_class.key.in_(self.command_instance.value_list), entity_class.value == value),
+                where=and_(
+                    AnswerEntity.key.in_(self.command_instance.value_list),
+                    AnswerEntity.value == value,
+                    AnswerEntity.content_type == content_type,
+                ),
             )
         ]
 
@@ -141,13 +142,14 @@ class AdminCommandMethod(BaseCommandMethod):
                 pack_id=self.default_answer_pack.id,
                 key=key.lower(),
                 value=value,
+                content_type=content_type,
                 reaction_type=reaction_type,
             )
             if description is not None:
                 instance_params.update(dict(description=description))
-            entities.append(entity_class(**instance_params))
+            entities.append(AnswerEntity(**instance_params))
 
-        await entity_class.async_add_all(db=self.db, instances=entities)
+        await AnswerEntity.async_add_all(db=self.db, instances=entities)
 
         return self._return_answer()
 
@@ -155,38 +157,29 @@ class AdminCommandMethod(BaseCommandMethod):
         """Удаление по ключам и по ключам-значениям"""
         if self.default_answer_pack is None:
             return self._return_answer("У чата нет ни одного пакета под управлением")
-
-        for entity_class in (
-            TextEntity,
-            VoiceEntity,
-            PhotoEntity,
-            StickerEntity,
-            GifEntity,
-            VideoEntity,
-            VideoNoteEntity,
-        ):
-            match self.command_instance:
-                case KeyValueParameterCommandSchema():
-                    await entity_class.async_delete(
-                        self.db,
-                        where=and_(
-                            entity_class.key == self.command_instance.key,
-                            entity_class.value == self.command_instance.value,
-                            entity_class.pack_id == self.default_answer_pack.id,
-                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
-                        ),
-                    )
-                case ValueParameterCommandSchema():
-                    await entity_class.async_delete(
-                        self.db,
-                        where=and_(
-                            entity_class.key == self.command_instance.value,
-                            entity_class.pack_id == self.default_answer_pack.id,
-                            entity_class.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
-                        ),
-                    )
-                case _:
-                    raise RaiseUpException("Введены неправильные значения")
+        match self.command_instance:
+            case KeyValueParameterCommandSchema():
+                await AnswerEntity.async_delete(
+                    self.db,
+                    where=and_(
+                        AnswerEntity.key == self.command_instance.key,
+                        AnswerEntity.value == self.command_instance.value,
+                        AnswerEntity.pack_id == self.default_answer_pack.id,
+                        AnswerEntity.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
+                        AnswerEntity.content_type == AnswerEntityContentTypesEnum.TEXT,
+                    ),
+                )
+            case ValueParameterCommandSchema():
+                await AnswerEntity.async_delete(
+                    self.db,
+                    where=and_(
+                        AnswerEntity.key == self.command_instance.value,
+                        AnswerEntity.pack_id == self.default_answer_pack.id,
+                        AnswerEntity.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
+                    ),
+                )
+            case _:
+                raise RaiseUpException("Введены неправильные значения")
         return self._return_answer()
 
     async def handle_answer_chance(self):

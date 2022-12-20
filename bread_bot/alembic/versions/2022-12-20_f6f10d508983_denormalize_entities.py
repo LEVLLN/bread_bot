@@ -7,13 +7,13 @@ Create Date: 2022-12-20 01:33:02.125029
 """
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects.postgresql import ENUM
 
 # revision identifiers, used by Alembic.
 revision = "f6f10d508983"
 down_revision = "09a1f6973cfe"
 branch_labels = None
 depends_on = None
-from sqlalchemy.dialects.postgresql import ENUM
 
 
 def upgrade():
