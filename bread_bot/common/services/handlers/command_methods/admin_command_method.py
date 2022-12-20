@@ -16,7 +16,7 @@ from bread_bot.common.services.handlers.command_methods.base_command_method impo
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
-    AnswerEntityTypesEnum,
+    AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
 )
 
@@ -34,9 +34,9 @@ class AdminCommandMethod(BaseCommandMethod):
             case AdminCommandsEnum.SHOW:
                 return await self.show()
             case AdminCommandsEnum.REMEMBER:
-                return await self.remember(reaction_type=AnswerEntityTypesEnum.SUBSTRING)
+                return await self.remember(reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING)
             case AdminCommandsEnum.REMEMBER_TRIGGER:
-                return await self.remember(reaction_type=AnswerEntityTypesEnum.TRIGGER)
+                return await self.remember(reaction_type=AnswerEntityReactionTypesEnum.TRIGGER)
             case AdminCommandsEnum.DELETE:
                 return await self.delete()
             case AdminCommandsEnum.ANSWER_CHANCE:
@@ -52,7 +52,7 @@ class AdminCommandMethod(BaseCommandMethod):
         key: str,
         value: str,
         content_type: AnswerEntityContentTypesEnum,
-        reaction_type: AnswerEntityTypesEnum,
+        reaction_type: AnswerEntityReactionTypesEnum,
         description: str | None = None,
     ):
         """Команда Добавить"""
@@ -86,7 +86,7 @@ class AdminCommandMethod(BaseCommandMethod):
             await AnswerEntity.async_add(db=self.db, instance=AnswerEntity(**instance_params))
         return self._return_answer()
 
-    async def remember(self, reaction_type: AnswerEntityTypesEnum = AnswerEntityTypesEnum.SUBSTRING):
+    async def remember(self, reaction_type: AnswerEntityReactionTypesEnum = AnswerEntityReactionTypesEnum.SUBSTRING):
         """Команда Запомни"""
         self._check_reply_existed()
         reply = self.message_service.message.reply

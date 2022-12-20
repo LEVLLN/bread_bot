@@ -3,7 +3,7 @@ from enum import Enum
 TRIGGER_WORDS = ["хлебушек", "хлеб", "bread_bot"]
 
 
-class AnswerEntityTypesEnum(str, Enum):
+class AnswerEntityReactionTypesEnum(str, Enum):
     TRIGGER = "TRIGGER"
     SUBSTRING = "SUBSTRING"
 
@@ -67,8 +67,8 @@ class CommandAnswerParametersEnum(IterEnum):
 
 
 ANSWER_ENTITY_MAP = {
-    CommandAnswerParametersEnum.SUBSTRING: AnswerEntityTypesEnum.SUBSTRING,
-    CommandAnswerParametersEnum.SUBSTRING_LIST: AnswerEntityTypesEnum.SUBSTRING,
-    CommandAnswerParametersEnum.TRIGGER: AnswerEntityTypesEnum.TRIGGER,
-    CommandAnswerParametersEnum.TRIGGER_LIST: AnswerEntityTypesEnum.TRIGGER,
+    CommandAnswerParametersEnum.SUBSTRING: AnswerEntityReactionTypesEnum.SUBSTRING,
+    CommandAnswerParametersEnum.SUBSTRING_LIST: AnswerEntityReactionTypesEnum.SUBSTRING,
+    CommandAnswerParametersEnum.TRIGGER: AnswerEntityReactionTypesEnum.TRIGGER,
+    CommandAnswerParametersEnum.TRIGGER_LIST: AnswerEntityReactionTypesEnum.TRIGGER,
 }

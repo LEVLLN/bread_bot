@@ -1,11 +1,4 @@
 from bread_bot.common.models.answer_entities import (
-    GifEntity,
-    VoiceEntity,
-    TextEntity,
-    PhotoEntity,
-    StickerEntity,
-    VideoEntity,
-    VideoNoteEntity,
     AnswerEntity,
 )
 from bread_bot.common.models.answer_packs_entities import (

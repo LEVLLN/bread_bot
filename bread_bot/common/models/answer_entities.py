@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Text, Integer, ForeignKey, Enum, select, 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
-from bread_bot.common.utils.structs import AnswerEntityTypesEnum, AnswerEntityContentTypesEnum
+from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum, AnswerEntityContentTypesEnum
 from bread_bot.main.database import mixins
 
 
@@ -11,7 +11,7 @@ class AnswerEntity(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CR
 
     key = Column(String(255), nullable=False)
     value = Column(Text, nullable=False)
-    reaction_type = Column(Enum(AnswerEntityTypesEnum), nullable=False)
+    reaction_type = Column(Enum(AnswerEntityReactionTypesEnum), nullable=False)
     content_type = Column(Enum(AnswerEntityContentTypesEnum), nullable=False)
     description = Column(Text, nullable=True)
     pack_id = Column(
@@ -32,7 +32,7 @@ class AnswerEntity(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CR
         )
 
     @classmethod
-    async def get_keys(cls, db: AsyncSession, pack_id: int, reaction_type: AnswerEntityTypesEnum):
+    async def get_keys(cls, db: AsyncSession, pack_id: int, reaction_type: AnswerEntityReactionTypesEnum):
         statement = select(cls.key).where(
             and_(
                 cls.reaction_type == reaction_type,

@@ -20,7 +20,7 @@ from bread_bot.common.schemas.bread_bot_answers import (
 from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
-    AnswerEntityTypesEnum,
+    AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
 )
 
@@ -34,12 +34,12 @@ class AnswerHandler(AbstractHandler):
             and not self.message_service.has_edited_message
         )
 
-    def find_keys(self, keys: list, reaction_type: AnswerEntityTypesEnum):
+    def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum):
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
-            case AnswerEntityTypesEnum.SUBSTRING:
+            case AnswerEntityReactionTypesEnum.SUBSTRING:
                 regex = f"({composite_mask(keys, split=True)})"
-            case AnswerEntityTypesEnum.TRIGGER:
+            case AnswerEntityReactionTypesEnum.TRIGGER:
                 regex = f"^({composite_mask(keys)})$"
             case _:
                 raise NextStepException("Неподходящий тип данных")
@@ -48,7 +48,7 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Подходящих ключей не найдено")
         return groups
 
-    async def process_message(self, reaction_type: AnswerEntityTypesEnum) -> BaseAnswerSchema:
+    async def process_message(self, reaction_type: AnswerEntityReactionTypesEnum) -> BaseAnswerSchema:
         if not await self.condition():
             raise NextStepException("Не подходит условие для обработки")
 
@@ -107,9 +107,9 @@ class AnswerHandler(AbstractHandler):
 
 class SubstringAnswerHandler(AnswerHandler):
     async def process(self) -> BaseAnswerSchema:
-        return await super().process_message(reaction_type=AnswerEntityTypesEnum.SUBSTRING)
+        return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING)
 
 
 class TriggerAnswerHandler(AnswerHandler):
     async def process(self) -> BaseAnswerSchema:
-        return await super().process_message(reaction_type=AnswerEntityTypesEnum.TRIGGER)
+        return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.TRIGGER)

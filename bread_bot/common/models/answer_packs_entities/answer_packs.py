@@ -14,13 +14,6 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUD
     answer_chance = Column(SmallInteger, default=100, nullable=False)
 
     chats = relationship("AnswerPacksToChats", back_populates="answer_packs")
-    gif_entities = relationship("GifEntity", back_populates="answer_packs")
-    photo_entities = relationship("PhotoEntity", back_populates="answer_packs")
-    sticker_entities = relationship("StickerEntity", back_populates="answer_packs")
-    text_entities = relationship("TextEntity", back_populates="answer_packs")
-    voice_entities = relationship("VoiceEntity", back_populates="answer_packs")
-    video_entities = relationship("VideoEntity", back_populates="answer_packs")
-    video_note_entities = relationship("VideoNoteEntity", back_populates="answer_packs")
     answer_entities = relationship("AnswerEntity", back_populates="answer_packs")
 
     @classmethod

@@ -16,7 +16,7 @@ from bread_bot.common.schemas.commands import (
 from bread_bot.common.services.member_service import MemberService
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
-    AnswerEntityTypesEnum,
+    AnswerEntityReactionTypesEnum,
 )
 
 COMMAND_INSTANCE_TYPE = (
@@ -55,9 +55,9 @@ class BaseCommandMethod:
         )
 
     @staticmethod
-    def _check_length_key(reaction_type: AnswerEntityTypesEnum, key: str):
+    def _check_length_key(reaction_type: AnswerEntityReactionTypesEnum, key: str):
         """Обязательная проверка ключей"""
-        if reaction_type != AnswerEntityTypesEnum.TRIGGER and len(key) < 3:
+        if reaction_type != AnswerEntityReactionTypesEnum.TRIGGER and len(key) < 3:
             raise RaiseUpException("Ключ для подстроки не может быть меньше 3-х символов")
 
     def _check_reply_existed(self):

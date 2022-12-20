@@ -8,7 +8,7 @@ from bread_bot.common.services.handlers.command_handler import CommandHandler
 from bread_bot.common.services.handlers.handler import EmptyResultHandler
 from bread_bot.common.services.messages.message_receiver import MessageReceiver
 from bread_bot.common.services.messages.message_service import MessageService
-from bread_bot.common.utils.structs import AnswerEntityTypesEnum
+from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
 
 
 @pytest.fixture
@@ -117,13 +117,13 @@ async def test_receive_chain(
     await text_entity_factory(
         key="my_substring_key",
         value="some_value_substring",
-        reaction_type=AnswerEntityTypesEnum.SUBSTRING,
+        reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
         pack_id=based_pack.id,
     )
     await text_entity_factory(
         key="my_trigger_key",
         value="some_value_trigger",
-        reaction_type=AnswerEntityTypesEnum.TRIGGER,
+        reaction_type=AnswerEntityReactionTypesEnum.TRIGGER,
         pack_id=based_pack.id,
     )
     command_result_handler_mock = mocker.spy(CommandHandler, "process")

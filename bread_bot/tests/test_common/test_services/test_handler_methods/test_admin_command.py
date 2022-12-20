@@ -19,7 +19,7 @@ from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     CommandAnswerParametersEnum,
-    AnswerEntityTypesEnum,
+    AnswerEntityReactionTypesEnum,
     ANSWER_ENTITY_MAP,
     AnswerEntityContentTypesEnum,
 )
@@ -214,8 +214,8 @@ class TestRemember(BaseAdminCommand):
     @pytest.mark.parametrize(
         "command, reaction_type",
         [
-            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
-            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+            (AdminCommandsEnum.REMEMBER, AnswerEntityReactionTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityReactionTypesEnum.TRIGGER),
         ],
     )
     async def test_photo_reply(
@@ -246,8 +246,8 @@ class TestRemember(BaseAdminCommand):
     @pytest.mark.parametrize(
         "command, reaction_type",
         [
-            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
-            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+            (AdminCommandsEnum.REMEMBER, AnswerEntityReactionTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityReactionTypesEnum.TRIGGER),
         ],
     )
     async def test_gif_reply(
@@ -280,8 +280,8 @@ class TestRemember(BaseAdminCommand):
     @pytest.mark.parametrize(
         "command, reaction_type",
         [
-            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
-            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+            (AdminCommandsEnum.REMEMBER, AnswerEntityReactionTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityReactionTypesEnum.TRIGGER),
         ],
     )
     async def test_photo_reply_with_capture(
@@ -317,8 +317,8 @@ class TestRemember(BaseAdminCommand):
     @pytest.mark.parametrize(
         "command, reaction_type",
         [
-            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
-            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+            (AdminCommandsEnum.REMEMBER, AnswerEntityReactionTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityReactionTypesEnum.TRIGGER),
         ],
     )
     async def test_voice_reply(
@@ -350,8 +350,8 @@ class TestRemember(BaseAdminCommand):
     @pytest.mark.parametrize(
         "command, reaction_type",
         [
-            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
-            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+            (AdminCommandsEnum.REMEMBER, AnswerEntityReactionTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityReactionTypesEnum.TRIGGER),
         ],
     )
     async def test_sticker_reply(
@@ -383,8 +383,8 @@ class TestRemember(BaseAdminCommand):
     @pytest.mark.parametrize(
         "command, reaction_type",
         [
-            (AdminCommandsEnum.REMEMBER, AnswerEntityTypesEnum.SUBSTRING),
-            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityTypesEnum.TRIGGER),
+            (AdminCommandsEnum.REMEMBER, AnswerEntityReactionTypesEnum.SUBSTRING),
+            (AdminCommandsEnum.REMEMBER_TRIGGER, AnswerEntityReactionTypesEnum.TRIGGER),
         ],
     )
     async def test_repeat_keys(

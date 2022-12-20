@@ -10,7 +10,7 @@ from bread_bot.common.schemas.bread_bot_answers import (
     GifAnswerSchema,
 )
 from bread_bot.common.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
-from bread_bot.common.utils.structs import AnswerEntityTypesEnum
+from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
 
 
 class TestAnswerHandler:
@@ -38,7 +38,7 @@ class TestAnswerHandler:
         sticker_entity_factory,
         based_pack,
     ):
-        for reaction_type in (AnswerEntityTypesEnum.SUBSTRING, AnswerEntityTypesEnum.TRIGGER):
+        for reaction_type in (AnswerEntityReactionTypesEnum.SUBSTRING, AnswerEntityReactionTypesEnum.TRIGGER):
             for key, value in [
                 ("my_key", "my_value1"),
                 ("my_key", "my_value2"),
@@ -91,7 +91,7 @@ class TestAnswerHandler:
             key="concrete_key",
             value="my_concrete_value",
             pack_id=based_pack.id,
-            reaction_type=AnswerEntityTypesEnum.SUBSTRING,
+            reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
         )
         substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
             db, substring_answer_handler.member_service.chat.id
@@ -115,7 +115,7 @@ class TestAnswerHandler:
             key="concrete_key",
             value="my_concrete_value",
             pack_id=based_pack.id,
-            reaction_type=AnswerEntityTypesEnum.SUBSTRING,
+            reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
         )
         substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
             db, substring_answer_handler.member_service.chat.id
@@ -189,7 +189,7 @@ class TestAnswerHandler:
             key="concrete_key",
             value="my_concrete_value",
             pack_id=based_pack.id,
-            reaction_type=AnswerEntityTypesEnum.TRIGGER,
+            reaction_type=AnswerEntityReactionTypesEnum.TRIGGER,
         )
         trigger_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
             db, trigger_answer_handler.member_service.chat.id
