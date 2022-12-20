@@ -231,4 +231,4 @@ class TestAnswerHandler:
         substring_answer_handler.message_service = edited_message_service
         with pytest.raises(NextStepException) as error:
             await substring_answer_handler.process()
-        assert error.value.args[0] == "Не подходит условие для обработки"
+        assert error.value.args[0] == "Пропуск отредактированного сообщения"

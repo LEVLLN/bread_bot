@@ -32,7 +32,6 @@ class AnswerHandler(AbstractHandler):
             self.message_service
             and self.message_service.message
             and self.message_service.message.text
-            and not self.message_service.has_edited_message
         )
 
     def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
@@ -55,10 +54,11 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Подходящих ключей не найдено")
         return groups
 
-    def check_process_ability(self):
+    def check_process_ability(self, check_edited_message: bool = True):
         if not self.condition:
             raise NextStepException("Не подходит условие для обработки")
-
+        if check_edited_message and self.message_service.has_edited_message:
+            raise NextStepException("Пропуск отредактированного сообщения")
         if not self.default_answer_pack:
             raise NextStepException("Отсутствуют пакеты с ответами")
 

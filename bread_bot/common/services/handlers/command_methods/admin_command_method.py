@@ -229,7 +229,7 @@ class AdminCommandMethod(BaseCommandMethod):
             handler.member_service = self.member_service
 
             try:
-                handler.check_process_ability()
+                handler.check_process_ability(check_edited_message=False)
                 result = await handler.process_message(
                     reaction_type=reaction_type, message_text=self.command_instance.value
                 )
