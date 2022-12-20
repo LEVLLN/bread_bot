@@ -7,6 +7,7 @@ from bread_bot.common.models import (
     AnswerPacksToChats,
     AnswerEntity,
 )
+from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
     KeyValueParameterCommandSchema,
     ValueListCommandSchema,
@@ -639,3 +640,99 @@ class TestAnswerChance(BaseAdminCommand):
 
         assert result.text == "Некорректное значение. Необходимо ввести число от 0 до 100"
         assert excepted_answer_pack.answer_chance == 100
+
+
+class TestCheckAnswer(BaseAdminCommand):
+    @pytest.fixture
+    async def command_instance(
+        self,
+    ):
+        yield ValueCommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.CHECK_ANSWER,
+            value="my_substring",
+            raw_command="проверка",
+        )
+
+    @pytest.mark.parametrize("answer_chance", [0, 100])
+    @pytest.mark.parametrize(
+        "reaction_type", [AnswerEntityReactionTypesEnum.SUBSTRING, AnswerEntityReactionTypesEnum.TRIGGER]
+    )
+    async def test_existed_substring(
+        self, db, admin_command_method, based_pack, command_instance, text_entity_factory, answer_chance, reaction_type
+    ):
+        based_pack.answer_chance = answer_chance
+        await AnswerPack.async_add(db, based_pack)
+        await text_entity_factory(
+            key="my_substring",
+            value="my_value",
+            reaction_type=reaction_type,
+            pack_id=based_pack.id,
+        )
+
+        admin_command_method.command_instance = command_instance
+        result = await admin_command_method.execute()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "my_value"
+
+    @pytest.mark.parametrize("answer_chance", [0, 100])
+    @pytest.mark.parametrize(
+        "reaction_type", [AnswerEntityReactionTypesEnum.SUBSTRING, AnswerEntityReactionTypesEnum.TRIGGER]
+    )
+    async def test_existed_substring(
+        self, db, admin_command_method, based_pack, command_instance, answer_chance, reaction_type
+    ):
+        based_pack.answer_chance = answer_chance
+        await AnswerPack.async_add(db, based_pack)
+
+        admin_command_method.command_instance = command_instance
+        result = await admin_command_method.execute()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "Ничего не было найдено"
+
+    async def test_another_command(self, admin_command_method):
+        command = CommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.CHECK_ANSWER,
+            raw_command="проверка",
+        )
+        admin_command_method.command_instance = command
+        result = await admin_command_method.execute()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "Необходимо указать параметром, что надо искать"
+
+class TestSay(BaseAdminCommand):
+    async def test_another_command(self, admin_command_method):
+        command = CommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.SAY,
+            raw_command="скажи",
+        )
+        admin_command_method.command_instance = command
+        result = await admin_command_method.execute()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "Необходимо указать параметром, что надо сказать"
+
+    @pytest.fixture
+    async def command_instance(
+        self,
+    ):
+        yield ValueCommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.SAY,
+            value="my_value",
+            raw_command="скажи",
+        )
+
+    async def test_existed_substring(
+        self,
+        db,
+        admin_command_method,
+        based_pack,
+        command_instance,
+        text_entity_factory,
+    ):
+        admin_command_method.command_instance = command_instance
+        result = await admin_command_method.execute()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "my_value"

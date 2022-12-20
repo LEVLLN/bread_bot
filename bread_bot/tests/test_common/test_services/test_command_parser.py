@@ -152,6 +152,35 @@ class TestCommandParser:
                 ),
             ),
             (
+                "Хлеб скажи слово",
+                ValueCommandSchema(
+                    header="Хлеб",
+                    command=AdminCommandsEnum.SAY,
+                    rest_text="",
+                    value="слово",
+                    raw_command="скажи",
+                ),
+            ),
+            (
+                "Хлеб проверка привет",
+                ValueCommandSchema(
+                    header="Хлеб",
+                    command=AdminCommandsEnum.CHECK_ANSWER,
+                    rest_text="",
+                    value="привет",
+                    raw_command="проверка",
+                ),
+            ),
+            (
+                "Хлеб скажи",
+                CommandSchema(
+                    header="Хлеб",
+                    command=AdminCommandsEnum.SAY,
+                    rest_text="",
+                    raw_command="скажи",
+                ),
+            ),
+            (
                 "Хлеб процент 20",
                 ValueCommandSchema(
                     header="Хлеб",

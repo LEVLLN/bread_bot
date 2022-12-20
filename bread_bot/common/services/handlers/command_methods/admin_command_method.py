@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import and_
 
 from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
@@ -12,6 +14,9 @@ from bread_bot.common.schemas.commands import (
     ValueCommandSchema,
     ValueParameterCommandSchema,
 )
+from bread_bot.common.services.handlers.answer_handler import (
+    AnswerHandler,
+)
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
@@ -19,6 +24,8 @@ from bread_bot.common.utils.structs import (
     AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class AdminCommandMethod(BaseCommandMethod):
@@ -41,6 +48,10 @@ class AdminCommandMethod(BaseCommandMethod):
                 return await self.delete()
             case AdminCommandsEnum.ANSWER_CHANCE:
                 return await self.handle_answer_chance()
+            case AdminCommandsEnum.CHECK_ANSWER:
+                return await self.check_answer()
+            case AdminCommandsEnum.SAY:
+                return await self.say()
             case _:
                 raise NextStepException("Не найдена команда")
 
@@ -84,7 +95,7 @@ class AdminCommandMethod(BaseCommandMethod):
             if description is not None:
                 instance_params.update(dict(description=description))
             await AnswerEntity.async_add(db=self.db, instance=AnswerEntity(**instance_params))
-        return self._return_answer()
+        return super()._return_answer()
 
     async def remember(self, reaction_type: AnswerEntityReactionTypesEnum = AnswerEntityReactionTypesEnum.SUBSTRING):
         """Команда Запомни"""
@@ -151,12 +162,12 @@ class AdminCommandMethod(BaseCommandMethod):
 
         await AnswerEntity.async_add_all(db=self.db, instances=entities)
 
-        return self._return_answer()
+        return super()._return_answer()
 
     async def delete(self):
         """Удаление по ключам и по ключам-значениям"""
         if self.default_answer_pack is None:
-            return self._return_answer("У чата нет ни одного пакета под управлением")
+            return super()._return_answer("У чата нет ни одного пакета под управлением")
         match self.command_instance:
             case KeyValueParameterCommandSchema():
                 await AnswerEntity.async_delete(
@@ -180,7 +191,7 @@ class AdminCommandMethod(BaseCommandMethod):
                 )
             case _:
                 raise RaiseUpException("Введены неправильные значения")
-        return self._return_answer()
+        return super()._return_answer()
 
     async def handle_answer_chance(self):
         if not self.default_answer_pack:
@@ -194,13 +205,42 @@ class AdminCommandMethod(BaseCommandMethod):
                 try:
                     value = int(chance_value.strip())
                 except (ValueError, AttributeError):
-                    return self._return_answer(error_message)
+                    return super()._return_answer(error_message)
                 if value > 100 or value < 0:
-                    return self._return_answer(error_message)
+                    return super()._return_answer(error_message)
                 self.default_answer_pack.answer_chance = value
                 await AnswerPack.async_add(db=self.db, instance=self.default_answer_pack)
-                return self._return_answer()
+                return super()._return_answer()
             case CommandSchema():
-                return self._return_answer(str(self.default_answer_pack.answer_chance))
+                return super()._return_answer(str(self.default_answer_pack.answer_chance))
             case _:
                 raise RaiseUpException("Не удалось установить процент срабатывания")
+
+    async def check_answer(self):
+        if not isinstance(self.command_instance, ValueCommandSchema):
+            return super()._return_answer("Необходимо указать параметром, что надо искать")
+
+        result = None
+        for reaction_type in (AnswerEntityReactionTypesEnum.TRIGGER, AnswerEntityReactionTypesEnum.SUBSTRING):
+            handler = AnswerHandler(next_handler=None)
+            handler.db = self.db
+            handler.message_service = self.message_service
+            handler.default_answer_pack = self.default_answer_pack
+            handler.member_service = self.member_service
+
+            try:
+                handler.check_process_ability()
+                result = await handler.process_message(
+                    reaction_type=reaction_type, message_text=self.command_instance.value
+                )
+            except NextStepException as e:
+                logger.error("Error: %s %s", self.__class__.__name__, str(e))
+                continue
+        if result is None:
+            return super()._return_answer("Ничего не было найдено")
+        return result
+
+    async def say(self):
+        if not isinstance(self.command_instance, ValueCommandSchema):
+            return super()._return_answer("Необходимо указать параметром, что надо сказать")
+        return super()._return_answer(self.command_instance.value)

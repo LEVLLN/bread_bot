@@ -29,6 +29,8 @@ class AdminCommandsEnum(str, Enum):
     PROPAGATE = "PROPAGATE"
     SET_VOICE_TRIGGER = "SET_VOICE_TRIGGER"
     SET_EDITED_TRIGGER = "SET_EDITED_TRIGGER"
+    CHECK_ANSWER = "CHECK_ANSWER"
+    SAY = "SAY"
 
 
 class MemberCommandsEnum(str, Enum):

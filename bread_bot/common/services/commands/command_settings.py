@@ -99,6 +99,33 @@ class CommandSettings:
                 "Хлеб процент 15",
             ],
         ),
+        CommandSettingsSchema(
+            aliases=["проверь", "проверка", "check"],
+            command=AdminCommandsEnum.CHECK_ANSWER,
+            to_find_for_values=True,
+            description=(
+                "В чатах с маленьким процентом срабатывания команда дает возможность проверку отработки "
+                "ответов на определенные триггеры или подстроки"
+            ),
+            examples=[
+                "Хлеб check моя_подстрока",
+                "Хлеб check мой_триггер",
+                "Хлеб проверь мой_триггер",
+                "Хлеб проверь моя_подстрока",
+                "Хлеб проверка мой_триггер",
+                "Хлеб проверка моя_подстрока",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["скажи", "say"],
+            command=AdminCommandsEnum.SAY,
+            to_find_for_values=True,
+            description="Бот присылает строку, которую указали в качестве параметров.",
+            examples=[
+                "Хлеб скажи Какой прекрасный день!",
+                "Хлеб say Какой прекрасный день!",
+            ],
+        ),
         # MEMBER COMMANDS
         CommandSettingsSchema(
             aliases=["статистика", "стата"],

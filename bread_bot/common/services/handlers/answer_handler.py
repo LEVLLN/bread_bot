@@ -26,7 +26,8 @@ from bread_bot.common.utils.structs import (
 
 
 class AnswerHandler(AbstractHandler):
-    async def condition(self) -> bool:
+    @property
+    def condition(self) -> bool:
         return (
             self.message_service
             and self.message_service.message
@@ -34,7 +35,7 @@ class AnswerHandler(AbstractHandler):
             and not self.message_service.has_edited_message
         )
 
-    def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum):
+    def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
             case AnswerEntityReactionTypesEnum.SUBSTRING:
@@ -43,25 +44,33 @@ class AnswerHandler(AbstractHandler):
                 regex = f"^({composite_mask(keys)})$"
             case _:
                 raise NextStepException("Неподходящий тип данных")
-        groups = re.findall(regex, self.message_service.message.text.lower(), re.IGNORECASE)
+
+        if message_text is not None:
+            message_text = message_text.lower()
+        else:
+            message_text = self.message_service.message.text.lower()
+
+        groups = re.findall(regex, message_text, re.IGNORECASE)
         if len(groups) == 0:
             raise NextStepException("Подходящих ключей не найдено")
         return groups
 
-    async def process_message(self, reaction_type: AnswerEntityReactionTypesEnum) -> BaseAnswerSchema:
-        if not await self.condition():
+    def check_process_ability(self):
+        if not self.condition:
             raise NextStepException("Не подходит условие для обработки")
 
         if not self.default_answer_pack:
             raise NextStepException("Отсутствуют пакеты с ответами")
-        # Отработка шансов только для подстрок
-        if random.random() > self.default_answer_pack.answer_chance / 100:
-            raise NextStepException("Пропуск ответа по проценту срабатывания")
 
+    async def process_message(
+        self,
+        reaction_type: AnswerEntityReactionTypesEnum,
+        message_text: str | None = None,
+    ) -> BaseAnswerSchema:
         answer_keys = await AnswerEntity.get_keys(
             db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
         )
-        keys = self.find_keys(keys=answer_keys, reaction_type=reaction_type)
+        keys = self.find_keys(keys=answer_keys, reaction_type=reaction_type, message_text=message_text)
         results = None
         for key in keys:
             results = await AnswerEntity.async_filter(
@@ -75,7 +84,7 @@ class AnswerHandler(AbstractHandler):
             if results:
                 break
 
-        if results is None:
+        if not results:
             raise NextStepException("Значения не найдено")
 
         result: AnswerEntity = random.choice(results)
@@ -107,9 +116,17 @@ class AnswerHandler(AbstractHandler):
 
 class SubstringAnswerHandler(AnswerHandler):
     async def process(self) -> BaseAnswerSchema:
+        self.check_process_ability()
+        if random.random() > self.default_answer_pack.answer_chance / 100:
+            raise NextStepException("Пропуск ответа по проценту срабатывания")
+
         return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING)
 
 
 class TriggerAnswerHandler(AnswerHandler):
     async def process(self) -> BaseAnswerSchema:
+        self.check_process_ability()
+        if random.random() > self.default_answer_pack.answer_chance / 100:
+            raise NextStepException("Пропуск ответа по проценту срабатывания")
+
         return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.TRIGGER)
