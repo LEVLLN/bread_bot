@@ -56,8 +56,8 @@ class CommandSettings:
             to_find_for_values=True,
             to_find_for_values_list=True,
             description=(
-                "Запоминает как подстроку из сообщения в ответе. Работает с картинками, "
-                "картинками с описанием анимациями, голосовыми, стикерами, текстом, видео, видео-кружки"
+                "[Надо выбрать сообщение в качестве ответа] Запоминает как подстроку из сообщения в ответе. Работает с "
+                "картинками, картинками с описанием, анимациями, голосовыми, стикерами, текстом, видео, видео-кружками"
             ),
             examples=[
                 "Хлеб запомни my_key",
@@ -71,7 +71,10 @@ class CommandSettings:
             command=AdminCommandsEnum.REMEMBER_TRIGGER,
             to_find_for_values=True,
             to_find_for_values_list=True,
-            description="Запоминает как триггер из сообщения в ответе",
+            description=(
+                "[Надо выбрать сообщение в качестве ответа] Запоминает как триггер из сообщения в ответе. Работает с "
+                "картинками, картинками с описанием, анимациями, голосовыми, стикерами, текстом, видео, видео-кружками"
+            ),
             examples=["Хлеб запомни триггер my_key", "Хлеб триггер my_key", "Хлеб триггер my_key1, my_key2, my_key3"],
         ),
         CommandSettingsSchema(
@@ -174,6 +177,7 @@ class CommandSettings:
                 "Хлеб канал",
             ],
         ),
+        # ENTERTAINMENT COMMANDS
         CommandSettingsSchema(
             command=EntertainmentCommandsEnum.CHANCE,
             aliases=["вероятность", "шанс"],
@@ -201,6 +205,7 @@ class CommandSettings:
                 "Хлеб выбери 1 или 2 или 3 или 4",
             ],
         ),
+        # INTEGRATION COMMANDS
         CommandSettingsSchema(
             aliases=["цитата", "цит"],
             command=IntegrationCommandsEnum.QUOTE,
@@ -214,7 +219,9 @@ class CommandSettings:
                 "insult",
             ],
             command=IntegrationCommandsEnum.INSULT,
-            description="Оскорбление по английски на владельца сообщения из ответа",
+            description=(
+                "[Надо выбрать сообщение в качестве ответа] Оскорбление по английски на владельца сообщения из ответа"
+            ),
             examples=["Хлеб insult"],
         ),
         CommandSettingsSchema(

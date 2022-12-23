@@ -4,6 +4,7 @@ import json
 import pytest
 import respx
 from httpx import Response
+from sqlalchemy import and_
 
 from bread_bot.common.exceptions.base import RaiseUpException
 from bread_bot.common.models import (
@@ -306,15 +307,21 @@ class TestMemberCommands:
             (32, False),
             (40, False),
             (50, False),
-        ]
+        ],
     )
     async def test_expired_member(self, db, member_command_method, days, expected):
         member_command_method.command_instance.command = MemberCommandsEnum.CHANNEL
         member_command_method.command_instance.raw_command = "channel"
         member_command_method.command_instance.rest_text = ""
         member = member_command_method.member_service.member
-        member.chats[0].updated_at = datetime.datetime.now() - datetime.timedelta(days=days)
-        await ChatToMember.async_add(db=db, instance=member.chats[0])
+        chat_to_member = await ChatToMember.async_first(
+            db,
+            where=and_(
+                ChatToMember.member_id == member.id,
+                ChatToMember.chat_id == member_command_method.member_service.chat.id,
+            ),
+        )
+        chat_to_member.updated_at = datetime.datetime.now() - datetime.timedelta(days=days)
+        await ChatToMember.async_add(db=db, instance=chat_to_member)
         result = await member_command_method._get_chat_members()
-
         assert bool(result) is expected

@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.models import Member, Chat, ChatToMember
@@ -22,7 +23,9 @@ class MemberService:
 
     async def handle_member(self) -> Member:
         member = self.message.source
-        instance = await Member.async_first(db=self.db, where=Member.username == member.username)
+        if member.username == "":
+            member.username = member.id
+        instance = await Member.async_first(db=self.db, where=Member.member_id == member.id, for_update=True)
         if instance is None:
             instance: Member = await Member.async_add_by_kwargs(
                 db=self.db,
@@ -34,9 +37,6 @@ class MemberService:
             )
         else:
             is_updated = False
-            if member.id != instance.member_id:
-                instance.member_id = member.id
-                is_updated = True
             for key in ("username", "first_name", "last_name"):
                 if getattr(member, key, None) != getattr(instance, key, None):
                     setattr(instance, key, getattr(member, key))
@@ -54,6 +54,7 @@ class MemberService:
         instance: Chat = await Chat.async_first(
             db=self.db,
             where=Chat.chat_id == self.message.chat.id,
+            for_update=True,
         )
         if instance is None:
             instance: Chat = await Chat.async_add_by_kwargs(db=self.db, name=title, chat_id=self.message.chat.id)
@@ -65,24 +66,30 @@ class MemberService:
             )
         return instance
 
-    async def bind_chat_to_member(self, member_id: int, chat_id: int) -> bool:
-        if member_id is None:
-            return False
-        member: Member = await Member.async_first(db=self.db, where=Member.id == member_id, select_in_load=Member.chats)
-        chat: Chat = await Chat.async_first(db=self.db, where=Chat.id == chat_id)
-        if not member or not chat:
-            return False
-        if member.chats and chat.id in [chat.chat_id for chat in member.chats]:
-            member.chats[0].updated_at = datetime.datetime.now()
-            await ChatToMember.async_add(db=self.db, instance=member.chats[0])
-            await member.commit(db=self.db)
-            return False
-        member.chats.append(ChatToMember(chat_id=chat_id, member_id=member_id))
-        await member.commit(db=self.db)
-        logger.info("Member %s bind with chat %s", member_id, chat_id)
+    async def bind_chat_to_member(self) -> bool:
+        chat_to_member = await ChatToMember.async_first(
+            db=self.db,
+            where=and_(
+                ChatToMember.member_id == self.member.id,
+                ChatToMember.chat_id == self.chat.id,
+            ),
+            for_update=True,
+        )
+        if not chat_to_member:
+            await ChatToMember.async_add(
+                db=self.db,
+                instance=ChatToMember(
+                    chat_id=self.chat.id, member_id=self.member.id, updated_at=datetime.datetime.now()
+                ),
+            )
+        else:
+            chat_to_member.updated_at = datetime.datetime.now()
+            await ChatToMember.async_add(self.db, chat_to_member)
+        logger.info("Member %s bind with chat %s", self.member.id, self.chat.id)
         return True
 
     async def process(self):
         self.member = await self.handle_member()
         self.chat = await self.handle_chat()
-        await self.bind_chat_to_member(self.member.id, self.chat.id)
+        if self.member and self.chat:
+            await self.bind_chat_to_member()
