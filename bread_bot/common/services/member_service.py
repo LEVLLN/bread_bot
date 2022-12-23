@@ -1,7 +1,8 @@
 import datetime
 import logging
 
-from sqlalchemy import and_
+from asyncpg import UniqueViolationError
+from sqlalchemy import and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.models import Member, Chat, ChatToMember
@@ -25,7 +26,13 @@ class MemberService:
         member = self.message.source
         if member.username == "":
             member.username = member.id
-        instance = await Member.async_first(db=self.db, where=Member.member_id == member.id, for_update=True)
+        instance = await Member.async_first(
+            db=self.db,
+            where=or_(
+                Member.member_id == member.id,
+                Member.username == member.username,
+            ),
+        )
         if instance is None:
             instance: Member = await Member.async_add_by_kwargs(
                 db=self.db,
@@ -42,10 +49,13 @@ class MemberService:
                     setattr(instance, key, getattr(member, key))
                     is_updated = True
             if is_updated:
-                instance: Member = await Member.async_add(
-                    db=self.db,
-                    instance=instance,
-                )
+                try:
+                    instance: Member = await Member.async_add(
+                        db=self.db,
+                        instance=instance,
+                    )
+                except UniqueViolationError as e:
+                    logger.info("Не получилось сохранить username, first_name, last_name %s", str(e))
         return instance
 
     async def handle_chat(self) -> Chat:
@@ -54,7 +64,6 @@ class MemberService:
         instance: Chat = await Chat.async_first(
             db=self.db,
             where=Chat.chat_id == self.message.chat.id,
-            for_update=True,
         )
         if instance is None:
             instance: Chat = await Chat.async_add_by_kwargs(db=self.db, name=title, chat_id=self.message.chat.id)
@@ -73,7 +82,6 @@ class MemberService:
                 ChatToMember.member_id == self.member.id,
                 ChatToMember.chat_id == self.chat.id,
             ),
-            for_update=True,
         )
         if not chat_to_member:
             await ChatToMember.async_add(
