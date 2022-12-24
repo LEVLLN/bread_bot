@@ -1,11 +1,9 @@
-name: DEPLOY
+name: RELEASE
 on:
   push:
     branches:
       - main
 jobs:
-  testing:
-    uses: LEVLLN/bread_bot/.github/workflows/ci.yml@v1
   build:
     name: Build
     runs-on: ubuntu-latest
