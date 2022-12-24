@@ -51,6 +51,15 @@ class TestCommandParser:
         "message_text, expected_result",
         [
             (
+                "Хлеб когда был месяц май?",
+                CommandSchema(
+                    header="Хлеб",
+                    command=EntertainmentCommandsEnum.PAST_DATE,
+                    rest_text="месяц май?",
+                    raw_command="когда был",
+                ),
+            ),
+            (
                 "Хлеб покажи подстроки как дела дорогой?",
                 ParameterCommandSchema(
                     header="Хлеб",

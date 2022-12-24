@@ -40,7 +40,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
 
     def get_how_many(self):
         rest_text = self.command_instance.rest_text.replace("?", "")
-        return super()._return_answer(f"{rest_text} - {str(random.randint(0, 5000000))}")
+        return super()._return_answer(f"{rest_text} - {str(random.randint(0, 1000))}")
 
     def get_date(self, future: bool = True):
         rest_text = self.command_instance.rest_text.replace("?", "")
