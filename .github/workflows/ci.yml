@@ -32,7 +32,7 @@ jobs:
           poetry run flake8
       - name: Test with pytest coverage
         run: |
-          poetry run pytest bread_bot --cov=bread_bot --cov-report
+          poetry run pytest bread_bot --cov=bread_bot
       - name: Coverage comment
         id: coverage_comment
         uses: py-cov-action/python-coverage-comment-action@v3
