@@ -32,7 +32,7 @@ jobs:
       with:
         file: ci/Dockerfile.app
         push: true
-        tags: levkey/bread_bot:latest
+        tags: levkey/bread_bot:app
   deploy:
     needs: build
     name: Deploy
