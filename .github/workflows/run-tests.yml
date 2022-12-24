@@ -31,11 +31,11 @@ jobs:
       - name: Flake8 check
         run: |
           poetry run flake8
-      - name: Test with pytest
+      - name: Test with pytest coverage
         run: |
           poetry run pytest bread_bot --cov=bread_bot --cov-report xml
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
+      - name: Coverage
+        uses: orgoro/coverage@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path--to-lcov: coverage.xml
+          coverageFile: coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
