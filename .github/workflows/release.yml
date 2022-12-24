@@ -6,7 +6,7 @@ on:
 jobs:
   testing:
     name: Testing
-    uses: ./.github/workflows/testing.yml@v1
+    uses: ./.github/workflows/testing.yml@main
   build:
     needs: testing
     name: Build
