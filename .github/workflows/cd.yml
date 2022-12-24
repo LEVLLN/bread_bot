@@ -4,6 +4,8 @@ on:
     branches:
       - test-cov
 jobs:
+  testing:
+    uses: LEVLLN/bread_bot/.github/workflows/ci.yml@v1
   build:
     name: Build
     runs-on: ubuntu-latest
