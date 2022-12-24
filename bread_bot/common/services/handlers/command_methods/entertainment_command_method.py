@@ -1,3 +1,4 @@
+import datetime
 import random
 
 from bread_bot.common.exceptions.base import NextStepException
@@ -17,6 +18,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return self.get_random()
             case EntertainmentCommandsEnum.HELP:
                 return self.help()
+            case EntertainmentCommandsEnum.PAST_DATE:
+                return self.get_date(future=False)
+            case EntertainmentCommandsEnum.FUTURE_DATE:
+                return self.get_date(future=True)
+            case EntertainmentCommandsEnum.HOW_MANY:
+                return self.get_how_many()
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -30,6 +37,26 @@ class EntertainmentCommandMethod(BaseCommandMethod):
 
     def get_random(self):
         return super()._return_answer(str(random.randint(0, 10000)))
+
+    def get_how_many(self):
+        rest_text = self.command_instance.rest_text.replace("?", "")
+        return super()._return_answer(f"{rest_text} - {str(random.randint(0, 5000000))}")
+
+    def get_date(self, future: bool = True):
+        rest_text = self.command_instance.rest_text.replace("?", "")
+        today = datetime.datetime.today()
+        delta = datetime.timedelta(
+            days=random.randint(0, 30000),
+        )
+        if future:
+            date = today + delta
+        else:
+            date = today - delta
+        str_date = date.strftime("%d.%m.%Y")
+        verb = self.command_instance.raw_command.lower().replace("когда", "").replace("ё", "е").lstrip()
+        if verb == "":
+            verb = "будет"
+        return super()._return_answer(f"{rest_text} {verb} в {str_date}")
 
     @staticmethod
     def _show_all_commands() -> str:

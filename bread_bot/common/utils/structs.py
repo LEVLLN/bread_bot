@@ -46,6 +46,9 @@ class EntertainmentCommandsEnum(str, Enum):
     HELP = "HELP"
     CHOOSE_VARIANT = "CHOOSE_VARIANT"
     RANDOM = "RANDOM"
+    PAST_DATE = "PAST_DATE"
+    FUTURE_DATE = "FUTURE_DATE"
+    HOW_MANY = "HOW_MANY"
 
 
 class IntegrationCommandsEnum(str, Enum):

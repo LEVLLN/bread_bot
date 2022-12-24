@@ -1,6 +1,7 @@
+import datetime
+
 import pytest
 
-from bread_bot.common.models import AnswerPack
 from bread_bot.common.schemas.commands import (
     ValueListCommandSchema,
     CommandSchema,
@@ -143,3 +144,62 @@ class TestEntertainmentCommand:
         result = await entertainment_command_method.execute()
 
         assert result.text == expected_result
+
+    @pytest.mark.parametrize(
+        "command, raw_command, expected_result",
+        [
+            (EntertainmentCommandsEnum.PAST_DATE, "когда было", "Some event было в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда была", "Some event была в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда были", "Some event были в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда был", "Some event был в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда случилось", "Some event случилось в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда случилась", "Some event случилась в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда случился", "Some event случился в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда случились", "Some event случились в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда настало", "Some event настало в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда настала", "Some event настала в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда настал", "Some event настал в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда настали", "Some event настали в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда произошло", "Some event произошло в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда произошли", "Some event произошли в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда произошла", "Some event произошла в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда произошел", "Some event произошел в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда произошёл", "Some event произошел в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда", "Some event будет в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда будет", "Some event будет в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда будут", "Some event будут в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда настанет", "Some event настанет в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда настанут", "Some event настанут в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда случатся", "Some event случатся в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда случится", "Some event случится в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда произойдет", "Some event произойдет в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда произойдёт", "Some event произойдет в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда произойдут", "Some event произойдут в"),
+        ],
+    )
+    async def test_date_command(
+        self, entertainment_command_method, command_instance, command, raw_command, expected_result
+    ):
+        today = datetime.datetime.today()
+        command_instance.rest_text = "Some event?"
+        command_instance.command = command
+        command_instance.raw_command = raw_command
+
+        result = await entertainment_command_method.execute()
+
+        assert result.text.startswith(expected_result)
+        date = result.text.lstrip(expected_result)
+        if command == EntertainmentCommandsEnum.FUTURE_DATE:
+            assert datetime.datetime.strptime(date, "%d.%m.%Y") > today
+        else:
+            assert datetime.datetime.strptime(date, "%d.%m.%Y") < today
+
+    async def test_how_many(self, entertainment_command_method, command_instance):
+        command_instance.rest_text = "Some event?"
+        command_instance.command = EntertainmentCommandsEnum.HOW_MANY
+        command_instance.raw_command = "сколько"
+
+        result = await entertainment_command_method.execute()
+
+        assert result.text.startswith("Some event - ")
+        assert result.text.lstrip("Some event - ").isnumeric()
