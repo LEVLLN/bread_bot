@@ -43,7 +43,7 @@ jobs:
       with:
         name: ci
         path: ci
-    - name: copy ci files
+    - name: copy-files
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -59,4 +59,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         script: |
-          . deploy.sh
+          docker pull levkey/bread_bot:app && docker-compose -p root -f ci/docker-compose.yml up -d --force-recreate
