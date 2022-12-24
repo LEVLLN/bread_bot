@@ -9,7 +9,3 @@ def composite_mask(collection, split=True) -> str:
             sorted(collection, key=len, reverse=True),
         )
     )
-
-
-async def async_composite_mask(collection, split=True) -> str:
-    return composite_mask(collection, split)

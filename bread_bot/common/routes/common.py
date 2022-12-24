@@ -7,8 +7,8 @@ from starlette import status
 
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.common.clients.telegram_client import TelegramClient
-from bread_bot.common.models import Chat, Member
-from bread_bot.common.schemas.api_models import SendMessageSchema, ChatSchema, MemberDBSchema, ReleaseNotesSchema
+from bread_bot.common.models import Chat
+from bread_bot.common.schemas.api_models import SendMessageSchema, ChatSchema, ReleaseNotesSchema
 from bread_bot.common.schemas.telegram_messages import StandardBodySchema, ChatMemberBodySchema
 from bread_bot.common.services.messages.message_receiver import MessageReceiver
 from bread_bot.common.services.messages.message_sender import MessageSender
@@ -52,26 +52,6 @@ async def send_message_to_chat(
 @router.get("/chats", response_model=List[ChatSchema], dependencies=[Depends(get_current_active_admin_user)])
 async def get_chats(db: AsyncSession = Depends(get_async_session)):
     return await Chat.async_filter(db, where=Chat.chat_id < 0)
-
-
-@router.get("/members", response_model=List[MemberDBSchema], dependencies=[Depends(get_current_active_admin_user)])
-async def get_members(db: AsyncSession = Depends(get_async_session)):
-    return await Member.async_all(db)
-
-
-@router.get(
-    "/members/{object_id}", response_model=MemberDBSchema, dependencies=[Depends(get_current_active_admin_user)]
-)
-async def get_member_by_id(object_id: int, db: AsyncSession = Depends(get_async_session)):
-    member = await Member.async_first(db, Member.id == object_id)
-    if member is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
-    return member
-
-
-@router.delete("/members/{object_id}", dependencies=[Depends(get_current_active_admin_user)])
-async def delete_members(object_id: int, db: AsyncSession = Depends(get_async_session)):
-    return {"deleted": await Member.async_delete(db=db, where=Member.id == object_id)}
 
 
 @router.get(

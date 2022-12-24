@@ -119,6 +119,5 @@ AUTO_MASK_LOGS = os.getenv("AUTO_MASK_LOGS", "false") == "true"
 DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = "|".join(map(lambda x: f"\\b{x}\\b", DEFAULT_SENSITIVE_KEY_WORDS))
 # Telegramer
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
-NGROK_HOST = os.getenv("NGROK_HOST", "localhost:8080")
-SHOW_STR_LIMIT = int(os.getenv("SHOW_STR_LIMIT", 100))
-MESSAGE_LEN_LIMIT = int(os.getenv("MESSAGE_LEN_LIMIT", 2500))
+APP_HOST = os.getenv("APP_HOST", "localhost:8080")
+MESSAGE_LEN_LIMIT = int(os.getenv("MESSAGE_LEN_LIMIT", 4096))

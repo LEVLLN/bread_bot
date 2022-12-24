@@ -77,7 +77,7 @@ class TelegramClient(BaseHTTPClient):
         response = await self.request(
             method="POST",
             url=f"{self.base_url}/{self.set_webhook_method}",
-            data={"url": settings.NGROK_HOST},
+            data={"url": settings.APP_HOST},
             headers=self.headers,
         )
         if response.status_code != 200 or not response.json().get("ok"):
@@ -98,7 +98,7 @@ class TelegramClient(BaseHTTPClient):
 
     async def compare_webhooks(self) -> bool:
         webhook = await self.get_webhook_info()
-        return settings.NGROK_HOST == webhook.result.url
+        return settings.APP_HOST == webhook.result.url
 
     async def get_chat(self, chat_id) -> ChatMemberBodySchema:
         response = await self.request(

@@ -1,7 +1,7 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool, AsyncAdaptedQueuePool
 
 from bread_bot.main.settings import (
@@ -42,11 +42,3 @@ AsyncSessionLocal = sessionmaker(
     autoflush=False,
     autocommit=False,
 )
-
-
-async def sync_imitate_long_db_query(session: Session, seconds=5):
-    session.execute(text(f"SELECT pg_sleep({seconds});"))
-
-
-async def async_imitate_long_db_query(session: AsyncSession, seconds=5):
-    await session.execute(text(f"SELECT pg_sleep({seconds});"))
