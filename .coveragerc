@@ -35,5 +35,8 @@ exclude_lines =
     raise NotImplementedError
     if 0:
 
+[coverage:paths]
+source =
+    bread_bot
 [html]
 title = BreadBot Coverage
