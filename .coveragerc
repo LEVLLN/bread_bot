@@ -38,5 +38,6 @@ exclude_lines =
 [coverage:paths]
 source =
     bread_bot
+
 [html]
 title = BreadBot Coverage
