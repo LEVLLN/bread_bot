@@ -2,7 +2,7 @@ name: DEPLOY
 on:
   push:
     branches:
-      - test-cov
+      - main
 jobs:
   testing:
     uses: LEVLLN/bread_bot/.github/workflows/ci.yml@v1
