@@ -33,6 +33,6 @@ jobs:
           poetry run flake8
       - name: Test with pytest
         run: |
-          poetry run coverage run pytest bread_bot/tests && coverage xml
+          poetry run coverage run -m pytest bread_bot
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
