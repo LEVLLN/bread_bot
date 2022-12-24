@@ -1,0 +1,79 @@
+name: DEPLOY
+on:
+  push:
+    branches:
+      - test-cov
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push base image
+      uses: docker/build-push-action@v3
+      with:
+        file: ci/Dockerfile
+        push: true
+        tags: levkey/bread_bot:base
+    - name: Build and push app image
+      uses: docker/build-push-action@v3
+      with:
+        file: ci/Dockerfile.app
+        push: true
+        tags: levkey/bread_bot:latest
+  deploy:
+    needs: build
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ci
+        path: ci
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Build and push base image
+      uses: docker/build-push-action@v3
+      with:
+        file: ci/Dockerfile
+        push: true
+        tags: levkey/bread_bot:base
+    - name: Build and push app image
+      uses: docker/build-push-action@v3
+      with:
+        file: ci/Dockerfile.app
+        push: true
+        tags: levkey/bread_bot:latest
+    - name: copy ci files
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.KEY }}
+        source: "ci/*"
+        target: "/root/"
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        script: |
+          . deploy.sh
