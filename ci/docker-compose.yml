@@ -8,8 +8,8 @@ services:
       - "443:443"
     volumes:
       - /root/nginx.conf:/etc/nginx/nginx.conf
-      - /root/nginx.key:/ssl/nginx.key
-      - /root/nginx.crt:/ssl/nginx.crt
+      - /root/hlebbot_ru.crt:/ssl/hlebbot_ru.crt
+      - /root/hlebbot_ru.key:/ssl/hlebbot_ru.key
     depends_on:
       - bread_bot
     networks:
