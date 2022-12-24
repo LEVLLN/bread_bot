@@ -1,9 +1,5 @@
 on:
   workflow_call:
-    inputs:
-      config-path:
-        required: true
-        type: string
 
 jobs:
   testing:
