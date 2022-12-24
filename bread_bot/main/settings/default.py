@@ -112,6 +112,7 @@ DEFAULT_SENSITIVE_KEY_WORDS = (
     "api_key",
     "ctn",
     "phone",
+    "bot_token",
 )
 
 AUTO_MASK_LOGS = os.getenv("AUTO_MASK_LOGS", "false") == "true"
