@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import Column, String, BigInteger, Boolean, SmallInteger
+from sqlalchemy import Column, String, BigInteger
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
