@@ -8,6 +8,5 @@ on:
 
 jobs:
   testing:
-  name: Testing
+  name: Pull request check
   uses: ./.github/workflows/testing.yml
-
