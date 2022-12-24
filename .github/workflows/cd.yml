@@ -30,6 +30,7 @@ jobs:
         push: true
         tags: levkey/bread_bot:latest
   deploy:
+    needs: build
     name: Deploy
     runs-on: ubuntu-latest
     steps:
@@ -75,4 +76,4 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         script: |
-          . build_images.sh
+          . deploy.sh
