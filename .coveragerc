@@ -1,5 +1,6 @@
 [coverage:run]
 source=bread_bot
+relative_files = true
 
 omit =
     tests.py
