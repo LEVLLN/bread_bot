@@ -160,6 +160,10 @@ class TestEntertainmentCommand:
             (EntertainmentCommandsEnum.PAST_DATE, "когда настала", "Some event настала в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда настал", "Some event настал в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда настали", "Some event настали в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда наступило", "Some event наступило в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда наступила", "Some event наступила в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда наступил", "Some event наступил в"),
+            (EntertainmentCommandsEnum.PAST_DATE, "когда наступили", "Some event наступили в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда произошло", "Some event произошло в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда произошли", "Some event произошли в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда произошла", "Some event произошла в"),
@@ -175,6 +179,8 @@ class TestEntertainmentCommand:
             (EntertainmentCommandsEnum.FUTURE_DATE, "когда произойдет", "Some event произойдет в"),
             (EntertainmentCommandsEnum.FUTURE_DATE, "когда произойдёт", "Some event произойдет в"),
             (EntertainmentCommandsEnum.FUTURE_DATE, "когда произойдут", "Some event произойдут в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда наступят", "Some event наступят в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда наступит", "Some event наступит в"),
         ],
     )
     async def test_date_command(
