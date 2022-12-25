@@ -165,7 +165,7 @@ class TestEntertainmentCommand:
             (EntertainmentCommandsEnum.PAST_DATE, "когда произошла", "Some event произошла в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда произошел", "Some event произошел в"),
             (EntertainmentCommandsEnum.PAST_DATE, "когда произошёл", "Some event произошел в"),
-            (EntertainmentCommandsEnum.FUTURE_DATE, "когда", "Some event будет в"),
+            (EntertainmentCommandsEnum.FUTURE_DATE, "когда", "Some event  в"),
             (EntertainmentCommandsEnum.FUTURE_DATE, "когда будет", "Some event будет в"),
             (EntertainmentCommandsEnum.FUTURE_DATE, "когда будут", "Some event будут в"),
             (EntertainmentCommandsEnum.FUTURE_DATE, "когда настанет", "Some event настанет в"),

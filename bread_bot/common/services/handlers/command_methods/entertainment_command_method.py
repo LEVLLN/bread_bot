@@ -55,7 +55,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         str_date = date.strftime("%d.%m.%Y")
         verb = self.command_instance.raw_command.lower().replace("когда", "").replace("ё", "е").lstrip()
         if verb == "":
-            verb = "будет"
+            super()._return_answer(f"{rest_text} в {str_date}")
         return super()._return_answer(f"{rest_text} {verb} в {str_date}")
 
     @staticmethod
