@@ -62,7 +62,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     def _show_all_commands() -> str:
         result = ""
         for command in CommandSettings().command_settings:
-            result += f"{'Команды' if len(command.aliases) > 1 else 'Команда'}: [{', '.join(command.aliases)}]"
+            result += f"{'Команды' if len(command.aliases) > 1 else 'Команда'}: [{', '.join(command.aliases[:3])}]"
             if command.description is not None:
                 result += f" - {command.description}\n"
             else:
