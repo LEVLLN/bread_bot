@@ -54,21 +54,18 @@ class AnswerHandler(AbstractHandler):
     def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
         """Поиск ключей из БД среди сообщения"""
         keys_to_lemmas = self.get_lemmas(keys=keys)
-        if message_text is not None:
-            message_text = message_text.lower()
-        else:
-            message_text = self.message_service.message.text.lower()
-
         match reaction_type:
             case AnswerEntityReactionTypesEnum.SUBSTRING:
                 regex = f"({composite_mask(keys + list(keys_to_lemmas.keys()), split=True)})"
-                if keys_to_lemmas:
-                    message_text = "".join(Mystem().lemmatize(message_text)).strip()
-                    print(message_text, keys_to_lemmas)
             case AnswerEntityReactionTypesEnum.TRIGGER:
                 regex = f"^({composite_mask(keys)})$"
             case _:
                 raise NextStepException("Неподходящий тип данных")
+
+        if message_text is not None:
+            message_text = message_text.lower()
+        else:
+            message_text = self.message_service.message.text.lower()
 
         groups = re.findall(regex, message_text, re.IGNORECASE)
         if len(groups) == 0:
