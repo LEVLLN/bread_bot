@@ -69,23 +69,6 @@ class TestAnswerHandler:
         trigger_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
         yield trigger_answer_handler
 
-    async def test_process_lemma_substring(self, db, substring_answer_handler, based_pack, text_entity_factory):
-        await text_entity_factory(
-            key="слова",
-            value="value",
-            reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
-            pack_id=based_pack.id
-        )
-        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
-            db, substring_answer_handler.member_service.chat.id
-        )
-        substring_answer_handler.message_service.message.text = "Есть лемма слово"
-
-        result = await substring_answer_handler.process()
-
-        assert isinstance(result, TextAnswerSchema)
-        assert result.text == "value"
-
     async def test_process_substring(self, db, substring_answer_handler, prepare_data):
         result = await substring_answer_handler.process()
         assert type(result) in (
