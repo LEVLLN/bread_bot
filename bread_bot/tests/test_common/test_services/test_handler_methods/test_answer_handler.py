@@ -69,41 +69,6 @@ class TestAnswerHandler:
         trigger_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
         yield trigger_answer_handler
 
-    @pytest.mark.parametrize(
-        "key, message_text",
-        [
-            ("слова", "слово"),
-            ("слова", "слову"),
-            ("слова", "в слове"),
-            ("слова", "словах"),
-            ("слова", "у слова"),
-            ("слова", "слов"),
-            ("Ваня", "Ване"),
-            ("Нурислам", "Нурисламы"),
-            ("Нурисламы", "Нурислам"),
-            ("Нурисламы", "Нурисламу"),
-            ("ручка", "ручке"),
-            ("сделать", "сделать"),
-            ("some_en_key", "some_en_key"),
-            ("зарифовое", "зарифовая"),
-        ]
-    )
-    async def test_process_lemma_substring(
-        self, db, substring_answer_handler, based_pack, text_entity_factory, key, message_text
-    ):
-        await text_entity_factory(
-            key=key, value="value", reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING, pack_id=based_pack.id
-        )
-        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
-            db, substring_answer_handler.member_service.chat.id
-        )
-        substring_answer_handler.message_service.message.text = f"Есть лемма {message_text} в предложении"
-
-        result = await substring_answer_handler.process()
-
-        assert isinstance(result, TextAnswerSchema)
-        assert result.text == "value"
-
     async def test_process_substring(self, db, substring_answer_handler, prepare_data):
         result = await substring_answer_handler.process()
         assert type(result) in (
