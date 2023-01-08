@@ -1,6 +1,7 @@
 import random
 import re
 
+from pymystem3 import Mystem
 from sqlalchemy import and_
 
 from bread_bot.common.exceptions.base import NextStepException
@@ -30,11 +31,32 @@ class AnswerHandler(AbstractHandler):
     def condition(self) -> bool:
         return self.message_service and self.message_service.message and self.message_service.message.text
 
+    @staticmethod
+    def get_lemmas(keys: list) -> dict[str, str]:
+        lemma_system = Mystem()
+        keys_to_lemmas = {}
+        for key in keys:
+            if re.findall(r"[А-я]", key):
+                lemma = "".join(lemma_system.lemmatize(key)).strip()
+                keys_to_lemmas[lemma] = key
+        return keys_to_lemmas
+
+    @staticmethod
+    def reformat_groups_from_lemmas(groups: list[str], keys_to_lemmas: dict[str, str]) -> list[str]:
+        result = []
+        for group_item in groups:
+            if group_item in keys_to_lemmas:
+                result.append(keys_to_lemmas[group_item])
+            else:
+                result.append(group_item)
+        return result
+
     def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
         """Поиск ключей из БД среди сообщения"""
+        keys_to_lemmas = self.get_lemmas(keys=keys)
         match reaction_type:
             case AnswerEntityReactionTypesEnum.SUBSTRING:
-                regex = f"({composite_mask(keys, split=True)})"
+                regex = f"({composite_mask(keys + list(keys_to_lemmas.keys()), split=True)})"
             case AnswerEntityReactionTypesEnum.TRIGGER:
                 regex = f"^({composite_mask(keys)})$"
             case _:
@@ -48,7 +70,10 @@ class AnswerHandler(AbstractHandler):
         groups = re.findall(regex, message_text, re.IGNORECASE)
         if len(groups) == 0:
             raise NextStepException("Подходящих ключей не найдено")
-        return groups
+        if keys_to_lemmas:
+            return self.reformat_groups_from_lemmas(groups=groups, keys_to_lemmas=keys_to_lemmas)
+        else:
+            return groups
 
     def check_process_ability(self, check_edited_message: bool = True):
         if not self.condition:
