@@ -64,7 +64,6 @@ class AnswerHandler(AbstractHandler):
                 regex = f"({composite_mask(keys + list(keys_to_lemmas.keys()), split=True)})"
                 if keys_to_lemmas:
                     message_text = "".join(Mystem().lemmatize(message_text)).strip()
-                    print(message_text, keys_to_lemmas)
             case AnswerEntityReactionTypesEnum.TRIGGER:
                 regex = f"^({composite_mask(keys)})$"
             case _:
