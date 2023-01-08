@@ -37,6 +37,7 @@ pytest-httpx = "^0.21.2"
 urllib3 = "^1.26.13"
 pydantic = {version = "1.10.2", extras = ["email"]}
 certifi = "2022.12.07"
+pymystem3 = "^0.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
