@@ -1,9 +1,9 @@
 import os
 from enum import Enum
 
-BOT_NAME = os.getenv('BOT_NAME', "Хлеб")
-ALTER_NAMES = os.getenv('ALTER_NAMES', 'хлебушек,хлеб,bread_bot')
-TRIGGER_WORDS = [BOT_NAME.lower()] + ALTER_NAMES.split(',')
+BOT_NAME = os.getenv("BOT_NAME", "Хлеб")
+ALTER_NAMES = os.getenv("ALTER_NAMES", "хлебушек,хлеб,bread_bot")
+TRIGGER_WORDS = [BOT_NAME.lower()] + ALTER_NAMES.split(",")
 
 
 class AnswerEntityReactionTypesEnum(str, Enum):

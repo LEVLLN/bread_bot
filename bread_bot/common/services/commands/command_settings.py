@@ -3,11 +3,11 @@ from functools import cached_property
 from bread_bot.common.schemas.commands import CommandSettingsSchema
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    EntertainmentCommandsEnum,
-    MemberCommandsEnum,
-    CommandAnswerParametersEnum,
-    IntegrationCommandsEnum,
     BOT_NAME,
+    CommandAnswerParametersEnum,
+    EntertainmentCommandsEnum,
+    IntegrationCommandsEnum,
+    MemberCommandsEnum,
 )
 
 
@@ -76,7 +76,11 @@ class CommandSettings:
                 "[Надо выбрать сообщение в качестве ответа] Запоминает как триггер из сообщения в ответе. Работает с "
                 "картинками, картинками с описанием, анимациями, голосовыми, стикерами, текстом, видео, видео-кружками"
             ),
-            examples=[f"{BOT_NAME} запомни триггер my_key", f"{BOT_NAME} триггер my_key", f"{BOT_NAME} триггер my_key1, my_key2, my_key3"],
+            examples=[
+                f"{BOT_NAME} запомни триггер my_key",
+                f"{BOT_NAME} триггер my_key",
+                f"{BOT_NAME} триггер my_key1, my_key2, my_key3",
+            ],
         ),
         CommandSettingsSchema(
             aliases=[
@@ -160,7 +164,19 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
-            aliases=["кто", "у кого", "кем", "с кем", "кого", "кому", "о ком", "чья", "чьё", "чей", "чье"],
+            aliases=[
+                "кто",
+                "у кого",
+                "кем",
+                "с кем",
+                "кого",
+                "кому",
+                "о ком",
+                "чья",
+                "чьё",
+                "чей",
+                "чье",
+            ],
             command=MemberCommandsEnum.WHO,
             description="Выбор случайного участника группы",
             examples=[
