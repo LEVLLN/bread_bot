@@ -3,10 +3,11 @@ from functools import cached_property
 from bread_bot.common.schemas.commands import CommandSettingsSchema
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    EntertainmentCommandsEnum,
-    MemberCommandsEnum,
+    BOT_NAME,
     CommandAnswerParametersEnum,
+    EntertainmentCommandsEnum,
     IntegrationCommandsEnum,
+    MemberCommandsEnum,
 )
 
 
@@ -30,7 +31,7 @@ class CommandSettings:
             command=AdminCommandsEnum.SHOW,
             available_parameters=CommandAnswerParametersEnum.list(),
             description="Показывает сохраненные данные",
-            examples=["Хлеб покажи подстроки", "Хлеб покажи триггеры"],
+            examples=[f"{BOT_NAME} покажи подстроки", f"{BOT_NAME} покажи триггеры"],
         ),
         CommandSettingsSchema(
             aliases=[
@@ -41,8 +42,8 @@ class CommandSettings:
             to_find_for_key_values=True,
             description="Добавление указанных данных",
             examples=[
-                "Хлеб добавь подстроку my_key=my_value",
-                "Хлеб добавь триггер my_key=my_value",
+                f"{BOT_NAME} добавь подстроку my_key=my_value",
+                f"{BOT_NAME} добавь триггер my_key=my_value",
             ],
         ),
         CommandSettingsSchema(
@@ -60,10 +61,10 @@ class CommandSettings:
                 "картинками, картинками с описанием, анимациями, голосовыми, стикерами, текстом, видео, видео-кружками"
             ),
             examples=[
-                "Хлеб запомни my_key",
-                "Хлеб запомни значение my_key",
-                "Хлеб подстрока my_key",
-                "Хлеб запомни my_key1, my_key2, my_key3",
+                f"{BOT_NAME} запомни my_key",
+                f"{BOT_NAME} запомни значение my_key",
+                f"{BOT_NAME} подстрока my_key",
+                f"{BOT_NAME} запомни my_key1, my_key2, my_key3",
             ],
         ),
         CommandSettingsSchema(
@@ -75,7 +76,11 @@ class CommandSettings:
                 "[Надо выбрать сообщение в качестве ответа] Запоминает как триггер из сообщения в ответе. Работает с "
                 "картинками, картинками с описанием, анимациями, голосовыми, стикерами, текстом, видео, видео-кружками"
             ),
-            examples=["Хлеб запомни триггер my_key", "Хлеб триггер my_key", "Хлеб триггер my_key1, my_key2, my_key3"],
+            examples=[
+                f"{BOT_NAME} запомни триггер my_key",
+                f"{BOT_NAME} триггер my_key",
+                f"{BOT_NAME} триггер my_key1, my_key2, my_key3",
+            ],
         ),
         CommandSettingsSchema(
             aliases=[
@@ -87,9 +92,9 @@ class CommandSettings:
             to_find_for_key_values=True,
             description="Удаляет указанные данные",
             examples=[
-                "Хлеб удали подстроки my_key",
-                "Хлеб удали триггер my_key",
-                "Хлеб удали подстроки my_key=my_value",
+                f"{BOT_NAME} удали подстроки my_key",
+                f"{BOT_NAME} удали триггер my_key",
+                f"{BOT_NAME} удали подстроки my_key=my_value",
             ],
         ),
         CommandSettingsSchema(
@@ -98,8 +103,8 @@ class CommandSettings:
             to_find_for_values=True,
             description="Показ / Установка процента срабатывания подстрок",
             examples=[
-                "Хлеб процент",
-                "Хлеб процент 15",
+                f"{BOT_NAME} процент",
+                f"{BOT_NAME} процент 15",
             ],
         ),
         CommandSettingsSchema(
@@ -111,12 +116,12 @@ class CommandSettings:
                 "ответов на определенные триггеры или подстроки"
             ),
             examples=[
-                "Хлеб check моя_подстрока",
-                "Хлеб check мой_триггер",
-                "Хлеб проверь мой_триггер",
-                "Хлеб проверь моя_подстрока",
-                "Хлеб проверка мой_триггер",
-                "Хлеб проверка моя_подстрока",
+                f"{BOT_NAME} check моя_подстрока",
+                f"{BOT_NAME} check мой_триггер",
+                f"{BOT_NAME} проверь мой_триггер",
+                f"{BOT_NAME} проверь моя_подстрока",
+                f"{BOT_NAME} проверка мой_триггер",
+                f"{BOT_NAME} проверка моя_подстрока",
             ],
         ),
         CommandSettingsSchema(
@@ -125,8 +130,8 @@ class CommandSettings:
             to_find_for_values=True,
             description="Бот присылает строку, которую указали в качестве параметров.",
             examples=[
-                "Хлеб скажи Какой прекрасный день!",
-                "Хлеб say Какой прекрасный день!",
+                f"{BOT_NAME} скажи Какой прекрасный день!",
+                f"{BOT_NAME} say Какой прекрасный день!",
             ],
         ),
         # MEMBER COMMANDS
@@ -143,8 +148,8 @@ class CommandSettings:
             command=MemberCommandsEnum.COUPLE,
             description="Образование пары из двух участников группы",
             examples=[
-                "Хлеб парочка",
-                "Хлеб парочка хороших людей",
+                f"{BOT_NAME} парочка",
+                f"{BOT_NAME} парочка хороших людей",
             ],
         ),
         CommandSettingsSchema(
@@ -154,17 +159,29 @@ class CommandSettings:
             command=MemberCommandsEnum.TOP,
             description="Формирование топ 10 из участников группы",
             examples=[
-                "Хлеб топ",
-                "Хлеб топ хороших людей",
+                f"{BOT_NAME} топ",
+                f"{BOT_NAME} топ хороших людей",
             ],
         ),
         CommandSettingsSchema(
-            aliases=["кто", "у кого", "кем", "с кем", "кого", "кому", "о ком", "чья", "чьё", "чей", "чье"],
+            aliases=[
+                "кто",
+                "у кого",
+                "кем",
+                "с кем",
+                "кого",
+                "кому",
+                "о ком",
+                "чья",
+                "чьё",
+                "чей",
+                "чье",
+            ],
             command=MemberCommandsEnum.WHO,
             description="Выбор случайного участника группы",
             examples=[
-                "Хлеб кто хороший человек?",
-                "Хлеб с кем веселее всего?",
+                f"{BOT_NAME} кто хороший человек?",
+                f"{BOT_NAME} с кем веселее всего?",
             ],
         ),
         CommandSettingsSchema(
@@ -172,9 +189,9 @@ class CommandSettings:
             command=MemberCommandsEnum.CHANNEL,
             description="Тегнуть всех участников в чате для привлечения внимания",
             examples=[
-                "Хлеб channel",
-                "Хлеб all",
-                "Хлеб канал",
+                f"{BOT_NAME} channel",
+                f"{BOT_NAME} all",
+                f"{BOT_NAME} канал",
             ],
         ),
         # ENTERTAINMENT COMMANDS
@@ -183,7 +200,7 @@ class CommandSettings:
             aliases=["вероятность", "шанс"],
             description="Выдача вероятности события случайным образом",
             examples=[
-                "Хлеб вероятность события N",
+                f"{BOT_NAME} вероятность события N",
             ],
         ),
         CommandSettingsSchema(
@@ -203,7 +220,7 @@ class CommandSettings:
             ],
             description="Выдача случайной даты из будущего на событие",
             examples=[
-                "Хлеб когда будет хороший день?",
+                f"{BOT_NAME} когда будет хороший день?",
             ],
         ),
         CommandSettingsSchema(
@@ -213,7 +230,7 @@ class CommandSettings:
             ],
             description="Выдача случайного числа на событие",
             examples=[
-                "Хлеб сколько на планете ежей?",
+                f"{BOT_NAME} сколько на планете ежей?",
             ],
         ),
         CommandSettingsSchema(
@@ -242,8 +259,8 @@ class CommandSettings:
             ],
             description="Выдача случайной даты из прошлого на событие",
             examples=[
-                "Хлеб когда были лучшие времена?",
-                "Хлеб когда произошли случайные события?",
+                f"{BOT_NAME} когда были лучшие времена?",
+                f"{BOT_NAME} когда произошли случайные события?",
             ],
         ),
         CommandSettingsSchema(
@@ -251,8 +268,8 @@ class CommandSettings:
             command=EntertainmentCommandsEnum.HELP,
             description="Помощь. Если к 'help' добавить имя команды, то будут отображены подробности запуска",
             examples=[
-                "Хлеб help",
-                "Хлеб help запомни",
+                f"{BOT_NAME} help",
+                f"{BOT_NAME} help запомни",
             ],
         ),
         CommandSettingsSchema(
@@ -261,8 +278,8 @@ class CommandSettings:
             to_find_for_values_list=True,
             description="Выбор случайного значения из перечисленных",
             examples=[
-                "Хлеб выбери 1, 2, 3, 4",
-                "Хлеб выбери 1 или 2 или 3 или 4",
+                f"{BOT_NAME} выбери 1, 2, 3, 4",
+                f"{BOT_NAME} выбери 1 или 2 или 3 или 4",
             ],
         ),
         # INTEGRATION COMMANDS
@@ -271,7 +288,7 @@ class CommandSettings:
             command=IntegrationCommandsEnum.QUOTE,
             description="Получение мудрой цитаты",
             examples=[
-                "Хлеб цитата",
+                f"{BOT_NAME} цитата",
             ],
         ),
         CommandSettingsSchema(
@@ -282,13 +299,13 @@ class CommandSettings:
             description=(
                 "[Надо выбрать сообщение в качестве ответа] Оскорбление по английски на владельца сообщения из ответа"
             ),
-            examples=["Хлеб insult"],
+            examples=[f"{BOT_NAME} insult"],
         ),
         CommandSettingsSchema(
             aliases=["анекдот", "шутка", "анек"],
             command=IntegrationCommandsEnum.JOKE,
             description="Получение анекдота",
-            examples=["Хлеб анекдот"],
+            examples=[f"{BOT_NAME} анекдот"],
         ),
         CommandSettingsSchema(
             aliases=[
@@ -297,8 +314,8 @@ class CommandSettings:
             command=IntegrationCommandsEnum.ADVICE,
             description="Получение совета",
             examples=[
-                "Хлеб совет",
-                "Хлеб совет хорошим людям",
+                f"{BOT_NAME} совет",
+                f"{BOT_NAME} совет хорошим людям",
             ],
         ),
     )

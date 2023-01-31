@@ -4,7 +4,7 @@ import random
 from bread_bot.common.exceptions.base import NextStepException
 from bread_bot.common.services.commands.command_settings import CommandSettings
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
-from bread_bot.common.utils.structs import EntertainmentCommandsEnum
+from bread_bot.common.utils.structs import ALTER_NAMES, BOT_NAME, EntertainmentCommandsEnum
 
 
 class EntertainmentCommandMethod(BaseCommandMethod):
@@ -70,10 +70,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         return result
 
     def help(self):
-        if not self.command_instance.rest_text:
-            return super()._return_answer(self._show_all_commands())
+        result = f"Привет, меня зовут {BOT_NAME}.\nМожете называть меня {ALTER_NAMES}\n\n"
 
-        result = ""
+        if not self.command_instance.rest_text:
+            result += self._show_all_commands()
+            return super()._return_answer(result)
+
         command = CommandSettings().alias_to_settings.get(self.command_instance.rest_text)
         if not command:
             return super()._return_answer(self._show_all_commands())
