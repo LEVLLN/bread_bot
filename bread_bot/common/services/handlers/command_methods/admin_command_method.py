@@ -10,9 +10,7 @@ from bread_bot.common.models import (
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
     CommandSchema,
-    KeyValueParameterCommandSchema,
     ValueCommandSchema,
-    ValueParameterCommandSchema,
 )
 from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.handlers.answer_handler import (
