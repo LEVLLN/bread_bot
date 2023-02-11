@@ -174,32 +174,7 @@ class AdminCommandMethod(BaseCommandMethod):
 
     async def delete(self):
         """Удаление по ключам и по ключам-значениям"""
-        if self.default_answer_pack is None:
-            return super()._return_answer("У чата нет ни одного пакета под управлением")
-        match self.command_instance:
-            case KeyValueParameterCommandSchema():
-                await AnswerEntity.async_delete(
-                    self.db,
-                    where=and_(
-                        AnswerEntity.key == self.command_instance.key,
-                        AnswerEntity.value == self.command_instance.value,
-                        AnswerEntity.pack_id == self.default_answer_pack.id,
-                        AnswerEntity.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
-                        AnswerEntity.content_type == AnswerEntityContentTypesEnum.TEXT,
-                    ),
-                )
-            case ValueParameterCommandSchema():
-                await AnswerEntity.async_delete(
-                    self.db,
-                    where=and_(
-                        AnswerEntity.key == self.command_instance.value,
-                        AnswerEntity.pack_id == self.default_answer_pack.id,
-                        AnswerEntity.reaction_type == ANSWER_ENTITY_MAP[self.command_instance.parameter],
-                    ),
-                )
-            case _:
-                raise RaiseUpException("Введены неправильные значения")
-        return super()._return_answer()
+        return super()._return_answer("Фича временно отключена. В процессе доработки.")
 
     async def handle_answer_chance(self):
         if not self.default_answer_pack:
