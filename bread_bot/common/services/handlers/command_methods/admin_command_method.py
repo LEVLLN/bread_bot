@@ -14,6 +14,7 @@ from bread_bot.common.schemas.commands import (
     ValueCommandSchema,
     ValueParameterCommandSchema,
 )
+from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.handlers.answer_handler import (
     AnswerHandler,
 )
@@ -26,6 +27,35 @@ from bread_bot.common.utils.structs import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _select_content_from_reply(reply: BaseMessageSchema) -> tuple[str, AnswerEntityContentTypesEnum, str | None]:
+    description = None
+    if reply.voice:
+        value = reply.voice.file_id
+        content_type = AnswerEntityContentTypesEnum.VOICE
+    elif reply.photo:
+        value = reply.photo[0].file_id
+        description = reply.caption
+        content_type = AnswerEntityContentTypesEnum.PICTURE
+    elif reply.sticker:
+        value = reply.sticker.file_id
+        content_type = AnswerEntityContentTypesEnum.STICKER
+    elif reply.video:
+        value = reply.video.file_id
+        content_type = AnswerEntityContentTypesEnum.VIDEO
+    elif reply.video_note:
+        value = reply.video_note.file_id
+        content_type = AnswerEntityContentTypesEnum.VIDEO_NOTE
+    elif reply.animation:
+        value = reply.animation.file_id
+        content_type = AnswerEntityContentTypesEnum.ANIMATION
+    elif reply.text:
+        value = reply.text
+        content_type = AnswerEntityContentTypesEnum.TEXT
+    else:
+        raise RaiseUpException("Данный тип данных не поддерживается")
+    return value, content_type, description
 
 
 class AdminCommandMethod(BaseCommandMethod):
@@ -101,32 +131,7 @@ class AdminCommandMethod(BaseCommandMethod):
         """Команда Запомни"""
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        description: str | None = None
-
-        if reply.voice:
-            value = reply.voice.file_id
-            content_type = AnswerEntityContentTypesEnum.VOICE
-        elif reply.photo:
-            value = reply.photo[0].file_id
-            description = reply.caption
-            content_type = AnswerEntityContentTypesEnum.PICTURE
-        elif reply.sticker:
-            value = reply.sticker.file_id
-            content_type = AnswerEntityContentTypesEnum.STICKER
-        elif reply.video:
-            value = reply.video.file_id
-            content_type = AnswerEntityContentTypesEnum.VIDEO
-        elif reply.video_note:
-            value = reply.video_note.file_id
-            content_type = AnswerEntityContentTypesEnum.VIDEO_NOTE
-        elif reply.animation:
-            value = reply.animation.file_id
-            content_type = AnswerEntityContentTypesEnum.ANIMATION
-        elif reply.text:
-            value = reply.text
-            content_type = AnswerEntityContentTypesEnum.TEXT
-        else:
-            raise RaiseUpException("Данный тип данных не поддерживается")
+        value, content_type, description = _select_content_from_reply(reply)
 
         if not self.default_answer_pack:
             self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
@@ -138,6 +143,7 @@ class AdminCommandMethod(BaseCommandMethod):
             for entity in await AnswerEntity.async_filter(
                 db=self.db,
                 where=and_(
+                    AnswerEntity.pack_id == self.default_answer_pack.id,
                     AnswerEntity.key.in_(self.command_instance.value_list),
                     AnswerEntity.value == value,
                     AnswerEntity.content_type == content_type,
