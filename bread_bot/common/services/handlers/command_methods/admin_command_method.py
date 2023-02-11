@@ -82,6 +82,8 @@ class AdminCommandMethod(BaseCommandMethod):
                 return await self.check_answer()
             case AdminCommandsEnum.SAY:
                 return await self.say()
+            case AdminCommandsEnum.SHOW_KEYS:
+                return await self.show_keys()
             case _:
                 raise NextStepException("Не найдена команда")
 
@@ -250,3 +252,21 @@ class AdminCommandMethod(BaseCommandMethod):
         if not isinstance(self.command_instance, ValueCommandSchema):
             return super()._return_answer("Необходимо указать параметром, что надо сказать")
         return super()._return_answer(self.command_instance.value)
+
+    async def show_keys(self):
+        self._check_reply_existed()
+        reply = self.message_service.message.reply
+        value, content_type, description = _select_content_from_reply(reply)
+        answer_entities = await AnswerEntity.async_filter(
+            db=self.db,
+            where=and_(
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.value == value,
+                AnswerEntity.content_type == content_type,
+            ),
+        )
+        if not answer_entities:
+            return super()._return_answer("Не найдено ключей на выбранный контент")
+
+        key_list = ", ".join([answer_entity.key for answer_entity in answer_entities])
+        return super()._return_answer(f"Перечень ключей на значение: [{key_list}]")

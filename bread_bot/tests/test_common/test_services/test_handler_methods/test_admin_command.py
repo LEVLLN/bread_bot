@@ -171,6 +171,46 @@ class TestAdd(BaseAdminCommand):
         assert result.text in admin_command_method.COMPLETE_MESSAGES
 
 
+class TestShowKeys(BaseAdminCommand):
+    @pytest.fixture
+    async def command_instance(
+        self,
+    ):
+        yield CommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.SHOW_KEYS,
+            raw_command="покажи ключи",
+        )
+
+    @pytest.fixture
+    async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
+        message_service = MessageService(request_body=request_body_message)
+        message_service.message.reply = reply_photo.message.reply
+        yield message_service
+
+    @pytest.fixture
+    async def answer_entity(self, db, based_pack, reply_photo):
+        return await AnswerEntity.async_add(
+            db=db,
+            instance=AnswerEntity(
+                pack_id=based_pack.id,
+                value=reply_photo.message.reply.photo[0].file_id,
+                key="my_key",
+                reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
+                content_type=AnswerEntityContentTypesEnum.PICTURE,
+            ),
+        )
+
+    async def test_photo_reply(
+        self, db, based_pack, admin_command_method, command_instance, photo_message_service, answer_entity
+    ):
+        admin_command_method.message_service = photo_message_service
+        admin_command_method.command_instance = command_instance
+        result = await admin_command_method.execute()
+
+        assert result.text == "Перечень ключей на значение: [my_key]"
+
+
 class TestRemember(BaseAdminCommand):
     @pytest.fixture
     async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
@@ -700,6 +740,7 @@ class TestCheckAnswer(BaseAdminCommand):
         result = await admin_command_method.execute()
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "Необходимо указать параметром, что надо искать"
+
 
 class TestSay(BaseAdminCommand):
     async def test_another_command(self, admin_command_method):

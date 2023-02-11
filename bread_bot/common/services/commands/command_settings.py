@@ -134,6 +134,16 @@ class CommandSettings:
                 f"{BOT_NAME} say Какой прекрасный день!",
             ],
         ),
+        CommandSettingsSchema(
+            aliases=["покажи ключи", "show keys"],
+            command=AdminCommandsEnum.SHOW_KEYS,
+            description=(
+                "[Надо выбрать сообщение в качестве ответа] Бот показывает перечень ключей на определенный контент"
+            ),
+            examples=[
+                f"{BOT_NAME} покажи ключи",
+            ],
+        ),
         # MEMBER COMMANDS
         CommandSettingsSchema(
             aliases=["статистика", "стата"],

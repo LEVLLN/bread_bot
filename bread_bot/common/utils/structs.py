@@ -34,6 +34,7 @@ class AdminCommandsEnum(str, Enum):
     SET_EDITED_TRIGGER = "SET_EDITED_TRIGGER"
     CHECK_ANSWER = "CHECK_ANSWER"
     SAY = "SAY"
+    SHOW_KEYS = "SHOW_KEYS"
 
 
 class MemberCommandsEnum(str, Enum):
