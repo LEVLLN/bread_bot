@@ -112,7 +112,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 else:
                     coefficient = 0.25
                 for i in range(0, math.ceil(words_count * coefficient)):
-                    if words[random.randint(0, words_count - 1)] is "\n":
+                    if words[random.randint(0, words_count - 1)] == "\n":
                         continue
                     words[random.randint(0, words_count - 1)] = random.choice(list(values_for_replacing))
                 return " ".join(words)
