@@ -28,7 +28,7 @@
 | bread\_bot/common/schemas/telegram\_messages.py                                        |       56 |        0 |    100.0% |           |
 | bread\_bot/common/services/commands/command\_parser.py                                 |      114 |       12 |     89.5% |64-65, 107-108, 159-163, 200, 206-207 |
 | bread\_bot/common/services/commands/command\_settings.py                               |       28 |        0 |    100.0% |           |
-| bread\_bot/common/services/handlers/answer\_handler.py                                 |       93 |       13 |     86.0% |41-42, 96, 98, 103-108, 111, 127, 151 |
+| bread\_bot/common/services/handlers/answer\_handler.py                                 |       93 |       13 |     86.0% |41-42, 96, 100, 103-108, 111, 127, 151 |
 | bread\_bot/common/services/handlers/command\_handler.py                                |       28 |        9 |     67.9% | 23, 35-42 |
 | bread\_bot/common/services/handlers/command\_methods/admin\_command\_method.py         |      118 |       13 |     89.0% |40, 46, 55-56, 59, 96, 107, 145, 149, 167-168, 192, 212 |
 | bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |       25 |     54.5% |     74-99 |
