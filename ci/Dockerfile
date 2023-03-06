@@ -4,4 +4,4 @@ WORKDIR /code
 
 COPY . /code/
 
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --only main
+RUN  pip install --upgrade pip && pip install poetry && poetry config virtualenvs.create false && poetry install --only main
