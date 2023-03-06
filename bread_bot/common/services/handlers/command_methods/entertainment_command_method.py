@@ -1,4 +1,5 @@
 import datetime
+import math
 import random
 
 from sqlalchemy import select, and_
@@ -108,7 +109,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                     coefficient = 0.5
                 else:
                     coefficient = 0.25
-                for i in range(0, int(words_count * coefficient)):
+                for i in range(0, math.ceil(words_count * coefficient)):
                     words[random.randint(0, words_count - 1)] = random.choice(list(values_for_replacing))
                 return " ".join(words)
             case _:
