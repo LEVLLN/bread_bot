@@ -147,7 +147,7 @@ class PictureAnswerHandler(AnswerHandler):
 
     async def process(self) -> BaseAnswerSchema:
         self.check_process_ability()
-        if random.random() > self.default_answer_pack.answer_chance / 100:
+        if random.random() > 20 / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
         return await self.process_picture()

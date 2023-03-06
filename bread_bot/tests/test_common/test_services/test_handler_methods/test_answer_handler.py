@@ -116,7 +116,8 @@ class TestAnswerHandler:
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "my_concrete_value"
 
-    async def test_process_picture(self, db, prepare_data, picture_answer_handler, member_service):
+    async def test_process_picture(self, db, prepare_data, picture_answer_handler, member_service, mocker):
+        mocker.patch("bread_bot.common.services.handlers.answer_handler.random.random", return_value=0.15)
         result = await picture_answer_handler.process()
         assert result.text == f"Похоже на {member_service.member.first_name} {member_service.member.last_name}"
 
