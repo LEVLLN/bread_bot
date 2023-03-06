@@ -18,6 +18,7 @@ from bread_bot.common.schemas.bread_bot_answers import (
     VideoNoteAnswerSchema,
 )
 from bread_bot.common.services.handlers.handler import AbstractHandler
+from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
     AnswerEntityReactionTypesEnum,
@@ -126,3 +127,27 @@ class TriggerAnswerHandler(AnswerHandler):
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
         return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.TRIGGER)
+
+
+class PictureAnswerHandler(AnswerHandler):
+    @property
+    def condition(self) -> bool:
+        return self.message_service and self.message_service.message and self.message_service.message.photo
+
+    async def _who_on_picture(self):
+        username = await ExternalMemberService(self.db, self.member_service, self.message_service).get_one_of_group()
+        return TextAnswerSchema(
+            reply_to_message_id=self.message_service.message.message_id,
+            chat_id=self.message_service.message.chat.id,
+            text=f"Похоже на {username}",
+        )
+
+    async def process_picture(self) -> BaseAnswerSchema:
+        return await self._who_on_picture()
+
+    async def process(self) -> BaseAnswerSchema:
+        self.check_process_ability()
+        if random.random() > self.default_answer_pack.answer_chance / 100:
+            raise NextStepException("Пропуск ответа по проценту срабатывания")
+
+        return await self.process_picture()

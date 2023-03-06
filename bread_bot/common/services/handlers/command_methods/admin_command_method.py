@@ -101,7 +101,7 @@ class AdminCommandMethod(BaseCommandMethod):
         """Команда Запомни"""
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        value, content_type, description = self._select_content_from_reply(reply)
+        value, content_type, description = self.message_service.select_content_from_message(reply)
 
         if not self.default_answer_pack:
             self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
@@ -199,7 +199,7 @@ class AdminCommandMethod(BaseCommandMethod):
     async def show_keys(self):
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        value, content_type, description = self._select_content_from_reply(reply)
+        value, content_type, description = self.message_service.select_content_from_message(reply)
         answer_entities = await AnswerEntity.async_filter(
             db=self.db,
             where=and_(

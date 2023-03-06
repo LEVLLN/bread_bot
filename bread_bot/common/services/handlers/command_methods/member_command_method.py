@@ -1,24 +1,39 @@
-import asyncio
-import datetime
 import random
 
-from sqlalchemy import and_
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from bread_bot.common.clients.telegram_client import TelegramClient
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import (
-    ChatToMember,
-    Member,
+    AnswerPack,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
-from bread_bot.common.schemas.telegram_messages import MemberSchema
-from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
+from bread_bot.common.services.handlers.command_methods.base_command_method import (
+    BaseCommandMethod,
+    COMMAND_INSTANCE_TYPE,
+)
+from bread_bot.common.services.member_service import ExternalMemberService, MemberService
+from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
     MemberCommandsEnum,
 )
 
 
 class MemberCommandMethod(BaseCommandMethod):
+    def __init__(
+        self,
+        db: AsyncSession,
+        command_instance: COMMAND_INSTANCE_TYPE,
+        message_service: MessageService,
+        member_service: MemberService,
+        default_answer_pack: AnswerPack | None = None,
+    ):
+        super().__init__(db, command_instance, message_service, member_service, default_answer_pack)
+        self.external_member_service = ExternalMemberService(
+            db=self.db,
+            message_service=self.message_service,
+            member_service=self.member_service,
+        )
+
     async def execute(self) -> TextAnswerSchema:
         match self.command_instance.command:
             case MemberCommandsEnum.WHO:
@@ -32,74 +47,9 @@ class MemberCommandMethod(BaseCommandMethod):
             case _:
                 raise NextStepException("Не найдена команда")
 
-    @staticmethod
-    def get_username(member: MemberSchema) -> str:
-        user_name = ""
-        if member.first_name != "" or member.last_name != "":
-            user_name = f"{member.first_name.strip()} {member.last_name.strip()}"
-        return user_name.strip()
-
-    async def _get_chat_members(self) -> dict:
-        """Получение из сохраненных members из БД"""
-        result = {}
-        chat_to_members = await ChatToMember.async_filter(
-            db=self.db,
-            where=and_(
-                ChatToMember.chat_id == self.member_service.chat.id,
-                Member.is_bot == False,
-                Member.id is not None,
-                Member.username is not None,
-                ChatToMember.updated_at >= datetime.datetime.now() - datetime.timedelta(days=30),
-            ),
-            select_in_load=ChatToMember.member,
-        )
-        for chat_to_member in chat_to_members:
-            if chat_to_member.member and not chat_to_member.member.is_bot:
-                member = chat_to_member.member
-                member_schema = MemberSchema(
-                    is_bot=member.is_bot,
-                    username=member.username,
-                    first_name=member.first_name,
-                    last_name=member.last_name,
-                    id=member.member_id,
-                )
-                result[member_schema.id] = member_schema
-        return result
-
-    async def _get_admin_members(self) -> dict:
-        """Получение администраторов группы"""
-        response = await TelegramClient().get_chat(self.member_service.chat.chat_id)
-        result = {}
-        for chat in response.result:
-            if chat.user.is_bot:
-                continue
-            if chat.user.id is None:
-                continue
-            if chat.user.username is None:
-                continue
-            result[chat.user.id] = chat.user
-        return result
-
-    async def get_members(self) -> list[MemberSchema]:
-        """Получить пользователей чата"""
-        if self.member_service.chat.chat_id > 0:
-            return [
-                self.message_service.message.source,
-            ]
-        admin_members, members = await asyncio.gather(
-            self._get_chat_members(),
-            self._get_admin_members(),
-        )
-        return list({**admin_members, **members}.values())
-
-    async def get_one_of_group(self) -> str:
-        """Получение случайного пользователя из группы"""
-        member = random.choice(await self.get_members())
-        return self.get_username(member)
-
     async def get_who(self):
         rest_text = self.command_instance.rest_text.replace("?", "")
-        username = await self.get_one_of_group()
+        username = await self.external_member_service.get_one_of_group()
 
         match self.command_instance.raw_command.lower():
             case "кто":
@@ -123,7 +73,7 @@ class MemberCommandMethod(BaseCommandMethod):
         return super()._return_answer(answer_text)
 
     async def get_top(self):
-        members = await self.get_members()
+        members = await self.external_member_service.get_members()
         rating = ""
         random.shuffle(members)
         if len(members) > 20:
@@ -131,19 +81,20 @@ class MemberCommandMethod(BaseCommandMethod):
         for i, user in enumerate(members, 1):
             if not user:
                 continue
-            rating += f"{i}) {self.get_username(user)}\n"
+            rating += f"{i}) {self.external_member_service.get_username(user)}\n"
         return super()._return_answer(f"Топ {self.command_instance.rest_text}\n{rating}")
 
     async def get_couple(self):
-        members = await self.get_members()
+        members = await self.external_member_service.get_members()
         random.shuffle(members)
         if len(members) < 2:
             raise RaiseUpException("В группе недостаточно пользователей для образования пары!")
         return super()._return_answer(
             f"Парочку {self.command_instance.rest_text} образовали: "
-            f"{self.get_username(members[0])} и {self.get_username(members[1])}"
+            f"{self.external_member_service.get_username(members[0])} "
+            f"и {self.external_member_service.get_username(members[1])}"
         )
 
     async def get_channel(self):
-        members = await self.get_members()
+        members = await self.external_member_service.get_members()
         return super()._return_answer(" ".join([f"@{member.username}" for member in members]))

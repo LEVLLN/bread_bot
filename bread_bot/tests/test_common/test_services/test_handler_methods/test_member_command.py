@@ -18,6 +18,7 @@ from bread_bot.common.schemas.commands import (
 )
 from bread_bot.common.schemas.telegram_messages import ChatMemberBodySchema, MemberSchema
 from bread_bot.common.services.handlers.command_methods.member_command_method import MemberCommandMethod
+from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.utils.structs import MemberCommandsEnum
 
 
@@ -39,6 +40,10 @@ class TestMemberCommands:
             ),
         )
         yield answer_pack
+
+    @pytest.fixture
+    async def external_member_service(self, db, message_service, member_service):
+        yield ExternalMemberService(db, member_service, message_service)
 
     @pytest.fixture
     async def member_command_method(
@@ -132,18 +137,20 @@ class TestMemberCommands:
         yield {params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list}
 
     @respx.mock
-    async def test_get_admin_members(self, member_command_method, member_content_response_mock, member_content_list):
+    async def test_get_admin_members(
+        self, external_member_service, member_command_method, member_content_response_mock, member_content_list
+    ):
         response = member_content_response_mock
 
-        result = await member_command_method._get_admin_members()
+        result = await external_member_service._get_admin_members()
         assert response.called
 
         assert result == {params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list}
 
-    async def test_get_member_from_db(self, member_command_method, ex_member_add):
-        result = await member_command_method._get_chat_members()
+    async def test_get_member_from_db(self, external_member_service, member_command_method, ex_member_add):
+        result = await external_member_service._get_chat_members()
 
-        default_member = member_command_method.member_service.member
+        default_member = external_member_service.member_service.member
         assert result == {
             member.member_id: MemberSchema(
                 is_bot=member.is_bot,
@@ -155,13 +162,15 @@ class TestMemberCommands:
             for member in [default_member, ex_member_add]
         }
 
-    async def test_get_members(self, mocker, member_command_method, member_content_list, ex_member_add):
+    async def test_get_members(
+        self, mocker, external_member_service, member_command_method, member_content_list, ex_member_add
+    ):
         get_admin_members_result = {
             params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list
         }
-        mocker.patch.object(MemberCommandMethod, "_get_admin_members", return_value=get_admin_members_result)
+        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=get_admin_members_result)
 
-        result = await member_command_method.get_members()
+        result = await external_member_service.get_members()
 
         assert result == [
             MemberSchema(**member_content_list[0]["user"]),
@@ -174,14 +183,15 @@ class TestMemberCommands:
         self,
         mocker,
         member_command_method,
+        external_member_service,
         member_content_list,
         administrators_members,
         ex_member_add,
     ):
         member_command_method.member_service.chat.chat_id = -10000
-        mocker.patch.object(MemberCommandMethod, "_get_admin_members", return_value=administrators_members)
+        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=administrators_members)
 
-        result = await member_command_method.get_one_of_group()
+        result = await external_member_service.get_one_of_group()
         assert result in [
             member.first_name + " " + member.last_name
             for member in (
@@ -198,14 +208,15 @@ class TestMemberCommands:
         member_command_method,
         member_content_list,
         ex_member_add,
+        external_member_service,
     ):
         member_command_method.member_service.chat.chat_id = 10000
         get_admin_members_result = {
             params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list
         }
-        mocker.patch.object(MemberCommandMethod, "_get_admin_members", return_value=get_admin_members_result)
+        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=get_admin_members_result)
 
-        result = await member_command_method.get_one_of_group()
+        result = await external_member_service.get_one_of_group()
         member = member_command_method.member_service.member
 
         assert result == member.first_name + " " + member.last_name
@@ -228,7 +239,7 @@ class TestMemberCommands:
         ],
     )
     async def test_who_command(self, mocker, member_command_method, raw_command, expected_result):
-        mocker.patch.object(MemberCommandMethod, "get_one_of_group", return_value="Test Testerov")
+        mocker.patch.object(ExternalMemberService, "get_one_of_group", return_value="Test Testerov")
         member_command_method.command_instance.raw_command = raw_command
 
         result = await member_command_method.execute()
@@ -238,7 +249,7 @@ class TestMemberCommands:
     async def test_top_command_only_db(self, mocker, member_command_method, ex_member_add):
         member_command_method.command_instance.command = MemberCommandsEnum.TOP
         member_command_method.command_instance.raw_command = "топ"
-        mocker.patch.object(MemberCommandMethod, "_get_admin_members", return_value={})
+        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value={})
 
         result = await member_command_method.execute()
         for member in [ex_member_add, member_command_method.member_service.member]:
@@ -247,7 +258,7 @@ class TestMemberCommands:
     async def test_top_command_with_admins(self, mocker, member_command_method, ex_member_add, administrators_members):
         member_command_method.command_instance.command = MemberCommandsEnum.TOP
         member_command_method.command_instance.raw_command = "топ"
-        mocker.patch.object(MemberCommandMethod, "_get_admin_members", return_value=administrators_members)
+        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=administrators_members)
 
         result = await member_command_method.execute()
         for member in administrators_members.values():
@@ -259,7 +270,7 @@ class TestMemberCommands:
         member_command_method.command_instance.rest_text = "some test"
 
         mocker.patch.object(
-            MemberCommandMethod, "get_members", return_value=[MemberSchema(**member_content_list[0]["user"])]
+            ExternalMemberService, "get_members", return_value=[MemberSchema(**member_content_list[0]["user"])]
         )
         with pytest.raises(RaiseUpException) as error:
             await member_command_method.execute()
@@ -272,7 +283,7 @@ class TestMemberCommands:
 
         first_member = MemberSchema(**member_content_list[0]["user"])
         second_member = MemberSchema(**member_content_list[1]["user"])
-        mocker.patch.object(MemberCommandMethod, "get_members", return_value=[first_member, second_member])
+        mocker.patch.object(ExternalMemberService, "get_members", return_value=[first_member, second_member])
         result = await member_command_method.execute()
         assert first_member.first_name + " " + first_member.last_name in result.text
         assert second_member.first_name + " " + second_member.last_name in result.text
@@ -286,7 +297,7 @@ class TestMemberCommands:
         second_member = MemberSchema(**member_content_list[1]["user"])
         third_member = MemberSchema(**member_content_list[1]["user"])
         mocker.patch.object(
-            MemberCommandMethod, "get_members", return_value=[first_member, second_member, third_member]
+            ExternalMemberService, "get_members", return_value=[first_member, second_member, third_member]
         )
         result = await member_command_method.execute()
         assert result.text == "@uname1 @uname2 @uname2"
@@ -309,7 +320,7 @@ class TestMemberCommands:
             (50, False),
         ],
     )
-    async def test_expired_member(self, db, member_command_method, days, expected):
+    async def test_expired_member(self, db, member_command_method, external_member_service, days, expected):
         member_command_method.command_instance.command = MemberCommandsEnum.CHANNEL
         member_command_method.command_instance.raw_command = "channel"
         member_command_method.command_instance.rest_text = ""
@@ -323,5 +334,5 @@ class TestMemberCommands:
         )
         chat_to_member.updated_at = datetime.datetime.now() - datetime.timedelta(days=days)
         await ChatToMember.async_add(db=db, instance=chat_to_member)
-        result = await member_command_method._get_chat_members()
+        result = await external_member_service._get_chat_members()
         assert bool(result) is expected

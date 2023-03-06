@@ -7,7 +7,11 @@ from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerPack
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema
 from bread_bot.common.schemas.telegram_messages import StandardBodySchema
-from bread_bot.common.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
+from bread_bot.common.services.handlers.answer_handler import (
+    TriggerAnswerHandler,
+    SubstringAnswerHandler,
+    PictureAnswerHandler,
+)
 from bread_bot.common.services.handlers.command_handler import CommandHandler
 from bread_bot.common.services.handlers.handler import EmptyResultHandler
 from bread_bot.common.services.member_service import MemberService
@@ -65,5 +69,7 @@ class MessageReceiver:
             chat_id=member_service.chat.id,
         )
 
-        handler = CommandHandler(TriggerAnswerHandler(SubstringAnswerHandler(EmptyResultHandler(None))))
+        handler = CommandHandler(
+            TriggerAnswerHandler(SubstringAnswerHandler(PictureAnswerHandler(EmptyResultHandler(None))))
+        )
         return await handler.handle(self.db, message_service, member_service, default_answer_pack)

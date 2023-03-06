@@ -126,7 +126,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 self.db, self.member_service.chat.id
             )
         reply = self.message_service.message.reply
-        value, content_type, description = self._select_content_from_reply(reply)
+        value, content_type, description = self.message_service.select_content_from_message(reply)
         result = await self._replace_strategy(reply, content_type)
         return super()._return_answer(result)
 

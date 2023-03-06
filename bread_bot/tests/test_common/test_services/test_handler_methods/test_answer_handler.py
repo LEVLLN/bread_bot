@@ -9,7 +9,10 @@ from bread_bot.common.schemas.bread_bot_answers import (
     PhotoAnswerSchema,
     GifAnswerSchema,
 )
-from bread_bot.common.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
+from bread_bot.common.services.handlers.answer_handler import (
+    SubstringAnswerHandler, TriggerAnswerHandler,
+    PictureAnswerHandler,
+)
 from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
 
 
@@ -48,6 +51,16 @@ class TestAnswerHandler:
                 await voice_entity_factory(key=key, value=value, reaction_type=reaction_type, pack_id=based_pack.id)
                 await sticker_entity_factory(key=key, value=value, reaction_type=reaction_type, pack_id=based_pack.id)
                 await photo_entity_factory(key=key, value=value, reaction_type=reaction_type, pack_id=based_pack.id)
+
+    @pytest.fixture
+    async def picture_answer_handler(self, db, member_service, message_service, reply_photo):
+        message_service.message = reply_photo.message.reply
+        picture_answer_handler = PictureAnswerHandler(next_handler=None)
+        picture_answer_handler.member_service = member_service
+        picture_answer_handler.message_service = message_service
+        picture_answer_handler.db = db
+        picture_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
+        yield picture_answer_handler
 
     @pytest.fixture
     async def substring_answer_handler(self, db, member_service, message_service, prepare_data):
@@ -102,6 +115,10 @@ class TestAnswerHandler:
 
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "my_concrete_value"
+
+    async def test_process_picture(self, db, prepare_data, picture_answer_handler, member_service):
+        result = await picture_answer_handler.process()
+        assert result.text == f"Похоже на {member_service.member.first_name} {member_service.member.last_name}"
 
     async def test_process_concrete_gif_entity(
         self,
