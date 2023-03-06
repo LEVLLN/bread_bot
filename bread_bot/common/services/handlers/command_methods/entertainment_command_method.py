@@ -1,6 +1,7 @@
 import datetime
 import math
 import random
+import re
 
 from sqlalchemy import select, and_
 
@@ -101,7 +102,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         values_for_replacing = await self._get_values_for_replacing()
         match content_type:
             case AnswerEntityContentTypesEnum.TEXT:
-                words = reply.text.split()
+                original_text = reply.text
+                words = re.split(" ", original_text)
                 words_count = len(words)
                 if words_count == 1:
                     coefficient = 1
@@ -110,6 +112,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 else:
                     coefficient = 0.25
                 for i in range(0, math.ceil(words_count * coefficient)):
+                    if words[random.randint(0, words_count - 1)] is "\n":
+                        continue
                     words[random.randint(0, words_count - 1)] = random.choice(list(values_for_replacing))
                 return " ".join(words)
             case _:

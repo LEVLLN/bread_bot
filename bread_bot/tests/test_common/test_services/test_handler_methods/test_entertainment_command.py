@@ -288,19 +288,17 @@ class TestRegenerateMessage:
     ):
         command_method.message_service.message.reply = reply_text.message.reply
         command_method.message_service.message.reply.text = (
-            "Ребята, не стоит вскрывать эту тему. "
-            "Вы молодые, шутливые, вам все легко. "
-            "Это не то. Это не Чикатило и даже не архивы спецслужб. "
-            "Сюда лучше не лезть. Серьезно, любой из вас будет жалеть. "
-            "Лучше закройте тему и забудьте, что тут писалось. "
-            "Я вполне понимаю, что данным сообщением вызову "
-            "дополнительный интерес, но хочу сразу предостеречь "
-            "пытливых – стоп. Остальных просто не найдут."
+            "как вас зовут?\n— Василий.\n— Дети "
+            "есть?\n— Да, сын Василий и дочь Василий,"
+            "дома Кот Васька!\n"
+            "— К сожалению, мы не можем Вас принять "
+            "на должность креативного менеджера…\n\n© https://baneks.ru"
         )
+
         result = await command_method.execute()
         count = 0
         for i in result.text.split():
             if "key" in i or "value" in i:
                 count += 1
-        assert count >= 5
-        assert count <= 15
+        assert count >= 2
+        assert count <= 8
