@@ -13,10 +13,12 @@ from bread_bot.common.schemas.commands import (
     ParameterCommandSchema,
     ValueListParameterCommandSchema,
 )
+from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.member_service import MemberService
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
     AnswerEntityReactionTypesEnum,
+    AnswerEntityContentTypesEnum,
 )
 
 COMMAND_INSTANCE_TYPE = (
@@ -64,3 +66,34 @@ class BaseCommandMethod:
         """Обязательная проверка значения"""
         if self.message_service.message.reply is None:
             raise RaiseUpException("Необходимо выбрать сообщение в качестве ответа для обработки")
+
+    @classmethod
+    def _select_content_from_reply(
+        cls, reply: BaseMessageSchema
+    ) -> tuple[str, AnswerEntityContentTypesEnum, str | None]:
+        description = None
+        if reply.voice:
+            value = reply.voice.file_id
+            content_type = AnswerEntityContentTypesEnum.VOICE
+        elif reply.photo:
+            value = reply.photo[0].file_id
+            description = reply.caption
+            content_type = AnswerEntityContentTypesEnum.PICTURE
+        elif reply.sticker:
+            value = reply.sticker.file_id
+            content_type = AnswerEntityContentTypesEnum.STICKER
+        elif reply.video:
+            value = reply.video.file_id
+            content_type = AnswerEntityContentTypesEnum.VIDEO
+        elif reply.video_note:
+            value = reply.video_note.file_id
+            content_type = AnswerEntityContentTypesEnum.VIDEO_NOTE
+        elif reply.animation:
+            value = reply.animation.file_id
+            content_type = AnswerEntityContentTypesEnum.ANIMATION
+        elif reply.text:
+            value = reply.text
+            content_type = AnswerEntityContentTypesEnum.TEXT
+        else:
+            raise RaiseUpException("Данный тип данных не поддерживается")
+        return value, content_type, description

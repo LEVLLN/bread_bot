@@ -56,6 +56,55 @@ def request_body_message():
 
 
 @pytest.fixture
+def reply_text():
+    return StandardBodySchema(
+        **{
+            "update_id": 958678863,
+            "message": {
+                "message_id": 13900,
+                "from": {
+                    "id": 296382623,
+                    "is_bot": False,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "language_code": "en",
+                },
+                "chat": {
+                    "id": 296382623,
+                    "first_name": "Tester",
+                    "last_name": "Testerov",
+                    "username": "Test_test",
+                    "type": "private",
+                },
+                "date": 1655506631,
+                "reply_to_message": {
+                    "message_id": 13898,
+                    "from": {
+                        "id": 296382623,
+                        "is_bot": False,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "language_code": "en",
+                    },
+                    "chat": {
+                        "id": 296382623,
+                        "first_name": "Tester",
+                        "last_name": "Testerov",
+                        "username": "Test_test",
+                        "type": "private",
+                    },
+                    "date": 1655506619,
+                    "text": "text1",
+                },
+                "text": "1234567",
+            },
+        }
+    )
+
+
+@pytest.fixture
 def reply_voice():
     return StandardBodySchema(
         **{

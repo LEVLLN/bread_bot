@@ -292,6 +292,15 @@ class CommandSettings:
                 f"{BOT_NAME} выбери 1 или 2 или 3 или 4",
             ],
         ),
+        CommandSettingsSchema(
+            aliases=["бред", "давай"],
+            command=EntertainmentCommandsEnum.REGENERATE_MESSAGE,
+            description="[Надо выбрать сообщение в качестве ответа] заменяет сообщение на известные слова боту",
+            examples=[
+                f"{BOT_NAME} бред",
+                f"{BOT_NAME} давай",
+            ],
+        ),
         # INTEGRATION COMMANDS
         CommandSettingsSchema(
             aliases=["цитата", "цит"],

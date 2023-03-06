@@ -53,6 +53,7 @@ class EntertainmentCommandsEnum(str, Enum):
     PAST_DATE = "PAST_DATE"
     FUTURE_DATE = "FUTURE_DATE"
     HOW_MANY = "HOW_MANY"
+    REGENERATE_MESSAGE = "REGENERATE_MESSAGE"
 
 
 class IntegrationCommandsEnum(str, Enum):

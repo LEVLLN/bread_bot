@@ -2,12 +2,17 @@ import datetime
 
 import pytest
 
+from bread_bot.common.models import AnswerPacksToChats, AnswerPack, AnswerEntity
 from bread_bot.common.schemas.commands import (
     ValueListCommandSchema,
     CommandSchema,
 )
 from bread_bot.common.services.handlers.command_methods.entertainment_command_method import EntertainmentCommandMethod
-from bread_bot.common.utils.structs import EntertainmentCommandsEnum
+from bread_bot.common.services.messages.message_service import MessageService
+from bread_bot.common.utils.structs import (
+    EntertainmentCommandsEnum,
+    AnswerEntityContentTypesEnum,
+)
 
 
 class TestEntertainmentCommand:
@@ -76,10 +81,7 @@ class TestEntertainmentCommand:
         result = await entertainment_command_method.execute()
 
         assert "Команда: [покажи] - Показывает сохраненные данные\n" in result.text
-        assert (
-            "Команды: [кто, у кого, кем]"
-            " - Выбор случайного участника группы\n" in result.text
-        )
+        assert "Команды: [кто, у кого, кем]" " - Выбор случайного участника группы\n" in result.text
 
     @pytest.mark.parametrize(
         "rest_text, expected_result",
@@ -210,3 +212,95 @@ class TestEntertainmentCommand:
 
         assert result.text.startswith("Some event - ")
         assert result.text.lstrip("Some event - ").isnumeric()
+
+
+class TestRegenerateMessage:
+    @pytest.fixture
+    async def based_pack(self, db, member_service):
+        answer_pack = await AnswerPack.async_add(db, instance=AnswerPack())
+        await AnswerPacksToChats.async_add(
+            db=db,
+            instance=AnswerPacksToChats(
+                chat_id=member_service.chat.id,
+                pack_id=answer_pack.id,
+            ),
+        )
+        yield answer_pack
+
+    @pytest.fixture
+    async def text_answer_entities(self, db, based_pack, member_service, command_method):
+        for key in range(1, 10):
+            await AnswerEntity.async_add(
+                db=db,
+                instance=AnswerEntity(
+                    key="key" + str(key),
+                    value="value" + str(key),
+                    reaction_type="TRIGGER",
+                    pack_id=based_pack.id,
+                    content_type=AnswerEntityContentTypesEnum.TEXT,
+                ),
+            )
+        yield None
+
+    @pytest.fixture
+    async def command_method(
+        self,
+        db,
+        message_service,
+        member_service,
+        command_instance,
+        based_pack,
+    ):
+        yield EntertainmentCommandMethod(
+            db=db,
+            member_service=member_service,
+            message_service=message_service,
+            command_instance=command_instance,
+            default_answer_pack=based_pack,
+        )
+
+    @pytest.fixture
+    async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
+        message_service = MessageService(request_body=request_body_message)
+        message_service.message.reply = reply_photo.message.reply
+        yield message_service
+
+    @pytest.fixture
+    async def command_instance(
+        self,
+    ):
+        yield ValueListCommandSchema(
+            header="хлеб",
+            command=EntertainmentCommandsEnum.REGENERATE_MESSAGE,
+            value_list=["my_value", "my_value1"],
+            raw_command="запомни",
+        )
+
+    async def test_text_reply(
+        self,
+        db,
+        based_pack,
+        command_method,
+        command_instance,
+        request_body_message,
+        reply_text,
+        text_answer_entities,
+    ):
+        command_method.message_service.message.reply = reply_text.message.reply
+        command_method.message_service.message.reply.text = (
+            "Ребята, не стоит вскрывать эту тему. "
+            "Вы молодые, шутливые, вам все легко. "
+            "Это не то. Это не Чикатило и даже не архивы спецслужб. "
+            "Сюда лучше не лезть. Серьезно, любой из вас будет жалеть. "
+            "Лучше закройте тему и забудьте, что тут писалось. "
+            "Я вполне понимаю, что данным сообщением вызову "
+            "дополнительный интерес, но хочу сразу предостеречь "
+            "пытливых – стоп. Остальных просто не найдут."
+        )
+        result = await command_method.execute()
+        count = 0
+        for i in result.text.split():
+            if "key" in i or "value" in i:
+                count += 1
+        assert count >= 5
+        assert count <= 15
