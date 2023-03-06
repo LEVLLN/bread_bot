@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_0cd7dd7b8d371720_base_command_method_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.1">coverage.py v7.2.1</a>,
-            created at 2023-03-06 07:51 +0000
+            created at 2023-03-06 21:14 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -183,7 +183,7 @@
     <p class="pln"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">        <span class="str">"""&#1050;&#1086;&#1084;&#1072;&#1085;&#1076;&#1072; &#1047;&#1072;&#1087;&#1086;&#1084;&#1085;&#1080;"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_check_reply_existed</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t">        <span class="nam">reply</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">message_service</span><span class="op">.</span><span class="nam">message</span><span class="op">.</span><span class="nam">reply</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">        <span class="nam">value</span><span class="op">,</span> <span class="nam">content_type</span><span class="op">,</span> <span class="nam">description</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_select_content_from_reply</span><span class="op">(</span><span class="nam">reply</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">        <span class="nam">value</span><span class="op">,</span> <span class="nam">content_type</span><span class="op">,</span> <span class="nam">description</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">message_service</span><span class="op">.</span><span class="nam">select_content_from_message</span><span class="op">(</span><span class="nam">reply</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">self</span><span class="op">.</span><span class="nam">default_answer_pack</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">            <span class="nam">self</span><span class="op">.</span><span class="nam">default_answer_pack</span><span class="op">:</span> <span class="nam">AnswerPack</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">AnswerPack</span><span class="op">.</span><span class="nam">create_by_chat_id</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -281,7 +281,7 @@
     <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t">    <span class="key">async</span> <span class="key">def</span> <span class="nam">show_keys</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">_check_reply_existed</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t">        <span class="nam">reply</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">message_service</span><span class="op">.</span><span class="nam">message</span><span class="op">.</span><span class="nam">reply</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t">        <span class="nam">value</span><span class="op">,</span> <span class="nam">content_type</span><span class="op">,</span> <span class="nam">description</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_select_content_from_reply</span><span class="op">(</span><span class="nam">reply</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t">        <span class="nam">value</span><span class="op">,</span> <span class="nam">content_type</span><span class="op">,</span> <span class="nam">description</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">message_service</span><span class="op">.</span><span class="nam">select_content_from_message</span><span class="op">(</span><span class="nam">reply</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">        <span class="nam">answer_entities</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">AnswerEntity</span><span class="op">.</span><span class="nam">async_filter</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t">            <span class="nam">db</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">db</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t">            <span class="nam">where</span><span class="op">=</span><span class="nam">and_</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -304,7 +304,7 @@
             <a id="nextFileLink" class="nav" href="d_0cd7dd7b8d371720_base_command_method_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.1">coverage.py v7.2.1</a>,
-            created at 2023-03-06 07:51 +0000
+            created at 2023-03-06 21:14 +0000
         </p>
     </div>
 </footer>

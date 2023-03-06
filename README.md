@@ -28,18 +28,18 @@
 | bread\_bot/common/schemas/telegram\_messages.py                                        |       56 |        0 |    100.0% |           |
 | bread\_bot/common/services/commands/command\_parser.py                                 |      114 |       12 |     89.5% |64-65, 107-108, 159-163, 200, 206-207 |
 | bread\_bot/common/services/commands/command\_settings.py                               |       28 |        0 |    100.0% |           |
-| bread\_bot/common/services/handlers/answer\_handler.py                                 |       78 |       13 |     83.3% |40-41, 55, 95, 99, 102-107, 110, 126 |
+| bread\_bot/common/services/handlers/answer\_handler.py                                 |       93 |       13 |     86.0% |41-42, 96, 98, 103-108, 111, 127, 151 |
 | bread\_bot/common/services/handlers/command\_handler.py                                |       28 |        9 |     67.9% | 23, 35-42 |
 | bread\_bot/common/services/handlers/command\_methods/admin\_command\_method.py         |      118 |       13 |     89.0% |40, 46, 55-56, 59, 96, 107, 145, 149, 167-168, 192, 212 |
-| bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |        5 |     90.9% |86-87, 89-90, 98 |
+| bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |       25 |     54.5% |     74-99 |
 | bread\_bot/common/services/handlers/command\_methods/entertainment\_command\_method.py |      119 |       10 |     91.6% |40-41, 82, 109, 111, 116, 119-120, 125, 142 |
 | bread\_bot/common/services/handlers/command\_methods/integration\_command\_method.py   |       41 |        2 |     95.1% |     21-22 |
-| bread\_bot/common/services/handlers/command\_methods/member\_command\_method.py        |      102 |        7 |     93.1% |32-33, 75, 77, 79, 130, 133 |
+| bread\_bot/common/services/handlers/command\_methods/member\_command\_method.py        |       68 |        4 |     94.1% |47-48, 80, 83 |
 | bread\_bot/common/services/handlers/handler.py                                         |       36 |        1 |     97.2% |        26 |
-| bread\_bot/common/services/member\_service.py                                          |       54 |        9 |     83.3% |28, 49-50, 52-58, 71-72 |
-| bread\_bot/common/services/messages/message\_receiver.py                               |       44 |        2 |     95.5% |    36, 47 |
+| bread\_bot/common/services/member\_service.py                                          |       98 |       12 |     87.8% |32, 53-54, 56-62, 75-76, 156, 158, 160 |
+| bread\_bot/common/services/messages/message\_receiver.py                               |       44 |        2 |     95.5% |    40, 51 |
 | bread\_bot/common/services/messages/message\_sender.py                                 |       43 |       28 |     34.9% |33-45, 53-76 |
-| bread\_bot/common/services/messages/message\_service.py                                |       18 |        0 |    100.0% |           |
+| bread\_bot/common/services/messages/message\_service.py                                |       46 |        5 |     89.1% |51-52, 54-55, 63 |
 | bread\_bot/common/utils/functions.py                                                   |        4 |        0 |    100.0% |           |
 | bread\_bot/common/utils/structs.py                                                     |       60 |        0 |    100.0% |           |
 | bread\_bot/main/base\_client.py                                                        |       46 |        2 |     95.7% |     92-93 |
@@ -54,7 +54,7 @@
 | bread\_bot/utils/middlewares.py                                                        |      122 |       11 |     91.0% |80, 103-104, 203, 214-216, 239-240, 248-249 |
 | bread\_bot/utils/testing\_tools.py                                                     |       35 |        4 |     88.6% |     35-39 |
 | bread\_bot/utils/utils\_schemas.py                                                     |       38 |        0 |    100.0% |           |
-|                                                                              **TOTAL** | **1992** |  **238** | **88.1%** |           |
+|                                                                              **TOTAL** | **2045** |  **263** | **87.1%** |           |
 
 
 ## Setup coverage badge
