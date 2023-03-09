@@ -59,8 +59,8 @@ class MorphService:
         dictionary_words = await self._get_dictionary_words()
         if not dictionary_words:
             raise RaiseUpException(
-                "Словарь пуст. Пополните словарь командой:\nХлеб добавь бредни слово1, слово2, "
-                "слово3\nПосле добавления текст начнет гибко меняться на добавленные слова"
+                "Словарь пуст. Пополните словарь командой:\n'Хлеб добавь бред слово1, слово2, "
+                "слово3'\n\nПосле добавления текст начнет гибко меняться на добавленные слова"
             )
         for word_index in range(0, self._get_maximum_words_to_replace(words_count)):
             random_word_index = random.randint(0, words_count - 1)
