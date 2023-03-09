@@ -16,3 +16,4 @@ class Chat(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUDMixin)
 
     members = relationship("ChatToMember", back_populates="chat")
     answer_packs = relationship("AnswerPacksToChats", back_populates="chats")
+    dictionary_entities = relationship("DictionaryEntity", back_populates="chats")

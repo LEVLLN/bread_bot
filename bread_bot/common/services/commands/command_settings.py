@@ -298,7 +298,32 @@ class CommandSettings:
             description="[Надо выбрать сообщение в качестве ответа] заменяет сообщение на известные слова боту",
             examples=[
                 f"{BOT_NAME} бред",
-                f"{BOT_NAME} давай",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["добавь бред"],
+            command=EntertainmentCommandsEnum.ADD_MORPH_ENTITIES,
+            description="Наполнение словаря для бреда",
+            to_find_for_values_list=True,
+            examples=[
+                f"{BOT_NAME} добавь бред слово1, слово2, слово3",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["удали бред"],
+            command=EntertainmentCommandsEnum.DELETE_MORPH_ENTITY,
+            description="Удаление указанного значения из бреда",
+            to_find_for_values=True,
+            examples=[
+                f"{BOT_NAME} удали бред слово1",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["покажи бред"],
+            command=EntertainmentCommandsEnum.SHOW_MORPH_ENTITIES,
+            description="Показ списка сохраненных слов для бреда",
+            examples=[
+                f"{BOT_NAME} покажи бред",
             ],
         ),
         # INTEGRATION COMMANDS

@@ -275,30 +275,3 @@ class TestRegenerateMessage:
             value_list=["my_value", "my_value1"],
             raw_command="запомни",
         )
-
-    async def test_text_reply(
-        self,
-        db,
-        based_pack,
-        command_method,
-        command_instance,
-        request_body_message,
-        reply_text,
-        text_answer_entities,
-    ):
-        command_method.message_service.message.reply = reply_text.message.reply
-        command_method.message_service.message.reply.text = (
-            "как вас зовут?\n— Василий.\n— Дети "
-            "есть?\n— Да, сын Василий и дочь Василий,"
-            "дома Кот Васька!\n"
-            "— К сожалению, мы не можем Вас принять "
-            "на должность креативного менеджера…\n\n© https://baneks.ru"
-        )
-
-        result = await command_method.execute()
-        count = 0
-        for i in result.text.split():
-            if "key" in i or "value" in i:
-                count += 1
-        assert count >= 2
-        assert count <= 8

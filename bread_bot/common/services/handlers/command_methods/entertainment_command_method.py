@@ -5,11 +5,12 @@ import re
 
 from sqlalchemy import select, and_
 
-from bread_bot.common.exceptions.base import NextStepException
-from bread_bot.common.models import AnswerPack, AnswerEntity
+from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
+from bread_bot.common.models import AnswerEntity
 from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.commands.command_settings import CommandSettings
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
+from bread_bot.common.services.morph_service import MorphService
 from bread_bot.common.utils.structs import (
     ALTER_NAMES,
     BOT_NAME,
@@ -37,6 +38,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return self.get_how_many()
             case EntertainmentCommandsEnum.REGENERATE_MESSAGE:
                 return await self.regenerate_message()
+            case EntertainmentCommandsEnum.ADD_MORPH_ENTITIES:
+                return await self.add_morph_values()
+            case EntertainmentCommandsEnum.DELETE_MORPH_ENTITY:
+                return await self.delete_morph_value()
+            case EntertainmentCommandsEnum.SHOW_MORPH_ENTITIES:
+                return await self.show_morph_values()
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -121,14 +128,37 @@ class EntertainmentCommandMethod(BaseCommandMethod):
 
     async def regenerate_message(self):
         self._check_reply_existed()
-        if not self.default_answer_pack:
-            self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
-                self.db, self.member_service.chat.id
-            )
         reply = self.message_service.message.reply
         value, content_type, description = self.message_service.select_content_from_message(reply)
-        result = await self._replace_strategy(reply, content_type)
+        morph_service = MorphService(db=self.db, chat_id=self.member_service.chat.id)
+        match content_type:
+            case AnswerEntityContentTypesEnum.TEXT:
+                result = await morph_service.morph_text(value)
+            case AnswerEntityContentTypesEnum.PICTURE:
+                if not description:
+                    raise RaiseUpException("Фотография не содержит подписи")
+                result = await morph_service.morph_text(description)
+            case _:
+                raise RaiseUpException("Тип контента не поддерживается")
         return super()._return_answer(result)
+
+    async def add_morph_values(self):
+        if not self.command_instance.value_list:
+            raise RaiseUpException("Укажите слова через запятую")
+        await MorphService(db=self.db, chat_id=self.member_service.chat.id).add_values(self.command_instance.value_list)
+        return super()._return_answer()
+
+    async def delete_morph_value(self):
+        if not self.command_instance.value:
+            raise RaiseUpException("Укажите слово, которое надо удалить")
+        await MorphService(db=self.db, chat_id=self.member_service.chat.id).delete_value(self.command_instance.value)
+        return super()._return_answer()
+
+    async def show_morph_values(self):
+        result = await MorphService(db=self.db, chat_id=self.member_service.chat.id).show_values()
+        if not result:
+            return super()._return_answer("Не найдено слов")
+        return super()._return_answer(f"[{result}]")
 
     def help(self):
         result = f"Привет, меня зовут {BOT_NAME}.\nМожете называть меня {ALTER_NAMES}\n\n"

@@ -4,6 +4,7 @@ from bread_bot.common.models import (
     Member,
     Chat,
     AnswerEntity,
+    DictionaryEntity,
 )
 from bread_bot.common.utils.structs import AnswerEntityContentTypesEnum
 
@@ -103,6 +104,7 @@ async def gif_entity_factory(db):
 
     yield _factory
 
+
 @pytest.fixture
 async def answer_entity_factory(db):
     async def _factory(key, value, content_type, reaction_type, pack_id, **kwargs):
@@ -118,3 +120,15 @@ async def answer_entity_factory(db):
 
     yield _factory
 
+
+@pytest.fixture
+async def dictionary_entity_factory(db):
+    async def _factory(chat_id, value, **kwargs):
+        return await DictionaryEntity.async_add_by_kwargs(
+            db=db,
+            chat_id=chat_id,
+            value=value,
+            **kwargs,
+        )
+
+    yield _factory
