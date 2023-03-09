@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for bread_bot/common/services/handlers/answer_handler.py: 86.0%</title>
+    <title>Coverage for bread_bot/common/services/handlers/answer_handler.py: 84.9%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>bread_bot/common/services/handlers/answer_handler.py</b>:
-            <span class="pc_cov">86.0%</span>
+            <span class="pc_cov">84.9%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">93 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">80<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">13<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">79<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">14<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_cb25ced56932bb31_command_handler_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.1">coverage.py v7.2.1</a>,
-            created at 2023-03-06 22:56 +0000
+            created at 2023-03-09 17:35 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -177,7 +177,7 @@
     <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">PICTURE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t">                <span class="key">return</span> <span class="nam">PhotoAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">photo</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span> <span class="nam">caption</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">description</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">STICKER</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">                <span class="key">return</span> <span class="nam">StickerAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">sticker</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t">                <span class="key">return</span> <span class="nam">StickerAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">sticker</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VOICE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t">                <span class="key">return</span> <span class="nam">VoiceAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">voice</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">ANIMATION</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -242,7 +242,7 @@
             <a id="nextFileLink" class="nav" href="d_cb25ced56932bb31_command_handler_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.1">coverage.py v7.2.1</a>,
-            created at 2023-03-06 22:56 +0000
+            created at 2023-03-09 17:35 +0000
         </p>
     </div>
 </footer>
