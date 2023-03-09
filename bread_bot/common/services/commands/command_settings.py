@@ -326,6 +326,16 @@ class CommandSettings:
                 f"{BOT_NAME} покажи бред",
             ],
         ),
+        CommandSettingsSchema(
+            aliases=["морф", "морфируй"],
+            command=EntertainmentCommandsEnum.MORPH_WORD,
+            to_find_for_values=True,
+            description="Склоняет в разные формы слово",
+            examples=[
+                f"{BOT_NAME} морфируй слово",
+                f"{BOT_NAME} морф слово",
+            ],
+        ),
         # INTEGRATION COMMANDS
         CommandSettingsSchema(
             aliases=["цитата", "цит"],
