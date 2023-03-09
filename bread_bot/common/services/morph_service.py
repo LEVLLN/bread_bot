@@ -68,6 +68,8 @@ class MorphService:
                 continue
             item = morph.parse(words[random_word_index])[0]
             key = self._get_tags(item)
+            if key[0] is None:
+                continue
             if key in dictionary_words:
                 words[random_word_index] = random.choice(dictionary_words[key])
         return " ".join(words)

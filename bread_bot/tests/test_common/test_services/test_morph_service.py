@@ -14,7 +14,7 @@ async def test_morph_text(db, dictionary_entity_factory, member_service, message
     assert await DictionaryEntity.async_filter(db, DictionaryEntity.chat_id == member_service.chat.id)
 
     result = await MorphService(db, chat_id=member_service.chat.id).morph_text(text)
-    assert result.startswith("Только до 2022 зариф вплотную прыгал")
+    assert result.startswith("Только до 1830 зариф вплотную прыгал")
     assert result.split()[-1] in ("головой", "головою")
 
 
