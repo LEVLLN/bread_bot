@@ -31,7 +31,7 @@ class MorphService:
                         words[pos] = lines[lines_pos]
                     else:
                         words.insert(pos, lines[lines_pos])
-                    if lines_pos % 2 != 0 or lines[lines_pos] == "":
+                    if lines[lines_pos] == "":
                         words.insert(pos, "\n")
                     lines_pos += 1
         return words
