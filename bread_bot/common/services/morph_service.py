@@ -31,7 +31,7 @@ class MorphService:
                         words[pos] = lines[lines_pos]
                     else:
                         words.insert(pos, lines[lines_pos])
-                    if lines_pos % 2 != 0:
+                    if lines_pos % 2 != 0 or lines[lines_pos] == "":
                         words.insert(pos, "\n")
                     lines_pos += 1
         return words
@@ -39,9 +39,13 @@ class MorphService:
     @classmethod
     def _join_words_to_str(cls, words: list[str]) -> str:
         result = ""
-        for word in words:
-            if "\n" == word:
+        words_count = len(words)
+        for index in range(0, words_count):
+            word = words[index]
+            if (word == "\n") or (index < words_count - 1 and words[index + 1] == "\n"):
                 result = result + word
+            elif word == "":
+                continue
             else:
                 result = result + word + " "
         return result.strip()
@@ -84,6 +88,7 @@ class MorphService:
     async def morph_text(self, text: str) -> str:
         words = self._split_by_words(text)
         words_count = len(words)
+        new_line_count = text.count("\n")
         dictionary_words = await self._get_dictionary_words()
         if not dictionary_words:
             raise RaiseUpException(
@@ -91,7 +96,7 @@ class MorphService:
                 "слово3'\n\nПосле добавления текст начнет гибко меняться на добавленные слова"
             )
 
-        for word_index in range(0, self._get_maximum_words_to_replace(words_count)):
+        for word_index in range(0, self._get_maximum_words_to_replace(words_count) + new_line_count):
             random_word_index = random.randint(0, words_count - 1)
             if words[random_word_index] == "\n":
                 continue

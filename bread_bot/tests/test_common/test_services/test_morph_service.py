@@ -5,9 +5,10 @@ from bread_bot.common.services.morph_service import MorphService
 
 
 async def test_morph_text(db, dictionary_entity_factory, member_service, message_service, mocker):
-    text = "Только после 1830 Пушкин вплотную занялся\nпрозой"
+    text = "Только после 1830 Пушкин вплотную занялся прозой"
     mocker.patch(
-        "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace", return_value=len(text)
+        "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace",
+        return_value=len(text) + 3,
     )
     for word in ["зариф", "прыгать", "мягкий", "2022", "головой", "до"]:
         await dictionary_entity_factory(chat_id=member_service.chat.id, value=word)
