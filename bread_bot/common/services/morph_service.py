@@ -19,6 +19,34 @@ class MorphService:
         self.chat_id: int = chat_id
 
     @classmethod
+    def _split_by_words(cls, text: str) -> list[str]:
+        words = re.split(" ", text, flags=re.M)
+        for index in range(0, len(words)):
+            lines = words[index].split("\n")
+            len_lines = len(lines)
+            if len_lines >= 2:
+                lines_pos = 0
+                for pos in range(index, index + len_lines):
+                    if lines_pos == 0:
+                        words[pos] = lines[lines_pos]
+                    else:
+                        words.insert(pos, lines[lines_pos])
+                    if lines_pos % 2 != 0:
+                        words.insert(pos, "\n")
+                    lines_pos += 1
+        return words
+
+    @classmethod
+    def _join_words_to_str(cls, words: list[str]) -> str:
+        result = ""
+        for word in words:
+            if "\n" == word:
+                result = result + word
+            else:
+                result = result + word + " "
+        return result.strip()
+
+    @classmethod
     def _get_tags(cls, morph_word) -> tuple:
         morph_tag = morph_word.tag
         return (
@@ -54,7 +82,7 @@ class MorphService:
         return result
 
     async def morph_text(self, text: str) -> str:
-        words = re.split(" ", text)
+        words = self._split_by_words(text)
         words_count = len(words)
         dictionary_words = await self._get_dictionary_words()
         if not dictionary_words:
@@ -62,6 +90,7 @@ class MorphService:
                 "Словарь пуст. Пополните словарь командой:\n'Хлеб добавь бред слово1, слово2, "
                 "слово3'\n\nПосле добавления текст начнет гибко меняться на добавленные слова"
             )
+
         for word_index in range(0, self._get_maximum_words_to_replace(words_count)):
             random_word_index = random.randint(0, words_count - 1)
             if words[random_word_index] == "\n":
@@ -72,7 +101,7 @@ class MorphService:
                 continue
             if key in dictionary_words:
                 words[random_word_index] = random.choice(dictionary_words[key])
-        return " ".join(words)
+        return self._join_words_to_str(words)
 
     async def add_values(self, values: list[str]):
         existed_dictionary_entities = await DictionaryEntity.async_filter(
@@ -96,7 +125,8 @@ class MorphService:
             self.db, and_(DictionaryEntity.chat_id == self.chat_id, DictionaryEntity.value == value)
         )
 
-    async def morph_word(self, word: str, debug: bool = False) -> str:
+    @classmethod
+    def morph_word(cls, word: str, debug: bool = False) -> str:
         result = []
         parsed_word = morph.parse(word)[0]
         for item in parsed_word.lexeme:

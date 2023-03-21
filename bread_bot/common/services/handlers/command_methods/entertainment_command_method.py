@@ -167,7 +167,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def morph_word(self, debug: bool = False):
         if not self.command_instance.value:
             raise RaiseUpException("Укажите слово, которое надо просклонять")
-        result = await MorphService(db=self.db, chat_id=self.member_service.chat.id).morph_word(
+        result = MorphService.morph_word(
             self.command_instance.value,
             debug,
         )

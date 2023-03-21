@@ -5,7 +5,7 @@ from bread_bot.common.services.morph_service import MorphService
 
 
 async def test_morph_text(db, dictionary_entity_factory, member_service, message_service, mocker):
-    text = "Только после 1830 Пушкин вплотную занялся прозой"
+    text = "Только после 1830 Пушкин вплотную занялся\nпрозой"
     mocker.patch(
         "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace", return_value=len(text)
     )
@@ -22,7 +22,10 @@ async def test_morph_text(db, dictionary_entity_factory, member_service, message
     "debug, expected",
     [
         (False, "слово, слова, слову, слово, словом, слове, слова, слов, словам, слова, словами, словах"),
-        (True, ("NOUN,inan,neut sing,nomn: слово\n"
+        (
+            True,
+            (
+                "NOUN,inan,neut sing,nomn: слово\n"
                 "NOUN,inan,neut sing,gent: слова\n"
                 "NOUN,inan,neut sing,datv: слову\n"
                 "NOUN,inan,neut sing,accs: слово\n"
@@ -33,12 +36,14 @@ async def test_morph_text(db, dictionary_entity_factory, member_service, message
                 "NOUN,inan,neut plur,datv: словам\n"
                 "NOUN,inan,neut plur,accs: слова\n"
                 "NOUN,inan,neut plur,ablt: словами\n"
-                "NOUN,inan,neut plur,loct: словах"))
-    ]
+                "NOUN,inan,neut plur,loct: словах"
+            ),
+        ),
+    ],
 )
 async def test_morph_word(db, dictionary_entity_factory, member_service, message_service, debug, expected):
     text = "Слово"
-    result = await MorphService(db, chat_id=member_service.chat.id).morph_word(word=text, debug=debug)
+    result = MorphService.morph_word(word=text, debug=debug)
     assert result == expected
 
 
