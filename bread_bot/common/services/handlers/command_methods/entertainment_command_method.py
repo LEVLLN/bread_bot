@@ -46,6 +46,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return await self.show_morph_values()
             case EntertainmentCommandsEnum.MORPH_WORD:
                 return await self.morph_word()
+            case EntertainmentCommandsEnum.MORPH_WORD_DEBUG:
+                return await self.morph_word(debug=True)
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -162,11 +164,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
             return super()._return_answer("Не найдено слов")
         return super()._return_answer(f"{result}")
 
-    async def morph_word(self):
+    async def morph_word(self, debug: bool = False):
         if not self.command_instance.value:
             raise RaiseUpException("Укажите слово, которое надо просклонять")
         result = await MorphService(db=self.db, chat_id=self.member_service.chat.id).morph_word(
-            self.command_instance.value
+            self.command_instance.value,
+            debug,
         )
         if not result:
             return super()._return_answer("Не найдено слов")

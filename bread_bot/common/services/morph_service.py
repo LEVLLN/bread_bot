@@ -96,13 +96,18 @@ class MorphService:
             self.db, and_(DictionaryEntity.chat_id == self.chat_id, DictionaryEntity.value == value)
         )
 
-    async def morph_word(self, word: str) -> str:
+    async def morph_word(self, word: str, debug: bool = False) -> str:
         result = []
         parsed_word = morph.parse(word)[0]
         for item in parsed_word.lexeme:
-            result.append(item.word)
-
-        return ", ".join(result)
+            if debug:
+                result.append(f"{str(item.tag)}: {item.word}")
+            else:
+                result.append(item.word)
+        if debug:
+            return "\n".join(result)
+        else:
+            return ", ".join(result)
 
     async def show_values(self) -> str:
         existed_dictionary_entities = await DictionaryEntity.async_filter(

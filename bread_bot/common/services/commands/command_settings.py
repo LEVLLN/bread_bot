@@ -330,10 +330,20 @@ class CommandSettings:
             aliases=["морф", "морфируй"],
             command=EntertainmentCommandsEnum.MORPH_WORD,
             to_find_for_values=True,
-            description="Склоняет в разные формы слово",
+            description="Склоняет в разные формы слов",
             examples=[
                 f"{BOT_NAME} морфируй слово",
                 f"{BOT_NAME} морф слово",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["морф дебаг", "морфируй дебаг"],
+            command=EntertainmentCommandsEnum.MORPH_WORD_DEBUG,
+            to_find_for_values=True,
+            description="Склоняет в разные формы слов с указанием тегов морфем",
+            examples=[
+                f"{BOT_NAME} морфируй дебаг слово",
+                f"{BOT_NAME} морф дебаг слово",
             ],
         ),
         # INTEGRATION COMMANDS

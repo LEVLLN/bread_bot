@@ -58,6 +58,7 @@ class EntertainmentCommandsEnum(str, Enum):
     DELETE_MORPH_ENTITY = "DELETE_MORPH_ENTITY"
     SHOW_MORPH_ENTITIES = "SHOW_MORPH_ENTITIES"
     MORPH_WORD = "MORPH_WORD"
+    MORPH_WORD_DEBUG = "MORPH_WORD_DEBUG"
 
 
 class IntegrationCommandsEnum(str, Enum):

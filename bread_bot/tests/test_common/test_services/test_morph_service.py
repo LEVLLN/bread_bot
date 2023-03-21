@@ -18,10 +18,28 @@ async def test_morph_text(db, dictionary_entity_factory, member_service, message
     assert result.split()[-1] in ("головой", "головою")
 
 
-async def test_morph_word(db, dictionary_entity_factory, member_service, message_service, mocker):
+@pytest.mark.parametrize(
+    "debug, expected",
+    [
+        (False, "слово, слова, слову, слово, словом, слове, слова, слов, словам, слова, словами, словах"),
+        (True, ("NOUN,inan,neut sing,nomn: слово\n"
+                "NOUN,inan,neut sing,gent: слова\n"
+                "NOUN,inan,neut sing,datv: слову\n"
+                "NOUN,inan,neut sing,accs: слово\n"
+                "NOUN,inan,neut sing,ablt: словом\n"
+                "NOUN,inan,neut sing,loct: слове\n"
+                "NOUN,inan,neut plur,nomn: слова\n"
+                "NOUN,inan,neut plur,gent: слов\n"
+                "NOUN,inan,neut plur,datv: словам\n"
+                "NOUN,inan,neut plur,accs: слова\n"
+                "NOUN,inan,neut plur,ablt: словами\n"
+                "NOUN,inan,neut plur,loct: словах"))
+    ]
+)
+async def test_morph_word(db, dictionary_entity_factory, member_service, message_service, debug, expected):
     text = "Слово"
-    result = await MorphService(db, chat_id=member_service.chat.id).morph_word(word=text)
-    assert result == "слово, слова, слову, слово, словом, слове, слова, слов, словам, слова, словами, словах"
+    result = await MorphService(db, chat_id=member_service.chat.id).morph_word(word=text, debug=debug)
+    assert result == expected
 
 
 async def test_add_value(db, member_service, message_service):
