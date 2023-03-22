@@ -12,6 +12,8 @@ from bread_bot.common.models import DictionaryEntity
 
 morph = pymorphy2.MorphAnalyzer()
 
+_NEW_LINE = "\n"
+
 
 class MorphService:
     def __init__(self, db: AsyncSession, chat_id: int):
@@ -20,19 +22,24 @@ class MorphService:
 
     @classmethod
     def _split_by_words(cls, text: str) -> list[str]:
-        words = re.split(" ", text, flags=re.M)
+        words = re.split(" ", text, flags=re.MULTILINE)
         for index in range(0, len(words)):
-            lines = words[index].split("\n")
+            lines = words[index].split(_NEW_LINE)
             len_lines = len(lines)
             if len_lines >= 2:
                 lines_pos = 0
                 for pos in range(index, index + len_lines):
                     if lines_pos == 0:
-                        words[pos] = lines[lines_pos]
+                        if lines[lines_pos] == "":
+                            words[pos] = _NEW_LINE
+                        else:
+                            words[pos] = lines[lines_pos]
+                    elif lines[lines_pos] == "":
+                        words.insert(pos, _NEW_LINE)
                     else:
                         words.insert(pos, lines[lines_pos])
-                    if lines[lines_pos] == "":
-                        words.insert(pos, "\n")
+                        if pos % 2 == 0:
+                            words.insert(pos, _NEW_LINE)
                     lines_pos += 1
         return words
 
@@ -42,7 +49,7 @@ class MorphService:
         words_count = len(words)
         for index in range(0, words_count):
             word = words[index]
-            if (word == "\n") or (index < words_count - 1 and words[index + 1] == "\n"):
+            if (word == _NEW_LINE) or (index < words_count - 1 and words[index + 1] == _NEW_LINE):
                 result = result + word
             elif word == "":
                 continue
@@ -88,7 +95,7 @@ class MorphService:
     async def morph_text(self, text: str) -> str:
         words = self._split_by_words(text)
         words_count = len(words)
-        new_line_count = text.count("\n")
+        new_line_count = text.count(_NEW_LINE)
         dictionary_words = await self._get_dictionary_words()
         if not dictionary_words:
             raise RaiseUpException(
@@ -98,7 +105,7 @@ class MorphService:
 
         for word_index in range(0, self._get_maximum_words_to_replace(words_count) + new_line_count):
             random_word_index = random.randint(0, words_count - 1)
-            if words[random_word_index] == "\n":
+            if words[random_word_index] == _NEW_LINE:
                 continue
             item = morph.parse(words[random_word_index])[0]
             key = self._get_tags(item)
@@ -140,7 +147,7 @@ class MorphService:
             else:
                 result.append(item.word)
         if debug:
-            return "\n".join(result)
+            return _NEW_LINE.join(result)
         else:
             return ", ".join(result)
 
