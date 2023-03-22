@@ -22,25 +22,7 @@ class MorphService:
 
     @classmethod
     def _split_by_words(cls, text: str) -> list[str]:
-        words = re.split(" ", text, flags=re.MULTILINE)
-        for index in range(0, len(words)):
-            lines = words[index].split(_NEW_LINE)
-            len_lines = len(lines)
-            if len_lines >= 2:
-                lines_pos = 0
-                for pos in range(index, index + len_lines):
-                    if lines_pos == 0:
-                        if lines[lines_pos] == "":
-                            words[pos] = _NEW_LINE
-                        else:
-                            words[pos] = lines[lines_pos]
-                    elif lines[lines_pos] == "":
-                        words.insert(pos, _NEW_LINE)
-                    else:
-                        words.insert(pos, lines[lines_pos])
-                        if pos % 2 == 0:
-                            words.insert(pos, _NEW_LINE)
-                    lines_pos += 1
+        words = re.split(r" ", text, flags=re.MULTILINE)
         return words
 
     @classmethod
