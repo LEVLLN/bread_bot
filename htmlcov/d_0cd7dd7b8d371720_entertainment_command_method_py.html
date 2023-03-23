@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_0cd7dd7b8d371720_integration_command_method_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.2">coverage.py v7.2.2</a>,
-            created at 2023-03-22 11:27 +0000
+            created at 2023-03-23 14:55 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -220,9 +220,9 @@
     <p class="mis show_mis"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t">        <span class="key">match</span> <span class="nam">content_type</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">TEXT</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t">                <span class="nam">result</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">morph_service</span><span class="op">.</span><span class="nam">morph_text</span><span class="op">(</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">PICTURE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">PICTURE</span> <span class="op">|</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VIDEO</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t">                <span class="key">if</span> <span class="key">not</span> <span class="nam">description</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">                    <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span><span class="str">"&#1060;&#1086;&#1090;&#1086;&#1075;&#1088;&#1072;&#1092;&#1080;&#1103; &#1085;&#1077; &#1089;&#1086;&#1076;&#1077;&#1088;&#1078;&#1080;&#1090; &#1087;&#1086;&#1076;&#1087;&#1080;&#1089;&#1080;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t">                    <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span><span class="str">"&#1050;&#1086;&#1085;&#1090;&#1077;&#1085;&#1090; &#1085;&#1077; &#1089;&#1086;&#1076;&#1077;&#1088;&#1078;&#1080;&#1090; &#1087;&#1086;&#1076;&#1087;&#1080;&#1089;&#1080;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t">                <span class="nam">result</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">morph_service</span><span class="op">.</span><span class="nam">morph_text</span><span class="op">(</span><span class="nam">description</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t">            <span class="key">case</span> <span class="nam">_</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t">                <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span><span class="str">"&#1058;&#1080;&#1087; &#1082;&#1086;&#1085;&#1090;&#1077;&#1085;&#1090;&#1072; &#1085;&#1077; &#1087;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1080;&#1074;&#1072;&#1077;&#1090;&#1089;&#1103;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -292,7 +292,7 @@
             <a id="nextFileLink" class="nav" href="d_0cd7dd7b8d371720_integration_command_method_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.2">coverage.py v7.2.2</a>,
-            created at 2023-03-22 11:27 +0000
+            created at 2023-03-23 14:55 +0000
         </p>
     </div>
 </footer>

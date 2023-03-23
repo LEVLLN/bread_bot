@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for bread_bot/common/services/messages/message_service.py: 82.6%</title>
+    <title>Coverage for bread_bot/common/services/messages/message_service.py: 80.9%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>bread_bot/common/services/messages/message_service.py</b>:
-            <span class="pc_cov">82.6%</span>
+            <span class="pc_cov">80.9%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">46 statements &nbsp;</span>
+            <span class="text">47 statements &nbsp;</span>
             <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">38<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">8<span class="text"> missing</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">9<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_f5f9bda5ed9a89bb_morph_service_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.2">coverage.py v7.2.2</a>,
-            created at 2023-03-22 11:27 +0000
+            created at 2023-03-23 14:55 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -131,19 +131,20 @@
     <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">STICKER</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">video</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">video</span><span class="op">.</span><span class="nam">file_id</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VIDEO</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">video_note</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">video_note</span><span class="op">.</span><span class="nam">file_id</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VIDEO_NOTE</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">animation</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">animation</span><span class="op">.</span><span class="nam">file_id</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">ANIMATION</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">text</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">text</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">TEXT</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t">        <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">            <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span><span class="str">"&#1044;&#1072;&#1085;&#1085;&#1099;&#1081; &#1090;&#1080;&#1087; &#1076;&#1072;&#1085;&#1085;&#1099;&#1093; &#1085;&#1077; &#1087;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1080;&#1074;&#1072;&#1077;&#1090;&#1089;&#1103;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">        <span class="key">return</span> <span class="nam">value</span><span class="op">,</span> <span class="nam">content_type</span><span class="op">,</span> <span class="nam">description</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">            <span class="nam">description</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">caption</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VIDEO</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">video_note</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">video_note</span><span class="op">.</span><span class="nam">file_id</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VIDEO_NOTE</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">animation</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">animation</span><span class="op">.</span><span class="nam">file_id</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">ANIMATION</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t">        <span class="key">elif</span> <span class="nam">message</span><span class="op">.</span><span class="nam">text</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">            <span class="nam">value</span> <span class="op">=</span> <span class="nam">message</span><span class="op">.</span><span class="nam">text</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t">            <span class="nam">content_type</span> <span class="op">=</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">TEXT</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">        <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">            <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span><span class="str">"&#1044;&#1072;&#1085;&#1085;&#1099;&#1081; &#1090;&#1080;&#1087; &#1076;&#1072;&#1085;&#1085;&#1099;&#1093; &#1085;&#1077; &#1087;&#1086;&#1076;&#1076;&#1077;&#1088;&#1078;&#1080;&#1074;&#1072;&#1077;&#1090;&#1089;&#1103;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">        <span class="key">return</span> <span class="nam">value</span><span class="op">,</span> <span class="nam">content_type</span><span class="op">,</span> <span class="nam">description</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -153,7 +154,7 @@
             <a id="nextFileLink" class="nav" href="d_f5f9bda5ed9a89bb_morph_service_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.2">coverage.py v7.2.2</a>,
-            created at 2023-03-22 11:27 +0000
+            created at 2023-03-23 14:55 +0000
         </p>
     </div>
 </footer>
