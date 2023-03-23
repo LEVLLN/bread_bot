@@ -138,9 +138,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         match content_type:
             case AnswerEntityContentTypesEnum.TEXT:
                 result = await morph_service.morph_text(value)
-            case AnswerEntityContentTypesEnum.PICTURE:
+            case AnswerEntityContentTypesEnum.PICTURE | AnswerEntityContentTypesEnum.VIDEO:
                 if not description:
-                    raise RaiseUpException("Фотография не содержит подписи")
+                    raise RaiseUpException("Контент не содержит подписи")
                 result = await morph_service.morph_text(description)
             case _:
                 raise RaiseUpException("Тип контента не поддерживается")

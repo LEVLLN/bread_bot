@@ -49,6 +49,7 @@ class MessageService(object):
             content_type = AnswerEntityContentTypesEnum.STICKER
         elif message.video:
             value = message.video.file_id
+            description = message.caption
             content_type = AnswerEntityContentTypesEnum.VIDEO
         elif message.video_note:
             value = message.video_note.file_id

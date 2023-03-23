@@ -206,6 +206,7 @@ class AdminCommandMethod(BaseCommandMethod):
                 AnswerEntity.pack_id == self.default_answer_pack.id,
                 AnswerEntity.value == value,
                 AnswerEntity.content_type == content_type,
+                AnswerEntity.description == description,
             ),
         )
         if not answer_entities:
