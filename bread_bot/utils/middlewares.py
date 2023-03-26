@@ -10,10 +10,10 @@ from opencensus.trace import (
     attributes_helper,
     execution_context,
     samplers,
+    utils,
 )
 from opencensus.trace import span as span_module
 from opencensus.trace import tracer as tracer_module
-from opencensus.trace import utils
 from opencensus.trace.base_exporter import Exporter
 from opencensus.trace.propagation import trace_context_http_header_format
 from starlette.middleware.base import RequestResponseEndpoint
@@ -218,7 +218,7 @@ class OpenCensusFastAPIMiddleware:
         try:
             span = fastapi_tracer.start_span()
             span.span_kind = span_module.SpanKind.SERVER
-            span.name = "[{}]{}".format(request.method, request.url)
+            span.name = f"[{request.method}]{request.url}"
             fastapi_tracer.add_attribute_to_current_span(
                 HTTP_HOST,
                 request.url.hostname,

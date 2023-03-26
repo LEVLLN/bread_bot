@@ -1,1 +1,1 @@
-from bread_bot.main.settings.default import *
+from bread_bot.main.settings.default import *  # noqa

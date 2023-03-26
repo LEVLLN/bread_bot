@@ -1,7 +1,6 @@
-from typing import Optional
 
-from fastapi import Query, Body
-from pydantic import BaseModel, Field, EmailStr
+from fastapi import Body, Query
+from pydantic import BaseModel, EmailStr, Field
 
 
 class TokenSchema(BaseModel):
@@ -18,7 +17,7 @@ class TokenDataSchema(BaseModel):
     Данные токена
     """
 
-    username: Optional[str] = None
+    username: str | None = None
 
 
 class UserSchema(BaseModel):
@@ -28,8 +27,8 @@ class UserSchema(BaseModel):
 
     username: str = Body(..., title="Логин")
     email: EmailStr = Body(..., title="Электронная почта")
-    first_name: Optional[str] = Body(None, title="Имя")
-    surname: Optional[str] = Body(None, title="Фамилия")
+    first_name: str | None = Body(None, title="Имя")
+    surname: str | None = Body(None, title="Фамилия")
 
     class Config:
         orm_mode = True
@@ -41,7 +40,7 @@ class UserInfoSchema(UserSchema):
     """
 
     id: int = Query(..., title="ID")
-    is_active: Optional[bool] = Query(..., title="Активен")
+    is_active: bool | None = Query(..., title="Активен")
 
     class Config:
         orm_mode = True

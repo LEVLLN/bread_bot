@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from bread_bot.common.schemas.telegram_messages import StandardBodySchema
@@ -479,23 +479,23 @@ def request_body_voice_message():
 @pytest.fixture
 async def message_service(request_body_message) -> MessageService:
     message_service = MessageService(request_body=request_body_message)
-    yield message_service
+    return message_service
 
 
 @pytest.fixture
 async def member_service(db, message_service) -> MemberService:
     member_service = MemberService(db=db, message=message_service.message)
     await member_service.process()
-    yield member_service
+    return member_service
 
 
 @pytest.fixture
 async def edited_message_service(request_body_edited_message) -> MessageService:
     message_service = MessageService(request_body=request_body_edited_message)
-    yield message_service
+    return message_service
 
 
 @pytest.fixture
 async def voice_message_service(request_body_voice_message) -> MessageService:
     message_service = MessageService(request_body=request_body_voice_message)
-    yield message_service
+    return message_service

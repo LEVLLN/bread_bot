@@ -8,9 +8,9 @@ from bread_bot.common.services.handlers.command_methods.member_command_method im
 from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    MemberCommandsEnum,
     EntertainmentCommandsEnum,
     IntegrationCommandsEnum,
+    MemberCommandsEnum,
 )
 
 
@@ -22,13 +22,13 @@ class CommandHandler(AbstractHandler):
         if not await self.condition():
             raise NextStepException("Не подходит условие для обработки")
         command_instance = CommandParser(message_text=self.message_service.message.text).parse()
-        command_params = dict(
-            db=self.db,
-            message_service=self.message_service,
-            member_service=self.member_service,
-            command_instance=command_instance,
-            default_answer_pack=self.default_answer_pack,
-        )
+        command_params = {
+            "db": self.db,
+            "message_service": self.message_service,
+            "member_service": self.member_service,
+            "command_instance": command_instance,
+            "default_answer_pack": self.default_answer_pack,
+        }
         match command_instance.command:
             case AdminCommandsEnum():
                 return await AdminCommandMethod(**command_params).execute()

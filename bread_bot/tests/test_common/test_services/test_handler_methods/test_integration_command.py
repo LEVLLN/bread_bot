@@ -6,7 +6,7 @@ from bread_bot.common.clients.forismatic_client import ForismaticClient
 from bread_bot.common.clients.great_advice import GreatAdviceClient
 from bread_bot.common.exceptions.base import RaiseUpException
 from bread_bot.common.models import AnswerPack
-from bread_bot.common.schemas.api_models import GreatAdviceResponse, ForismaticQuote, EvilInsultResponse
+from bread_bot.common.schemas.api_models import EvilInsultResponse, ForismaticQuote, GreatAdviceResponse
 from bread_bot.common.schemas.commands import (
     CommandSchema,
 )
@@ -23,7 +23,7 @@ class TestIntegrationCommand:
         member_service,
         command_instance,
     ):
-        yield IntegrationCommandMethod(
+        return IntegrationCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
@@ -35,7 +35,7 @@ class TestIntegrationCommand:
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб", command=IntegrationCommandsEnum.ADVICE, rest_text="some test", raw_command="совет"
         )
 

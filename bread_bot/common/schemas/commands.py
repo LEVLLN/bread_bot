@@ -2,10 +2,10 @@ from pydantic import BaseModel, Field, conlist
 
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    MemberCommandsEnum,
-    EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,
+    EntertainmentCommandsEnum,
     IntegrationCommandsEnum,
+    MemberCommandsEnum,
 )
 
 

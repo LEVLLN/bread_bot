@@ -1,5 +1,5 @@
-from bread_bot.main.base_client import BaseHTTPClient
 from bread_bot.common.schemas.api_models import ForismaticQuote
+from bread_bot.main.base_client import BaseHTTPClient
 
 
 class ForismaticClient(BaseHTTPClient):

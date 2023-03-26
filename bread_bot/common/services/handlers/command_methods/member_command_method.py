@@ -46,7 +46,7 @@ class MemberCommandMethod(BaseCommandMethod):
             db=self.db,
             where=and_(
                 ChatToMember.chat_id == self.member_service.chat.id,
-                Member.is_bot == False,
+                Member.is_bot is False,
                 Member.id is not None,
                 Member.username is not None,
                 ChatToMember.updated_at >= datetime.datetime.now() - datetime.timedelta(days=30),

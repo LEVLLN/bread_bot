@@ -1,8 +1,8 @@
-from sqlalchemy import Column, String, Text, Integer, ForeignKey, Enum, select, and_
+from sqlalchemy import Column, Enum, ForeignKey, Integer, String, Text, and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import relationship
 
-from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum, AnswerEntityContentTypesEnum
+from bread_bot.common.utils.structs import AnswerEntityContentTypesEnum, AnswerEntityReactionTypesEnum
 from bread_bot.main.database import mixins
 
 

@@ -2,10 +2,10 @@ import logging
 
 from sqlalchemy import and_
 
-from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
+from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import (
-    AnswerPack,
     AnswerEntity,
+    AnswerPack,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
@@ -19,10 +19,10 @@ from bread_bot.common.services.handlers.answer_handler import (
 )
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
 from bread_bot.common.utils.structs import (
-    AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
-    AnswerEntityReactionTypesEnum,
+    AdminCommandsEnum,
     AnswerEntityContentTypesEnum,
+    AnswerEntityReactionTypesEnum,
 )
 
 logger = logging.getLogger(__name__)
@@ -85,15 +85,15 @@ class AdminCommandMethod(BaseCommandMethod):
             for_update=True,
         )
         if entity is None:
-            instance_params = dict(
-                pack_id=self.default_answer_pack.id,
-                key=key.lower(),
-                value=value,
-                reaction_type=reaction_type,
-                content_type=content_type,
-            )
+            instance_params = {
+                "pack_id": self.default_answer_pack.id,
+                "key": key.lower(),
+                "value": value,
+                "reaction_type": reaction_type,
+                "content_type": content_type,
+            }
             if description is not None:
-                instance_params.update(dict(description=description))
+                instance_params.update({"description": description})
             await AnswerEntity.async_add(db=self.db, instance=AnswerEntity(**instance_params))
         return super()._return_answer()
 
@@ -149,15 +149,15 @@ class AdminCommandMethod(BaseCommandMethod):
             self._check_length_key(reaction_type, key)
             if key in keys_to_skip:
                 continue
-            instance_params = dict(
-                pack_id=self.default_answer_pack.id,
-                key=key.lower(),
-                value=value,
-                content_type=content_type,
-                reaction_type=reaction_type,
-            )
+            instance_params = {
+                "pack_id": self.default_answer_pack.id,
+                "key": key.lower(),
+                "value": value,
+                "content_type": content_type,
+                "reaction_type": reaction_type,
+            }
             if description is not None:
-                instance_params.update(dict(description=description))
+                instance_params.update({"description": description})
             entities.append(AnswerEntity(**instance_params))
 
         await AnswerEntity.async_add_all(db=self.db, instances=entities)

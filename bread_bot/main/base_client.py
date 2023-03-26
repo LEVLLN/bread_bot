@@ -2,11 +2,10 @@ import json
 import logging
 import math
 import time
-from typing import Union
 
-from httpx import AsyncClient, Response, Request, HTTPError, Headers
+from httpx import AsyncClient, Headers, HTTPError, Request, Response
 from httpx._client import UseClientDefault
-from httpx._types import QueryParamTypes, HeaderTypes, URLTypes, AuthTypes, RequestData, RequestContent
+from httpx._types import AuthTypes, HeaderTypes, QueryParamTypes, RequestContent, RequestData, URLTypes
 
 from bread_bot.utils.json_logger import EMPTY_VALUE
 from bread_bot.utils.utils_schemas import RequestJsonLogSchema
@@ -25,8 +24,8 @@ class BaseHTTPClient:
         url: URLTypes,
         headers: HeaderTypes = None,
         query_params: QueryParamTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = None,
-        data: Union[RequestContent, RequestData] = None,
+        auth: AuthTypes | UseClientDefault = None,
+        data: RequestContent | RequestData = None,
     ) -> Response:
         """
         Сделать http запрос

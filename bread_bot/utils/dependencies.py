@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
-from bread_bot.main.database.base import SyncSessionLocal, AsyncSessionLocal
+from bread_bot.main.database.base import AsyncSessionLocal, SyncSessionLocal
 
 
 class OffsetQueryParams:

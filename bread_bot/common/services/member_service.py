@@ -5,7 +5,7 @@ from asyncpg import UniqueViolationError
 from sqlalchemy import and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bread_bot.common.models import Member, Chat, ChatToMember
+from bread_bot.common.models import Chat, ChatToMember, Member
 from bread_bot.common.schemas.telegram_messages import MessageSchema
 
 logger = logging.getLogger(__name__)

@@ -8,8 +8,7 @@ from httpx import AsyncClient
 
 from bread_bot.auth.models import User
 from bread_bot.auth.schemas.auth import UserCreateSchema, UserInfoSchema
-from bread_bot.utils.testing_tools import init_async_session, test_app, \
-    TEST_SERVER_URL
+from bread_bot.utils.testing_tools import TEST_SERVER_URL, init_async_session, test_app
 
 
 class CreateUserTestCase(unittest.IsolatedAsyncioTestCase):

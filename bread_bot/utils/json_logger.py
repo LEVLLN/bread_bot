@@ -2,16 +2,15 @@ import datetime
 import json
 import logging
 import traceback
-from typing import Union
 
-from opencensus.trace import execution_context, Span
+from opencensus.trace import Span, execution_context
 
 from bread_bot.main.settings import (
-    AUTO_MASK_LOGS,
     APP_NAME,
     APP_VERSION,
-    ENVIRONMENT,
+    AUTO_MASK_LOGS,
     ENABLE_TELEMETRY,
+    ENVIRONMENT,
 )
 from bread_bot.utils.helpers import mask_string
 from bread_bot.utils.utils_schemas import BaseJsonLogSchema
@@ -32,7 +31,7 @@ class JSONLogFormatter(logging.Formatter):
     Кастомизированный класс-форматер для логов в формате json
     """
 
-    def format(self, record: logging.LogRecord, *args, **kwargs) -> Union[dict, str]:
+    def format(self, record: logging.LogRecord, *args, **kwargs) -> dict | str:
         """
         Преобразование объект журнала в json
 
@@ -48,12 +47,12 @@ class JSONLogFormatter(logging.Formatter):
                 additional_mask_keys=getattr(
                     record,
                     "sensitive_keys",
-                    tuple(),
+                    (),
                 ),
                 additional_mask_values=getattr(
                     record,
                     "sensitive_values",
-                    tuple(),
+                    (),
                 ),
             )
         else:

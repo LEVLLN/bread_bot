@@ -3,10 +3,10 @@ from functools import cached_property
 from bread_bot.common.schemas.commands import CommandSettingsSchema
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    EntertainmentCommandsEnum,
-    MemberCommandsEnum,
     CommandAnswerParametersEnum,
+    EntertainmentCommandsEnum,
     IntegrationCommandsEnum,
+    MemberCommandsEnum,
 )
 
 
@@ -17,7 +17,7 @@ class CommandSettings:
 
     def __new__(cls):
         if not hasattr(cls, "instance"):
-            cls.instance = super(CommandSettings, cls).__new__(cls)
+            cls.instance = super().__new__(cls)
         return cls.instance
 
     # Инициализация настройки команд

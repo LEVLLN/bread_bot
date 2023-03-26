@@ -1,5 +1,5 @@
-from bread_bot.main.base_client import BaseHTTPClient
 from bread_bot.common.schemas.api_models import EvilInsultResponse
+from bread_bot.main.base_client import BaseHTTPClient
 
 
 class EvilInsultClient(BaseHTTPClient):

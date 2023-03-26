@@ -1,8 +1,8 @@
 from bread_bot.common.exceptions.base import NextStepException
-from bread_bot.common.schemas.telegram_messages import StandardBodySchema, MessageSchema
+from bread_bot.common.schemas.telegram_messages import MessageSchema, StandardBodySchema
 
 
-class MessageService(object):
+class MessageService:
     """Сервис сообщений"""
 
     def __init__(

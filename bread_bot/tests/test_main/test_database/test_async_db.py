@@ -137,7 +137,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_bulk_create(self):
-        users = list()
+        users = []
         for i in range(9):
             users.append(
                 User(
@@ -164,7 +164,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
         )
 
     async def test_bulk_update(self):
-        users = list()
+        users = []
         for i in range(9):
             users.append(
                 User(
@@ -174,7 +174,7 @@ class AsyncDBTestCase(unittest.IsolatedAsyncioTestCase):
                 )
             )
         await User.async_add_all(self.session, users)
-        updated_users = list()
+        updated_users = []
         result = await self.session.stream(
             select(User).where(
                 User.username.in_([user.username for user in users])

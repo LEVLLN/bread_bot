@@ -8,9 +8,9 @@ from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
     CommandSchema,
     KeyValueParameterCommandSchema,
-    ValueListCommandSchema,
-    ValueCommandSchema,
     ParameterCommandSchema,
+    ValueCommandSchema,
+    ValueListCommandSchema,
     ValueListParameterCommandSchema,
 )
 from bread_bot.common.services.member_service import MemberService

@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from opencensus.trace.samplers import AlwaysOnSampler
 
 from bread_bot.auth.routes import auth
-from bread_bot.main import routes as root
-from bread_bot.main.settings import CORS_ALLOW_ORIGINS, LOG_CONFIG, ENABLE_TELEMETRY
 from bread_bot.common.routes import common
-from bread_bot.utils.middlewares import OpenCensusFastAPIMiddleware, LoggingMiddleware
+from bread_bot.main import routes as root
+from bread_bot.main.settings import CORS_ALLOW_ORIGINS, ENABLE_TELEMETRY, LOG_CONFIG
+from bread_bot.utils.middlewares import LoggingMiddleware, OpenCensusFastAPIMiddleware
 
 dictConfig(LOG_CONFIG)
 logger = logging.getLogger(__name__)

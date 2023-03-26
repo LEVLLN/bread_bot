@@ -175,7 +175,7 @@ escape(document.referrer)+((typeof(screen)=="undefined")?"":
 screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
 ";"+Math.random()+
 "' alt='' title='LiveInternet' "+
-"border=0 width=31 height=31><\/a>")//
+"border=0 width=31 height=31><\\/a>")//
 					-->
 
 </script>
@@ -196,6 +196,7 @@ screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
 <!-- Время затраченное на выполнение MySQL запросов: 0.32273 секунд-->
 <!-- Общее количество MySQL запросов 1 -->
 """
+
 
 baneks_resource = """
 <!DOCTYPE html>
@@ -317,7 +318,7 @@ baneks_resource = """
         } else {
             f();
         }
-    })(document, window, "yandex_metrika_callbacks"); 
+    })(document, window, "yandex_metrika_callbacks");
 	</script>
 	<noscript>
 		<div><img src="https://mc.yandex.ru/watch/36131715" style="position:absolute; left:-9999px;" alt=""/></div>

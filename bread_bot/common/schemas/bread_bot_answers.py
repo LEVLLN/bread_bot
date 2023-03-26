@@ -1,10 +1,9 @@
-from typing import Optional
 
 from pydantic import BaseModel
 
 
 class BaseAnswerSchema(BaseModel):
-    reply_to_message_id: Optional[int] = None
+    reply_to_message_id: int | None = None
     chat_id: int
 
     def send_body(self):

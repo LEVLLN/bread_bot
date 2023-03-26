@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerPack
-from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema, BaseAnswerSchema
+from bread_bot.common.schemas.bread_bot_answers import BaseAnswerSchema, TextAnswerSchema
 from bread_bot.common.schemas.telegram_messages import StandardBodySchema
-from bread_bot.common.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
+from bread_bot.common.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
 from bread_bot.common.services.handlers.command_handler import CommandHandler
 from bread_bot.common.services.handlers.handler import EmptyResultHandler
 from bread_bot.common.services.member_service import MemberService

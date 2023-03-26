@@ -2,7 +2,7 @@ import unittest
 
 from httpx import AsyncClient
 
-from bread_bot.utils.testing_tools import test_app, TEST_SERVER_URL
+from bread_bot.utils.testing_tools import TEST_SERVER_URL, test_app
 
 
 class RootRouteTestCase(unittest.IsolatedAsyncioTestCase):

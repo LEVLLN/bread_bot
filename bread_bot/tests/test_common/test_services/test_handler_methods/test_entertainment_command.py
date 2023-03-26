@@ -3,8 +3,8 @@ import datetime
 import pytest
 
 from bread_bot.common.schemas.commands import (
-    ValueListCommandSchema,
     CommandSchema,
+    ValueListCommandSchema,
 )
 from bread_bot.common.services.handlers.command_methods.entertainment_command_method import EntertainmentCommandMethod
 from bread_bot.common.utils.structs import EntertainmentCommandsEnum
@@ -19,7 +19,7 @@ class TestEntertainmentCommand:
         member_service,
         command_instance,
     ):
-        yield EntertainmentCommandMethod(
+        return EntertainmentCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
@@ -30,7 +30,7 @@ class TestEntertainmentCommand:
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб", command=EntertainmentCommandsEnum.CHANCE, rest_text="события", raw_command="вероятность"
         )
 

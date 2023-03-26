@@ -9,19 +9,19 @@ from bread_bot.common.models import (
 )
 from bread_bot.common.schemas.bread_bot_answers import (
     BaseAnswerSchema,
-    TextAnswerSchema,
+    GifAnswerSchema,
     PhotoAnswerSchema,
     StickerAnswerSchema,
-    VoiceAnswerSchema,
-    GifAnswerSchema,
+    TextAnswerSchema,
     VideoAnswerSchema,
     VideoNoteAnswerSchema,
+    VoiceAnswerSchema,
 )
 from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
-    AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
+    AnswerEntityReactionTypesEnum,
 )
 
 
@@ -84,10 +84,10 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Значения не найдено")
 
         result: AnswerEntity = random.choice(results)
-        base_message_params = dict(
-            reply_to_message_id=self.message_service.message.message_id,
-            chat_id=self.message_service.message.chat.id,
-        )
+        base_message_params = {
+            "reply_to_message_id": self.message_service.message.message_id,
+            "chat_id": self.message_service.message.chat.id,
+        }
         match result.content_type:
             case AnswerEntityContentTypesEnum.TEXT:
                 return TextAnswerSchema(**base_message_params, text=result.value)

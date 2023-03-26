@@ -5,9 +5,9 @@ import unittest
 import respx
 from httpx import AsyncClient, Response
 
-from bread_bot.common.models import Member
 from bread_bot.common.clients.telegram_client import TelegramClient
-from bread_bot.utils.testing_tools import test_app, TEST_SERVER_URL, init_async_session
+from bread_bot.common.models import Member
+from bread_bot.utils.testing_tools import TEST_SERVER_URL, init_async_session, test_app
 
 
 class GetMessageTestCase(unittest.IsolatedAsyncioTestCase):

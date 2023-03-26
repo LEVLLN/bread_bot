@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, Integer, ForeignKey, and_, SmallInteger
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, SmallInteger, String, and_
 from sqlalchemy.orm import relationship
 
 from bread_bot.common.models.answer_packs_to_chats import AnswerPacksToChats
@@ -23,7 +23,7 @@ class AnswerPack(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUD
             answer_pack = await AnswerPack.async_first(
                 db=db,
                 where=and_(
-                    AnswerPack.name == "based", AnswerPack.is_private == True, AnswerPack.id == answer_chat.pack_id
+                    AnswerPack.name == "based", AnswerPack.is_private is True, AnswerPack.id == answer_chat.pack_id
                 ),
             )
             return answer_pack

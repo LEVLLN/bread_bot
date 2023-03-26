@@ -1,17 +1,17 @@
 import logging
 
-from bread_bot.main.settings import MESSAGE_LEN_LIMIT
 from bread_bot.common.clients.telegram_client import TelegramClient
 from bread_bot.common.schemas.bread_bot_answers import (
-    TextAnswerSchema,
     BaseAnswerSchema,
-    VoiceAnswerSchema,
+    GifAnswerSchema,
     PhotoAnswerSchema,
     StickerAnswerSchema,
-    GifAnswerSchema,
+    TextAnswerSchema,
     VideoAnswerSchema,
     VideoNoteAnswerSchema,
+    VoiceAnswerSchema,
 )
+from bread_bot.main.settings import MESSAGE_LEN_LIMIT
 from bread_bot.utils.helpers import chunks
 
 logger = logging.getLogger(__name__)

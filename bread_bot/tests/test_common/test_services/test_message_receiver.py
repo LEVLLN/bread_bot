@@ -1,9 +1,9 @@
 import pytest
 
-from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
+from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerPack, AnswerPacksToChats
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
-from bread_bot.common.services.handlers.answer_handler import TriggerAnswerHandler, SubstringAnswerHandler
+from bread_bot.common.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
 from bread_bot.common.services.handlers.command_handler import CommandHandler
 from bread_bot.common.services.handlers.handler import EmptyResultHandler
 from bread_bot.common.services.messages.message_receiver import MessageReceiver
@@ -21,7 +21,7 @@ async def based_pack(db, member_service):
             pack_id=answer_pack.id,
         ),
     )
-    yield answer_pack
+    return answer_pack
 
 
 @pytest.mark.parametrize(

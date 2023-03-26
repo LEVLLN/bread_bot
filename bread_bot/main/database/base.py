@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import NullPool, AsyncAdaptedQueuePool
+from sqlalchemy.pool import AsyncAdaptedQueuePool, NullPool
 
 from bread_bot.main.settings import (
-    DATABASE_URI,
     ASYNC_DATABASE_URI,
-    DB_POOL_SIZE,
+    DATABASE_URI,
     DB_POOL_MAX_OVERFLOW,
+    DB_POOL_SIZE,
 )
 
 sync_engine = create_engine(

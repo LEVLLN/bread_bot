@@ -3,11 +3,11 @@ import pytest
 from bread_bot.common.exceptions.base import NextStepException
 from bread_bot.common.models import AnswerPack, AnswerPacksToChats
 from bread_bot.common.schemas.bread_bot_answers import (
-    TextAnswerSchema,
-    StickerAnswerSchema,
-    VoiceAnswerSchema,
-    PhotoAnswerSchema,
     GifAnswerSchema,
+    PhotoAnswerSchema,
+    StickerAnswerSchema,
+    TextAnswerSchema,
+    VoiceAnswerSchema,
 )
 from bread_bot.common.services.handlers.answer_handler import SubstringAnswerHandler, TriggerAnswerHandler
 from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
@@ -27,7 +27,7 @@ class TestAnswerHandler:
                 ),
             )
         answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
-        yield answer_pack
+        return answer_pack
 
     @pytest.fixture
     async def prepare_data(
@@ -57,7 +57,7 @@ class TestAnswerHandler:
         substring_answer_handler.message_service = message_service
         substring_answer_handler.db = db
         substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
-        yield substring_answer_handler
+        return substring_answer_handler
 
     @pytest.fixture
     async def trigger_answer_handler(self, db, member_service, message_service, prepare_data):
@@ -67,7 +67,7 @@ class TestAnswerHandler:
         trigger_answer_handler.message_service = message_service
         trigger_answer_handler.db = db
         trigger_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
-        yield trigger_answer_handler
+        return trigger_answer_handler
 
     async def test_process_substring(self, db, substring_answer_handler, prepare_data):
         result = await substring_answer_handler.process()

@@ -1,4 +1,4 @@
-from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
+from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 
 
 class CommandParseException(RaiseUpException):

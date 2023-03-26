@@ -1,5 +1,4 @@
-from datetime import timedelta, datetime
-from typing import Optional
+from datetime import datetime, timedelta
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -9,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.auth.models import User
 from bread_bot.auth.schemas.auth import TokenDataSchema
-from bread_bot.main.settings import SECRET_KEY, ALGORITHM
+from bread_bot.main.settings import ALGORITHM, SECRET_KEY
 from bread_bot.utils.dependencies import get_async_session
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -46,7 +45,7 @@ async def authenticate_user(db: AsyncSession, username: str, password: str):
 
 async def create_access_token(
     data: dict,
-    expires_delta: Optional[timedelta] = None,
+    expires_delta: timedelta | None = None,
 ):
     """
     Создание токена на указанный срок по логину и паролю
