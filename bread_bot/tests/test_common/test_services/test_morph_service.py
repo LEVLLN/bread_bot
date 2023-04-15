@@ -37,7 +37,7 @@ async def test_morph_text(db, dictionary_entity_factory, member_service, message
 @pytest.mark.parametrize(
     "debug, expected",
     [
-        (False, "слово, слова, слову, слово, словом, слове, слова, слов, словам, слова, словами, словах"),
+        (False, "слово\nслова\nслову\nслово\nсловом\nслове\nслова\nслов\nсловам\nслова\nсловами\nсловах"),
         (
             True,
             (
