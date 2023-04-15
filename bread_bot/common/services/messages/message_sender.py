@@ -31,6 +31,13 @@ class MessageSender:
         Если сообщение превышает лимит - необходимо его разделить на несколько сообщений
         """
         result = []
+        message_lines = message.text.splitlines()
+        if len(message_lines) > 0:
+            message_count = 0
+            message = ""
+            for message_line in message_lines:
+                if message_count + len(message_line) < MESSAGE_LEN_LIMIT:
+                    message += message_line
         if len(message.text) > MESSAGE_LEN_LIMIT:
             for chunk in chunks(message.text, MESSAGE_LEN_LIMIT):
                 result.append(

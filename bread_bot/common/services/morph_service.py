@@ -22,7 +22,7 @@ class MorphService:
 
     @classmethod
     def tokenize_text(cls, text: str) -> list[list[str]]:
-        return [re.findall(r"\w+|\d+|\s+|[()|@,.:-^!#$%^&*-=_+\W]+", line) for line in text.splitlines()]
+        return [re.findall(r"\w+|\d+|\s+|\"|[()|@,.:-^!#$%^&*-=_+\W]+", line) for line in text.splitlines()]
 
     @classmethod
     def _get_tags(cls, morph_word) -> tuple:
@@ -118,7 +118,7 @@ class MorphService:
         if debug:
             return _NEW_LINE.join(result)
         else:
-            return ", ".join(result)
+            return _NEW_LINE.join(result)
 
     async def show_values(self) -> str:
         existed_dictionary_entities = await DictionaryEntity.async_filter(

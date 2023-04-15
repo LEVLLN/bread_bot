@@ -5,10 +5,18 @@ from bread_bot.common.services.morph_service import MorphService
 
 
 async def test_tokenize():
-    text = """Утром:\n1)бегит\n2)хлеба дрочит\n3)щитпостит\n\nВечром\n1)анжуманя\n2)щитпостит\n3)тимур выпей 
-    таблетки\n👉 Топор Live. Подписаться"""
+    text = """Утром:\n1)бегит\n2)хлеба ловить\n3)@писать\n\nВечером:\n1)анжуманя\n2)"писат"\n3)ловить\n👉"""
     result = MorphService.tokenize_text(text)
-    print(result)
+    assert result[0] == ["Утром", ":"]
+    assert result[1] == ["1", ")", "бегит"]
+    assert result[2] == ["2", ")", "хлеба", " ", "ловить"]
+    assert result[3] == ["3", ")@", "писать"]
+    assert result[4] == []
+    assert result[5] == ["Вечером", ":"]
+    assert result[6] == ["1", ")", "анжуманя"]
+    assert result[7] == ["2", ")\"", "писат", "\""]
+    assert result[8] == ["3", ")", "ловить"]
+    assert result[9] == ["👉"]
 
 
 async def test_morph_text(db, dictionary_entity_factory, member_service, message_service, mocker):
