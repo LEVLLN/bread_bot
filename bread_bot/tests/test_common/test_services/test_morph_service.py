@@ -4,6 +4,13 @@ from bread_bot.common.models import DictionaryEntity
 from bread_bot.common.services.morph_service import MorphService
 
 
+async def test_tokenize():
+    text = """Утром:\n1)бегит\n2)хлеба дрочит\n3)щитпостит\n\nВечром\n1)анжуманя\n2)щитпостит\n3)тимур выпей 
+    таблетки\n👉 Топор Live. Подписаться"""
+    result = MorphService.tokenize_text(text)
+    print(result)
+
+
 async def test_morph_text(db, dictionary_entity_factory, member_service, message_service, mocker):
     text = "Только после 1830 Пушкин вплотную занялся \n-\n\n\nпрозой"
     mocker.patch(

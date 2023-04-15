@@ -22,7 +22,7 @@ class MorphService:
 
     @classmethod
     def tokenize_text(cls, text: str) -> list[list[str]]:
-        return [re.findall(r"\w+|\d+|\s+|[()|@,.:-^!@#$%^&*-=_+]+", line) for line in text.splitlines()]
+        return [re.findall(r"\w+|\d+|\s+|[()|@,.:-^!#$%^&*-=_+\W]+", line) for line in text.splitlines()]
 
     @classmethod
     def _get_tags(cls, morph_word) -> tuple:
