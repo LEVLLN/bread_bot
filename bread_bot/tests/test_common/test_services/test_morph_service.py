@@ -14,7 +14,7 @@ async def test_tokenize():
     assert result[4] == []
     assert result[5] == ["Вечером", ":"]
     assert result[6] == ["1", ")", "анжуманя"]
-    assert result[7] == ["2", ")\"", "писат", "\""]
+    assert result[7] == ["2", ')"', "писат", '"']
     assert result[8] == ["3", ")", "ловить"]
     assert result[9] == ["👉"]
 
