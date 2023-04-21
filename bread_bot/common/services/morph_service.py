@@ -1,7 +1,6 @@
 import math
 import random
 import re
-from collections import Counter
 from typing import Any
 
 import pymorphy2
