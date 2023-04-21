@@ -23,15 +23,44 @@ async def test_morph_text(db, dictionary_entity_factory, member_service, message
     text = "Только после 1830 Пушкин вплотную занялся \n-\n\n\nпрозой"
     mocker.patch(
         "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace",
-        return_value=len(text) + 4,
+        return_value=100,
     )
-    for word in ["зариф", "прыгать", "мягкий", "2022", "головой", "до"]:
+    for word in ["зариф", "прыгать", "мягкий", "2022", "голова", "до"]:
         await dictionary_entity_factory(chat_id=member_service.chat.id, value=word)
     assert await DictionaryEntity.async_filter(db, DictionaryEntity.chat_id == member_service.chat.id)
 
     result = await MorphService(db, chat_id=member_service.chat.id).morph_text(text)
     assert result.startswith("Только до 1830 зариф вплотную прыгал")
     assert result.split()[-1] in ("головой", "головою")
+
+
+@pytest.mark.parametrize(
+    "line_number, min_of_morphed, max_of_morphed",
+    [
+        (0, 1, 1),
+        (1, 1, 2),
+        (2, 0, 0),
+        (3, 1, 3),
+        (4, 1, 1),
+    ],
+)
+async def test_only_words(
+    db, dictionary_entity_factory, member_service, message_service, line_number, min_of_morphed, max_of_morphed
+):
+    text = (
+        "прозой прозой прозой \n прозой прозой прозой прозой прозой прозой-\n\nпрозой прозой прозой прозой прозой "
+        "прозой прозой прозой прозой\nпрозой\nслово слово слово слово"
+    )
+    for word in ["зариф", "прыгать", "мягкий", "2022", "головой", "до"]:
+        await dictionary_entity_factory(chat_id=member_service.chat.id, value=word)
+    assert await DictionaryEntity.async_filter(db, DictionaryEntity.chat_id == member_service.chat.id)
+
+    result = await MorphService(db, chat_id=member_service.chat.id).morph_text(text)
+    count = 0
+    for word in result.splitlines()[line_number].split():
+        if word in ("головой", "головою"):
+            count += 1
+    assert max_of_morphed >= count >= min_of_morphed
 
 
 @pytest.mark.parametrize(
@@ -87,4 +116,4 @@ async def test_show_values(db, member_service, message_service, dictionary_entit
     entities = await DictionaryEntity.async_filter(db, DictionaryEntity.chat_id == member_service.chat.id)
     assert [e.value for e in entities] == ["word1", "word2"]
     result = await MorphService(db, chat_id=member_service.chat.id).show_values()
-    assert result == "word1, word2"
+    assert result == "word1\nword2"

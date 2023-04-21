@@ -1,6 +1,7 @@
 import math
 import random
 import re
+from collections import Counter
 from typing import Any
 
 import pymorphy2
@@ -70,11 +71,13 @@ class MorphService:
             )
         result_strings = []
         for words in lines_with_words:
-            if not words:
+            words_indexes = [index for index in range(0, len(words)) if re.match(r"\w+", words[index])]
+            if not words_indexes:
                 result_strings.append("")
                 continue
-            for word_index in range(0, math.ceil(self._get_maximum_words_to_replace(len(words)))):
-                random_word_index = random.randint(0, len(words) - 1)
+            max_words_count = self._get_maximum_words_to_replace(len(words_indexes))
+            for _ in range(0, max_words_count):
+                random_word_index = random.choice(words_indexes)
                 item = morph.parse(words[random_word_index])[0]
                 key = self._get_tags(item)
                 if key[0] is None:
@@ -124,4 +127,4 @@ class MorphService:
         existed_dictionary_entities = await DictionaryEntity.async_filter(
             self.db, DictionaryEntity.chat_id == self.chat_id
         )
-        return ", ".join([item.value for item in existed_dictionary_entities])
+        return "\n".join([item.value for item in existed_dictionary_entities])
