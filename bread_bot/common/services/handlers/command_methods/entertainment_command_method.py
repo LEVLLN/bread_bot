@@ -85,12 +85,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     @staticmethod
     def _show_all_commands() -> str:
         result = ""
-        for command in CommandSettings().command_settings:
-            result += f"{'Команды' if len(command.aliases) > 1 else 'Команда'}: [{', '.join(command.aliases[:3])}]"
-            if command.description is not None:
-                result += f" - {command.description}\n"
-            else:
-                result += "\n"
+        for index, command in enumerate(CommandSettings().command_settings, 1):
+            result += f"{index}) {', '.join(command.aliases[:3])}\n"
         return result
 
     async def _get_values_for_replacing(self):
@@ -176,7 +172,10 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         return super()._return_answer(f"{result}")
 
     def help(self):
-        result = f"Привет, меня зовут {BOT_NAME}.\nМожете называть меня {ALTER_NAMES}\n\n"
+        result = (
+            f"Привет, меня зовут {BOT_NAME}.\nМожете называть меня {ALTER_NAMES}\n"
+            f"Выбери любую команду из списка и введи '{BOT_NAME} help <имя_команды>', перечень команд ниже:\n"
+        )
 
         if not self.command_instance.rest_text:
             result += self._show_all_commands()

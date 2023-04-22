@@ -46,6 +46,33 @@ class MessageSender:
                 message,
             ]
 
+    def _fit_in_messages(self, message: BaseAnswerSchema | TextAnswerSchema) -> list[TextAnswerSchema]:
+        """
+        thx for Roman Kitaev for this code
+        """
+        lines = message.text.splitlines()
+        messages = [[]]
+        for line in lines:
+            offset = 0
+            while True:
+                chunk = line[offset : MESSAGE_LEN_LIMIT + offset]
+                offset += MESSAGE_LEN_LIMIT
+                if not chunk:
+                    break
+
+                if sum(len(x) for x in messages[-1]) + len(chunk) > MESSAGE_LEN_LIMIT:
+                    messages.append([])
+                messages[-1].append(chunk)
+        return [
+            TextAnswerSchema(
+                text="\n".join(lines),
+                chat_id=message.chat_id,
+                reply_to_message_id=message.reply_to_message_id,
+            )
+            for lines in messages
+            if lines
+        ]
+
     async def send_messages_to_chat(self):
         """Отправка сообщения в чат"""
         if not self.message:
@@ -68,7 +95,7 @@ class MessageSender:
                 method = self.telegram_client.send_video_note
             case TextAnswerSchema():
                 method = self.telegram_client.send_message_method
-                messages = self._split_text_messages(self.message)
+                messages = self._fit_in_messages(self.message)
             case _:
                 logger.error("Unknown type to send of obj: %s", self.message)
                 return None

@@ -12,8 +12,6 @@ from bread_bot.common.models import DictionaryEntity
 
 morph = pymorphy2.MorphAnalyzer()
 
-_NEW_LINE = "\n"
-
 
 class MorphService:
     def __init__(self, db: AsyncSession, chat_id: int):
@@ -120,9 +118,9 @@ class MorphService:
             else:
                 result.append(item.word)
         if debug:
-            return _NEW_LINE.join(result)
+            return "\n".join(result)
         else:
-            return _NEW_LINE.join(result)
+            return "\n".join(result)
 
     async def show_values(self) -> str:
         existed_dictionary_entities = await DictionaryEntity.async_filter(
