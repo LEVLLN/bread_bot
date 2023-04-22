@@ -19,6 +19,42 @@ async def test_tokenize():
     assert result[9] == ["👉"]
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        (
+            "В чем разница между доктором физико-математических наук и большой пиццей?\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            ".\n"
+            "Большая пицца способна накормить семью из четырех человек."
+        ),
+    ],
+)
+async def test_morph_corner_cases(db, dictionary_entity_factory, member_service, message_service, mocker, text):
+    mocker.patch(
+        "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace",
+        return_value=100,
+    )
+    for word in [
+        "2022",
+    ]:
+        await dictionary_entity_factory(chat_id=member_service.chat.id, value=word)
+    assert await DictionaryEntity.async_filter(db, DictionaryEntity.chat_id == member_service.chat.id)
+    result = await MorphService(db, chat_id=member_service.chat.id).morph_text(text)
+    assert result == text
+
+
 async def test_morph_text(db, dictionary_entity_factory, member_service, message_service, mocker):
     text = "Только после 1830 Пушкин вплотную занялся \n-\n\n\nпрозой"
     mocker.patch(

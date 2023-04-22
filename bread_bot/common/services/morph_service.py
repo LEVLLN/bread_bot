@@ -69,8 +69,11 @@ class MorphService:
         result_strings = []
         for words in lines_with_words:
             words_indexes = [index for index in range(0, len(words)) if re.match(r"\w+", words[index])]
-            if not words_indexes:
+            if not words:
                 result_strings.append("")
+                continue
+            if not words_indexes:
+                result_strings.append("".join(words))
                 continue
             max_words_count = self._get_maximum_words_to_replace(len(words_indexes))
             for _ in range(0, max_words_count):
