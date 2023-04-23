@@ -37,8 +37,8 @@ def get_morphed_words_to_keys(answer_keys: tuple) -> dict[str, str]:
         parsed_word = morph.parse(answer_key)[0]
         for item in parsed_word.lexeme:
             morphed_words_to_keys[item.word] = answer_key
-    print("called")
     return morphed_words_to_keys
+
 
 class AnswerHandler(AbstractHandler):
     @property
