@@ -1,6 +1,5 @@
 import random
 import re
-from functools import lru_cache
 
 import pymorphy2
 from sqlalchemy import and_
