@@ -22,23 +22,8 @@ async def test_tokenize():
 @pytest.mark.parametrize(
     "text",
     [
-        (
-            "В чем разница между доктором физико-математических наук и большой пиццей?\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            ".\n"
-            "Большая пицца способна накормить семью из четырех человек."
-        ),
+        "some message?\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\n.\nfooter message.",
+        "some message \n\nfooter message",
     ],
 )
 async def test_morph_corner_cases(db, dictionary_entity_factory, member_service, message_service, mocker, text):

@@ -46,11 +46,11 @@ class MessageSender:
                 message,
             ]
 
-    def _fit_in_messages(self, message: BaseAnswerSchema | TextAnswerSchema) -> list[TextAnswerSchema]:
+    def _fit_in_messages(self) -> list[TextAnswerSchema]:
         """
         thx for Roman Kitaev for this code
         """
-        lines = message.text.splitlines()
+        lines = self.message.text.splitlines(keepends=1)
         messages = [[]]
         for line in lines:
             offset = 0
@@ -59,15 +59,14 @@ class MessageSender:
                 offset += MESSAGE_LEN_LIMIT
                 if not chunk:
                     break
-
                 if sum(len(x) for x in messages[-1]) + len(chunk) > MESSAGE_LEN_LIMIT:
                     messages.append([])
                 messages[-1].append(chunk)
         return [
             TextAnswerSchema(
-                text="\n".join(lines),
-                chat_id=message.chat_id,
-                reply_to_message_id=message.reply_to_message_id,
+                text="".join(lines),
+                chat_id=self.message.chat_id,
+                reply_to_message_id=self.message.reply_to_message_id,
             )
             for lines in messages
             if lines
