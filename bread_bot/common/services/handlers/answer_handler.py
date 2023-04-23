@@ -1,6 +1,7 @@
 import random
 import re
 
+import pymorphy2
 from sqlalchemy import and_
 
 from bread_bot.common.exceptions.base import NextStepException
@@ -25,13 +26,15 @@ from bread_bot.common.utils.structs import (
     AnswerEntityContentTypesEnum,
 )
 
+morph = pymorphy2.MorphAnalyzer()
+
 
 class AnswerHandler(AbstractHandler):
     @property
     def condition(self) -> bool:
         return self.message_service and self.message_service.message and self.message_service.message.text
 
-    def find_keys(self, keys: list, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
+    def _find_keys(self, keys, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
             case AnswerEntityReactionTypesEnum.SUBSTRING:
@@ -59,32 +62,7 @@ class AnswerHandler(AbstractHandler):
         if not self.default_answer_pack:
             raise NextStepException("Отсутствуют пакеты с ответами")
 
-    async def process_message(
-        self,
-        reaction_type: AnswerEntityReactionTypesEnum,
-        message_text: str | None = None,
-    ) -> BaseAnswerSchema:
-        answer_keys = await AnswerEntity.get_keys(
-            db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
-        )
-        keys = self.find_keys(keys=answer_keys, reaction_type=reaction_type, message_text=message_text)
-        results = None
-        for key in keys:
-            results = await AnswerEntity.async_filter(
-                db=self.db,
-                where=and_(
-                    AnswerEntity.pack_id == self.default_answer_pack.id,
-                    AnswerEntity.reaction_type == reaction_type,
-                    AnswerEntity.key == key,
-                ),
-            )
-            if results:
-                break
-
-        if not results:
-            raise NextStepException("Значения не найдено")
-
-        result: AnswerEntity = random.choice(results)
+    def _choose_content(self, result: AnswerEntity):
         base_message_params = dict(
             reply_to_message_id=self.message_service.message.message_id,
             chat_id=self.message_service.message.chat.id,
@@ -106,6 +84,44 @@ class AnswerHandler(AbstractHandler):
                 return VideoNoteAnswerSchema(**base_message_params, video_note=result.value)
             case _:
                 raise NextStepException("Полученный тип контента не подлежит ответу")
+
+    async def process_message(
+        self,
+        reaction_type: AnswerEntityReactionTypesEnum,
+        message_text: str | None = None,
+    ) -> BaseAnswerSchema:
+        answer_keys = await AnswerEntity.get_keys(
+            db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
+        )
+        morphed_words_to_keys = {}
+        for answer_key in answer_keys:
+            parsed_word = morph.parse(answer_key)[0]
+            for item in parsed_word.lexeme:
+                morphed_words_to_keys[item.word] = answer_key
+
+        if not morphed_words_to_keys:
+            raise NextStepException("Значения не найдено")
+
+        keys = self._find_keys(
+            keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
+        )
+        results = None
+        for key in keys:
+            results = await AnswerEntity.async_filter(
+                db=self.db,
+                where=and_(
+                    AnswerEntity.pack_id == self.default_answer_pack.id,
+                    AnswerEntity.reaction_type == reaction_type,
+                    AnswerEntity.key == morphed_words_to_keys[key],
+                ),
+            )
+            if results:
+                break
+
+        if not results:
+            raise NextStepException("Значения не найдено")
+
+        return self._choose_content(random.choice(results))
 
     async def process(self) -> BaseAnswerSchema:
         raise NextStepException("Базовый класс")

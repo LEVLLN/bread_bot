@@ -1,7 +1,7 @@
 import pytest
 
 from bread_bot.common.exceptions.base import NextStepException
-from bread_bot.common.models import AnswerPack, AnswerPacksToChats
+from bread_bot.common.models import AnswerPack, AnswerPacksToChats, DictionaryEntity
 from bread_bot.common.schemas.bread_bot_answers import (
     TextAnswerSchema,
     StickerAnswerSchema,
@@ -10,7 +10,8 @@ from bread_bot.common.schemas.bread_bot_answers import (
     GifAnswerSchema,
 )
 from bread_bot.common.services.handlers.answer_handler import (
-    SubstringAnswerHandler, TriggerAnswerHandler,
+    SubstringAnswerHandler,
+    TriggerAnswerHandler,
     PictureAnswerHandler,
 )
 from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
@@ -115,6 +116,52 @@ class TestAnswerHandler:
 
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "my_concrete_value"
+
+    @pytest.mark.parametrize(
+        "morph_text, entity_key, raw_word_in_text",
+        [
+            ("слова", "слово", "слову"),
+            ("делать", "делаю", "делавший"),
+            ("красивый", "красивая", "красивое"),
+            ("зариф", "зарифу", "зарифа"),
+            ("батарейка", "батарейка", "батарейка"),
+            ("батарейка", "батарейка", "батарейки"),
+            ("батарейка", "батарейки", "батарейка"),
+            ("батарейки", "батарейка", "батарейка"),
+            ("some_key", "some_key", "some_key"),
+        ],
+    )
+    async def test_process_concrete_substring_in_morph(
+        self,
+        db,
+        prepare_data,
+        text_entity_factory,
+        based_pack,
+        substring_answer_handler,
+        dictionary_entity_factory,
+        morph_text,
+        entity_key,
+        raw_word_in_text,
+    ):
+        await dictionary_entity_factory(chat_id=substring_answer_handler.member_service.chat.id, value=morph_text)
+        assert await DictionaryEntity.async_filter(
+            db, DictionaryEntity.chat_id == substring_answer_handler.member_service.chat.id
+        )
+        await text_entity_factory(
+            key=entity_key,
+            value="concrete_value",
+            pack_id=based_pack.id,
+            reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
+        )
+        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
+            db, substring_answer_handler.member_service.chat.id
+        )
+        substring_answer_handler.message_service.message.text = f"I finding {raw_word_in_text} in message"
+
+        result = await substring_answer_handler.process()
+
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "concrete_value"
 
     async def test_process_picture(self, db, prepare_data, picture_answer_handler, member_service, mocker):
         mocker.patch("bread_bot.common.services.handlers.answer_handler.random.random", return_value=0.15)
