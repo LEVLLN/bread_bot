@@ -29,14 +29,29 @@ from bread_bot.common.utils.structs import (
 
 morph = pymorphy2.MorphAnalyzer()
 
+morphed_keys_cache = {}
 
-@lru_cache()
-def get_morphed_words_to_keys(answer_keys: tuple) -> dict[str, str]:
+
+def get_morphed_words_to_keys(
+    chat_id: int, reaction_type: AnswerEntityReactionTypesEnum, answer_keys: tuple
+) -> dict[str, str]:
+    if chat_id in morphed_keys_cache:
+        if reaction_type.value in morphed_keys_cache[chat_id]:
+            if morphed_keys_cache[chat_id][reaction_type.value]["key"] == answer_keys:
+                return morphed_keys_cache[chat_id][reaction_type.value]["value"]
+
     morphed_words_to_keys = {}
     for answer_key in answer_keys:
         parsed_word = morph.parse(answer_key)[0]
         for item in parsed_word.lexeme:
             morphed_words_to_keys[item.word] = answer_key
+
+    morphed_keys_cache[chat_id] = {
+        reaction_type.value: {
+            "key": answer_keys,
+            "value": morphed_words_to_keys,
+        }
+    }
     return morphed_words_to_keys
 
 
@@ -104,7 +119,7 @@ class AnswerHandler(AbstractHandler):
         answer_keys = tuple(
             await AnswerEntity.get_keys(db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type)
         )
-        morphed_words_to_keys = get_morphed_words_to_keys(answer_keys)
+        morphed_words_to_keys = get_morphed_words_to_keys(self.member_service.chat.id, reaction_type, answer_keys)
 
         if not morphed_words_to_keys:
             raise NextStepException("Значения не найдено")

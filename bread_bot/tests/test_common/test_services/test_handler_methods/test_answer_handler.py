@@ -1,7 +1,9 @@
+import functools
+
 import pytest
 
 from bread_bot.common.exceptions.base import NextStepException
-from bread_bot.common.models import AnswerPack, AnswerPacksToChats, DictionaryEntity
+from bread_bot.common.models import AnswerPack, AnswerPacksToChats, DictionaryEntity, AnswerEntity
 from bread_bot.common.schemas.bread_bot_answers import (
     TextAnswerSchema,
     StickerAnswerSchema,
@@ -9,10 +11,12 @@ from bread_bot.common.schemas.bread_bot_answers import (
     PhotoAnswerSchema,
     GifAnswerSchema,
 )
+from bread_bot.common.services.handlers import answer_handler
 from bread_bot.common.services.handlers.answer_handler import (
     SubstringAnswerHandler,
     TriggerAnswerHandler,
     PictureAnswerHandler,
+    morphed_keys_cache,
 )
 from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
 
@@ -116,6 +120,47 @@ class TestAnswerHandler:
 
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "my_concrete_value"
+
+    async def test_process_repeat_morph_words(
+        self,
+        db,
+        text_entity_factory,
+        based_pack,
+        substring_answer_handler,
+        mocker,
+    ):
+        await AnswerEntity.async_delete(db, where=None)
+        cache_mock = mocker.spy(answer_handler.morph, "parse")
+        await text_entity_factory(
+            key="concrete_key",
+            value="my_concrete_value",
+            pack_id=based_pack.id,
+            reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
+        )
+        substring_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(
+            db, substring_answer_handler.member_service.chat.id
+        )
+        substring_answer_handler.message_service.message.text = "I finding concrete_key in message"
+
+        assert morphed_keys_cache == {}
+        result = await substring_answer_handler.process()
+        assert morphed_keys_cache[substring_answer_handler.member_service.chat.id][
+            AnswerEntityReactionTypesEnum.SUBSTRING.value
+        ] == {"key": ("concrete_key",), "value": {"concrete_key": "concrete_key"}}
+
+        await text_entity_factory(
+            key="concrete_key",
+            value="my_concrete_value",
+            pack_id=based_pack.id,
+            reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
+        )
+        await substring_answer_handler.process()
+        assert isinstance(result, TextAnswerSchema)
+        assert result.text == "my_concrete_value"
+        assert cache_mock.called
+        assert morphed_keys_cache[substring_answer_handler.member_service.chat.id][
+            AnswerEntityReactionTypesEnum.SUBSTRING.value
+        ] == {"key": ("concrete_key", "concrete_key"), "value": {"concrete_key": "concrete_key"}}
 
     @pytest.mark.parametrize(
         "morph_text, entity_key, raw_word_in_text",
