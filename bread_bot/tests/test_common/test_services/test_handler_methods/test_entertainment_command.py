@@ -149,17 +149,13 @@ class TestEntertainmentCommand:
         rest_text,
         expected_result,
     ):
-        base_title = (
-            "Привет, меня зовут Хлеб.\nМожете называть меня хлебушек,хлеб,bread_bot\n"
-            "Выбери любую команду из списка и введи 'Хлеб help <имя_команды>', перечень команд ниже:\n"
-        )
         command_instance.rest_text = rest_text
         command_instance.command = EntertainmentCommandsEnum.HELP
         command_instance.raw_command = "help"
 
         result = await entertainment_command_method.execute()
 
-        assert result.text == f"{base_title}{expected_result}"
+        assert result.text == expected_result
 
     @pytest.mark.parametrize(
         "command, raw_command, expected_result",

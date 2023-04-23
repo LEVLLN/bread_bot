@@ -172,20 +172,18 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         return super()._return_answer(f"{result}")
 
     def help(self):
-        result = (
-            f"Привет, меня зовут {BOT_NAME}.\nМожете называть меня {ALTER_NAMES}\n"
-            f"Выбери любую команду из списка и введи '{BOT_NAME} help <имя_команды>', перечень команд ниже:\n"
-        )
-
         if not self.command_instance.rest_text:
-            result += self._show_all_commands()
+            result = (
+                f"Привет, меня зовут {BOT_NAME}.\nМожете называть меня {ALTER_NAMES}\nВыбери любую команду из списка и"
+                f" введи '{BOT_NAME} help <имя_команды>', перечень команд ниже:\n\n{self._show_all_commands()}"
+            )
             return super()._return_answer(result)
 
         command = CommandSettings().alias_to_settings.get(self.command_instance.rest_text)
         if not command:
             return super()._return_answer(self._show_all_commands())
 
-        result += f"{'Команды' if len(command.aliases) > 1 else 'Команда'}: [{', '.join(command.aliases)}]\n"
+        result = f"{'Команды' if len(command.aliases) > 1 else 'Команда'}: [{', '.join(command.aliases)}]\n"
         if command.description:
             result += f"   Описание: {command.description}\n"
         if command.available_parameters:
