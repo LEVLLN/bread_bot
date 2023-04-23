@@ -94,7 +94,7 @@ class MessageSender:
                 method = self.telegram_client.send_video_note
             case TextAnswerSchema():
                 method = self.telegram_client.send_message_method
-                messages = self._fit_in_messages(self.message)
+                messages = self._fit_in_messages()
             case _:
                 logger.error("Unknown type to send of obj: %s", self.message)
                 return None
