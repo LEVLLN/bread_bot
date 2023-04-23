@@ -29,7 +29,7 @@
 | bread\_bot/common/schemas/telegram\_messages.py                                        |       56 |        0 |    100.0% |           |
 | bread\_bot/common/services/commands/command\_parser.py                                 |      114 |       12 |     89.5% |64-65, 107-108, 159-163, 200, 206-207 |
 | bread\_bot/common/services/commands/command\_settings.py                               |       28 |        0 |    100.0% |           |
-| bread\_bot/common/services/handlers/answer\_handler.py                                 |      109 |       14 |     87.2% |45-46, 49, 75, 82-87, 129, 134, 150, 174 |
+| bread\_bot/common/services/handlers/answer\_handler.py                                 |      108 |       15 |     86.1% |55-56, 59, 85, 87, 92-97, 129, 134, 150, 174 |
 | bread\_bot/common/services/handlers/command\_handler.py                                |       28 |        9 |     67.9% | 23, 35-42 |
 | bread\_bot/common/services/handlers/command\_methods/admin\_command\_method.py         |      118 |       13 |     89.0% |40, 46, 55-56, 59, 96, 107, 145, 149, 167-168, 192, 213 |
 | bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |       25 |     54.5% |     74-99 |
@@ -56,7 +56,7 @@
 | bread\_bot/utils/middlewares.py                                                        |      122 |       11 |     91.0% |80, 103-104, 203, 214-216, 239-240, 248-249 |
 | bread\_bot/utils/testing\_tools.py                                                     |       35 |        4 |     88.6% |     35-39 |
 | bread\_bot/utils/utils\_schemas.py                                                     |       38 |        0 |    100.0% |           |
-|                                                                              **TOTAL** | **2216** |  **325** | **85.3%** |           |
+|                                                                              **TOTAL** | **2215** |  **326** | **85.3%** |           |
 
 
 ## Setup coverage badge
