@@ -36,7 +36,9 @@ class AnswerHandler(AbstractHandler):
     def condition(self) -> bool:
         return self.message_service and self.message_service.message and self.message_service.message.text
 
-    def _find_keys(self, keys, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None):
+    def _find_keys(
+        self, keys, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None
+    ) -> list[str]:
         """Поиск ключей из БД среди сообщения"""
         match reaction_type:
             case AnswerEntityReactionTypesEnum.SUBSTRING:
@@ -120,6 +122,7 @@ class AnswerHandler(AbstractHandler):
             keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
         )
         results = None
+        random.shuffle(keys)
         for key in keys:
             results = await AnswerEntity.async_filter(
                 db=self.db,
