@@ -157,9 +157,6 @@ class SubstringAnswerHandler(AnswerHandler):
 class TriggerAnswerHandler(AnswerHandler):
     async def process(self) -> BaseAnswerSchema:
         self.check_process_ability()
-        if random.random() > self.default_answer_pack.answer_chance / 100:
-            raise NextStepException("Пропуск ответа по проценту срабатывания")
-
         return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.TRIGGER)
 
 
