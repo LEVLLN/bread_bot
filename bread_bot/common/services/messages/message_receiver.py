@@ -11,6 +11,7 @@ from bread_bot.common.services.handlers.answer_handler import (
     TriggerAnswerHandler,
     SubstringAnswerHandler,
     PictureAnswerHandler,
+    MorphAnswerHandler,
 )
 from bread_bot.common.services.handlers.command_handler import CommandHandler
 from bread_bot.common.services.handlers.handler import EmptyResultHandler
@@ -70,6 +71,8 @@ class MessageReceiver:
         )
 
         handler = CommandHandler(
-            TriggerAnswerHandler(SubstringAnswerHandler(PictureAnswerHandler(EmptyResultHandler(None))))
+            TriggerAnswerHandler(
+                SubstringAnswerHandler(PictureAnswerHandler(MorphAnswerHandler(EmptyResultHandler(None))))
+            )
         )
         return await handler.handle(self.db, message_service, member_service, default_answer_pack)

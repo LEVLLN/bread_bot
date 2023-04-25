@@ -4,7 +4,7 @@ import re
 import pymorphy2
 from sqlalchemy import and_
 
-from bread_bot.common.exceptions.base import NextStepException
+from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import (
     AnswerEntity,
 )
@@ -20,6 +20,7 @@ from bread_bot.common.schemas.bread_bot_answers import (
 )
 from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.services.member_service import ExternalMemberService
+from bread_bot.common.services.morph_service import MorphService
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
     AnswerEntityReactionTypesEnum,
@@ -184,3 +185,26 @@ class PictureAnswerHandler(AnswerHandler):
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
         return await self.process_picture()
+
+
+class MorphAnswerHandler(AnswerHandler):
+    async def process_morph(self) -> BaseAnswerSchema:
+        try:
+            result = await MorphService(self.db, chat_id=self.member_service.chat.id).morph_text(
+                self.message_service.message.text,
+            )
+        except RaiseUpException as e:
+            raise NextStepException(str(e))
+        else:
+            if result == self.message_service.message.text:
+                raise NextStepException("Нового значения не сгенерировалось")
+            return TextAnswerSchema(
+                text=result,
+                reply_to_message_id=self.message_service.message.message_id,
+                chat_id=self.message_service.message.chat.id,
+            )
+
+    async def process(self) -> BaseAnswerSchema:
+        if random.random() > self.default_answer_pack.answer_chance / 100:
+            raise NextStepException("Пропуск ответа по проценту срабатывания")
+        return await self.process_morph()

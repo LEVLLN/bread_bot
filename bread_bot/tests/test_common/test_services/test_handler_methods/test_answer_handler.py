@@ -1,9 +1,7 @@
-import functools
-
 import pytest
 
 from bread_bot.common.exceptions.base import NextStepException
-from bread_bot.common.models import AnswerPack, AnswerPacksToChats, DictionaryEntity, AnswerEntity
+from bread_bot.common.models import AnswerPack, AnswerPacksToChats, DictionaryEntity
 from bread_bot.common.schemas.bread_bot_answers import (
     TextAnswerSchema,
     StickerAnswerSchema,
@@ -11,12 +9,11 @@ from bread_bot.common.schemas.bread_bot_answers import (
     PhotoAnswerSchema,
     GifAnswerSchema,
 )
-from bread_bot.common.services.handlers import answer_handler
 from bread_bot.common.services.handlers.answer_handler import (
     SubstringAnswerHandler,
     TriggerAnswerHandler,
     PictureAnswerHandler,
-    morphed_keys_cache,
+    MorphAnswerHandler,
 )
 from bread_bot.common.utils.structs import AnswerEntityReactionTypesEnum
 
@@ -66,6 +63,16 @@ class TestAnswerHandler:
         picture_answer_handler.db = db
         picture_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
         yield picture_answer_handler
+
+    @pytest.fixture
+    async def morph_answer_handler(self, db, member_service, message_service, reply_photo):
+        message_service.message.text = "скакать от счастья"
+        morph_answer_handler = MorphAnswerHandler(next_handler=None)
+        morph_answer_handler.member_service = member_service
+        morph_answer_handler.message_service = message_service
+        morph_answer_handler.db = db
+        morph_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
+        yield morph_answer_handler
 
     @pytest.fixture
     async def substring_answer_handler(self, db, member_service, message_service, prepare_data):
@@ -171,6 +178,70 @@ class TestAnswerHandler:
         mocker.patch("bread_bot.common.services.handlers.answer_handler.random.random", return_value=0.15)
         result = await picture_answer_handler.process()
         assert result.text == f"Похоже на {member_service.member.first_name} {member_service.member.last_name}"
+
+    async def test_process_morph(
+        self,
+        db,
+        prepare_data,
+        morph_answer_handler,
+        member_service,
+        dictionary_entity_factory,
+        mocker,
+    ):
+        mocker.patch(
+            "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace",
+            return_value=100,
+        )
+        await dictionary_entity_factory(chat_id=member_service.chat.id, value="прыгать")
+        assert await DictionaryEntity.async_filter(
+            db, DictionaryEntity.chat_id == morph_answer_handler.member_service.chat.id
+        )
+
+        result = await morph_answer_handler.process()
+
+        assert result.text == "прыгать от счастья"
+
+    async def test_process_not_morphed(
+        self,
+        db,
+        prepare_data,
+        morph_answer_handler,
+        member_service,
+        dictionary_entity_factory,
+        mocker,
+    ):
+        mocker.patch(
+            "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace",
+            return_value=100,
+        )
+        await dictionary_entity_factory(chat_id=member_service.chat.id, value="красивый")
+        assert await DictionaryEntity.async_filter(
+            db, DictionaryEntity.chat_id == morph_answer_handler.member_service.chat.id
+        )
+
+        with pytest.raises(NextStepException) as error:
+            await morph_answer_handler.process()
+        assert error.value.args[0] == "Нового значения не сгенерировалось"
+
+    async def test_process_morph_values_not_exists(
+        self,
+        db,
+        prepare_data,
+        morph_answer_handler,
+        member_service,
+        mocker,
+    ):
+        mocker.patch(
+            "bread_bot.common.services.morph_service.MorphService._get_maximum_words_to_replace",
+            return_value=100,
+        )
+        with pytest.raises(NextStepException) as error:
+            await morph_answer_handler.process()
+        assert (
+            error.value.args[0]
+            == "Словарь пуст. Пополните словарь командой:\n'Хлеб добавь бред слово1, слово2, "
+            "слово3'\n\nПосле добавления текст начнет гибко меняться на добавленные слова"
+        )
 
     async def test_process_concrete_gif_entity(
         self,
