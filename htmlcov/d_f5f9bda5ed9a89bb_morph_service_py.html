@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for bread_bot/common/services/morph_service.py: 96.7%</title>
+    <title>Coverage for bread_bot/common/services/morph_service.py: 97.8%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>bread_bot/common/services/morph_service.py</b>:
-            <span class="pc_cov">96.7%</span>
+            <span class="pc_cov">97.8%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">90 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">87<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">3<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">88<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">2<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_b34f4db8d62e8f41_functions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.3">coverage.py v7.2.3</a>,
-            created at 2023-04-24 00:11 +0000
+            created at 2023-04-25 20:38 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -143,7 +143,7 @@
     <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">        <span class="nam">lines_with_words</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">tokenize_text</span><span class="op">(</span><span class="nam">text</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t">        <span class="nam">dictionary_words</span> <span class="op">=</span> <span class="key">await</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_get_dictionary_words</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="nam">dictionary_words</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">            <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">            <span class="key">raise</span> <span class="nam">RaiseUpException</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">                <span class="str">"&#1057;&#1083;&#1086;&#1074;&#1072;&#1088;&#1100; &#1087;&#1091;&#1089;&#1090;. &#1055;&#1086;&#1087;&#1086;&#1083;&#1085;&#1080;&#1090;&#1077; &#1089;&#1083;&#1086;&#1074;&#1072;&#1088;&#1100; &#1082;&#1086;&#1084;&#1072;&#1085;&#1076;&#1086;&#1081;:\n"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                <span class="str">"'&#1061;&#1083;&#1077;&#1073; &#1076;&#1086;&#1073;&#1072;&#1074;&#1100; &#1073;&#1088;&#1077;&#1076; &#1089;&#1083;&#1086;&#1074;&#1086;1, &#1089;&#1083;&#1086;&#1074;&#1086;2, &#1089;&#1083;&#1086;&#1074;&#1086;3'\n\n"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">                <span class="str">"&#1055;&#1086;&#1089;&#1083;&#1077; &#1076;&#1086;&#1073;&#1072;&#1074;&#1083;&#1077;&#1085;&#1080;&#1103; &#1090;&#1077;&#1082;&#1089;&#1090; &#1085;&#1072;&#1095;&#1085;&#1077;&#1090; &#1075;&#1080;&#1073;&#1082;&#1086; &#1084;&#1077;&#1085;&#1103;&#1090;&#1100;&#1089;&#1103; &#1085;&#1072; &#1076;&#1086;&#1073;&#1072;&#1074;&#1083;&#1077;&#1085;&#1085;&#1099;&#1077; &#1089;&#1083;&#1086;&#1074;&#1072;"</span>&nbsp;</span><span class="r"></span></p>
@@ -219,7 +219,7 @@
             <a id="nextFileLink" class="nav" href="d_b34f4db8d62e8f41_functions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.3">coverage.py v7.2.3</a>,
-            created at 2023-04-24 00:11 +0000
+            created at 2023-04-25 20:38 +0000
         </p>
     </div>
 </footer>
