@@ -882,7 +882,7 @@ class TestMorphAnswerChance(BaseAdminCommand):
     ):
         command_value_instance.value = answer_chance
         admin_command_method.command_instance = command_value_instance
-        assert admin_command_method.member_service.chat.morph_answer_chance == 100
+        assert admin_command_method.member_service.chat.morph_answer_chance == 15
 
         with pytest.raises(RaiseUpException) as error:
             await admin_command_method.execute()
@@ -891,4 +891,4 @@ class TestMorphAnswerChance(BaseAdminCommand):
             db=db, where=Chat.id == admin_command_method.member_service.chat.id
         )
         assert error.value.args[0] == "Некорректное значение. Необходимо ввести число от 0 до 100"
-        assert excepted_answer_pack.morph_answer_chance == 100
+        assert excepted_answer_pack.morph_answer_chance == 15
