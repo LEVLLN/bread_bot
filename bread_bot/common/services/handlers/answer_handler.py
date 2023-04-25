@@ -186,14 +186,15 @@ class PictureAnswerHandler(AnswerHandler):
 
 class MorphAnswerHandler(AnswerHandler):
     async def process_morph(self) -> BaseAnswerSchema:
+        text = self.message_service.message.text or self.message_service.message.caption
+        if not text:
+            raise NextStepException("Контент не поддерживается")
         try:
-            result = await MorphService(self.db, chat_id=self.member_service.chat.id).morph_text(
-                self.message_service.message.text,
-            )
+            result = await MorphService(self.db, chat_id=self.member_service.chat.id).morph_text(text)
         except RaiseUpException as e:
             raise NextStepException(str(e))
         else:
-            if result == self.message_service.message.text:
+            if result == text:
                 raise NextStepException("Нового значения не сгенерировалось")
             return TextAnswerSchema(
                 text=result,
