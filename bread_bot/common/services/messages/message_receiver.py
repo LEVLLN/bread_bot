@@ -10,7 +10,6 @@ from bread_bot.common.schemas.telegram_messages import StandardBodySchema
 from bread_bot.common.services.handlers.answer_handler import (
     TriggerAnswerHandler,
     SubstringAnswerHandler,
-    PictureAnswerHandler,
     MorphAnswerHandler,
 )
 from bread_bot.common.services.handlers.command_handler import CommandHandler
