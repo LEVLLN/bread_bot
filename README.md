@@ -29,7 +29,7 @@
 | bread\_bot/common/schemas/telegram\_messages.py                                        |       56 |        0 |    100.0% |           |
 | bread\_bot/common/services/commands/command\_parser.py                                 |      114 |       12 |     89.5% |64-65, 107-108, 159-163, 200, 206-207 |
 | bread\_bot/common/services/commands/command\_settings.py                               |       28 |        0 |    100.0% |           |
-| bread\_bot/common/services/handlers/answer\_handler.py                                 |      128 |       16 |     87.5% |49-50, 53, 79, 83, 86-91, 98, 140, 145, 182, 191 |
+| bread\_bot/common/services/handlers/answer\_handler.py                                 |      128 |       16 |     87.5% |49-50, 53, 64, 83, 86-91, 98, 140, 145, 182, 191 |
 | bread\_bot/common/services/handlers/command\_handler.py                                |       28 |        9 |     67.9% | 23, 35-42 |
 | bread\_bot/common/services/handlers/command\_methods/admin\_command\_method.py         |      133 |       15 |     88.7% |41, 47, 58-59, 62, 99, 110, 148, 164, 174-175, 186-187, 211, 232 |
 | bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |       25 |     54.5% |     74-99 |
@@ -38,7 +38,7 @@
 | bread\_bot/common/services/handlers/command\_methods/member\_command\_method.py        |       68 |        4 |     94.1% |47-48, 80, 83 |
 | bread\_bot/common/services/handlers/handler.py                                         |       36 |        1 |     97.2% |        26 |
 | bread\_bot/common/services/member\_service.py                                          |       98 |       12 |     87.8% |32, 53-54, 56-62, 75-76, 156, 158, 160 |
-| bread\_bot/common/services/messages/message\_receiver.py                               |       44 |        2 |     95.5% |    41, 52 |
+| bread\_bot/common/services/messages/message\_receiver.py                               |       44 |        2 |     95.5% |    40, 51 |
 | bread\_bot/common/services/messages/message\_sender.py                                 |       57 |       29 |     49.1% |33-45, 63, 79-102 |
 | bread\_bot/common/services/messages/message\_service.py                                |       47 |        9 |     80.9% |51-53, 55-56, 60-64 |
 | bread\_bot/common/services/morph\_service.py                                           |       90 |        2 |     97.8% |    42, 98 |
