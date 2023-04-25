@@ -71,8 +71,6 @@ class MessageReceiver:
         )
 
         handler = CommandHandler(
-            TriggerAnswerHandler(
-                SubstringAnswerHandler(PictureAnswerHandler(MorphAnswerHandler(EmptyResultHandler(None))))
-            )
+            TriggerAnswerHandler(SubstringAnswerHandler(MorphAnswerHandler(EmptyResultHandler(None))))
         )
         return await handler.handle(self.db, message_service, member_service, default_answer_pack)
