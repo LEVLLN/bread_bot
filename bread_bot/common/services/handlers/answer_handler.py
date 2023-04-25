@@ -202,6 +202,6 @@ class MorphAnswerHandler(AnswerHandler):
             )
 
     async def process(self) -> BaseAnswerSchema:
-        if random.random() > self.default_answer_pack.answer_chance / 100:
+        if random.random() > self.member_service.chat.morph_answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
         return await self.process_morph()

@@ -1,6 +1,6 @@
 import logging
 
-from sqlalchemy import Column, String, BigInteger
+from sqlalchemy import Column, String, BigInteger, SmallInteger
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins
@@ -13,6 +13,7 @@ class Chat(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CRUDMixin)
 
     chat_id = Column(BigInteger, nullable=False, unique=True)
     name = Column(String(255), nullable=True)
+    morph_answer_chance = Column(SmallInteger, default=15, nullable=False)
 
     members = relationship("ChatToMember", back_populates="chat")
     answer_packs = relationship("AnswerPacksToChats", back_populates="chats")

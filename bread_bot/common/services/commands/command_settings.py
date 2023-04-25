@@ -144,6 +144,16 @@ class CommandSettings:
                 f"{BOT_NAME} покажи ключи",
             ],
         ),
+        CommandSettingsSchema(
+            aliases=["процент бреда"],
+            command=AdminCommandsEnum.MORPH_ANSWER_CHANCE,
+            to_find_for_values=True,
+            description="Показ / Установка процента срабатывания автоматического бреда сообщений",
+            examples=[
+                f"{BOT_NAME} процент бреда",
+                f"{BOT_NAME} процент бреда 15",
+            ],
+        ),
         # MEMBER COMMANDS
         CommandSettingsSchema(
             aliases=["статистика", "стата"],

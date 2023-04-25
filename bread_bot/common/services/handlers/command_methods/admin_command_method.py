@@ -6,6 +6,7 @@ from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
 from bread_bot.common.models import (
     AnswerPack,
     AnswerEntity,
+    Chat,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
@@ -52,6 +53,8 @@ class AdminCommandMethod(BaseCommandMethod):
                 return await self.say()
             case AdminCommandsEnum.SHOW_KEYS:
                 return await self.show_keys()
+            case AdminCommandsEnum.MORPH_ANSWER_CHANCE:
+                return await self.handle_morph_answer_chance()
             case _:
                 raise NextStepException("Не найдена команда")
 
@@ -144,6 +147,18 @@ class AdminCommandMethod(BaseCommandMethod):
         """Удаление по ключам и по ключам-значениям"""
         return super()._return_answer("Фича временно отключена. В процессе доработки.")
 
+    def _get_chance_value(self) -> int:
+        chance_value = self.command_instance.value
+        error_message = "Некорректное значение. Необходимо ввести число от 0 до 100"
+        try:
+            value = int(chance_value.strip())
+        except (ValueError, AttributeError):
+            raise RaiseUpException(error_message)
+        else:
+            if value > 100 or value < 0:
+                raise RaiseUpException(error_message)
+            return value
+
     async def handle_answer_chance(self):
         if not self.default_answer_pack:
             self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
@@ -151,19 +166,23 @@ class AdminCommandMethod(BaseCommandMethod):
             )
         match self.command_instance:
             case ValueCommandSchema():
-                chance_value = self.command_instance.value
-                error_message = "Некорректное значение. Необходимо ввести число от 0 до 100"
-                try:
-                    value = int(chance_value.strip())
-                except (ValueError, AttributeError):
-                    return super()._return_answer(error_message)
-                if value > 100 or value < 0:
-                    return super()._return_answer(error_message)
-                self.default_answer_pack.answer_chance = value
+                self.default_answer_pack.answer_chance = self._get_chance_value()
                 await AnswerPack.async_add(db=self.db, instance=self.default_answer_pack)
                 return super()._return_answer()
             case CommandSchema():
                 return super()._return_answer(str(self.default_answer_pack.answer_chance))
+            case _:
+                raise RaiseUpException("Не удалось установить процент срабатывания")
+
+    async def handle_morph_answer_chance(self):
+        match self.command_instance:
+            case ValueCommandSchema():
+                chat = self.member_service.chat
+                chat.morph_answer_chance = self._get_chance_value()
+                await Chat.async_add(db=self.db, instance=chat)
+                return super()._return_answer()
+            case CommandSchema():
+                return super()._return_answer(str(self.member_service.chat.morph_answer_chance))
             case _:
                 raise RaiseUpException("Не удалось установить процент срабатывания")
 

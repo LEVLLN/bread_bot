@@ -72,6 +72,7 @@ class TestAnswerHandler:
         morph_answer_handler.message_service = message_service
         morph_answer_handler.db = db
         morph_answer_handler.default_answer_pack = await AnswerPack.get_by_chat_id(db, member_service.chat.id)
+        morph_answer_handler.member_service.chat.morph_answer_chance = 100
         yield morph_answer_handler
 
     @pytest.fixture

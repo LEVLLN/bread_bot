@@ -81,7 +81,7 @@ class TestEntertainmentCommand:
         result = await entertainment_command_method.execute()
 
         assert "1) покажи\n" in result.text
-        assert "13) кто, у кого, кем\n" in result.text
+        assert "14) кто, у кого, кем\n" in result.text
 
     @pytest.mark.parametrize(
         "rest_text, expected_result",

@@ -6,6 +6,7 @@ from bread_bot.common.models import (
     AnswerPack,
     AnswerPacksToChats,
     AnswerEntity,
+    Chat,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
@@ -455,6 +456,7 @@ class TestRemember(BaseAdminCommand):
         )
         assert len(entities) == 2
 
+
 @pytest.mark.skip
 class TestDelete(BaseAdminCommand):
     @pytest.fixture
@@ -675,10 +677,12 @@ class TestAnswerChance(BaseAdminCommand):
         admin_command_method.command_instance = command_value_instance
         assert based_pack.answer_chance == 100
 
-        result = await admin_command_method.execute()
+        with pytest.raises(RaiseUpException) as error:
+            await admin_command_method.execute()
+
         excepted_answer_pack = await AnswerPack.async_first(db=db, where=AnswerPack.id == based_pack.id)
 
-        assert result.text == "Некорректное значение. Необходимо ввести число от 0 до 100"
+        assert error.value.args[0] == "Некорректное значение. Необходимо ввести число от 0 до 100"
         assert excepted_answer_pack.answer_chance == 100
 
 
@@ -777,3 +781,114 @@ class TestSay(BaseAdminCommand):
         result = await admin_command_method.execute()
         assert isinstance(result, TextAnswerSchema)
         assert result.text == "my_value"
+
+
+class TestMorphAnswerChance(BaseAdminCommand):
+    @pytest.fixture
+    async def command_instance(
+        self,
+    ):
+        yield CommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.MORPH_ANSWER_CHANCE,
+            raw_command="процент бреда",
+        )
+
+    @pytest.fixture
+    async def command_value_instance(
+        self,
+    ):
+        yield ValueCommandSchema(
+            header="хлеб",
+            command=AdminCommandsEnum.MORPH_ANSWER_CHANCE,
+            value="100",
+            raw_command="процент бреда 100",
+        )
+
+    @pytest.mark.parametrize(
+        "answer_chance",
+        [
+            "100",
+            "20",
+            "80",
+            "15",
+        ],
+    )
+    async def test_set_morph_answer_chance(
+        self,
+        db,
+        admin_command_method,
+        command_value_instance,
+        based_pack,
+        answer_chance,
+    ):
+        command_value_instance.value = answer_chance
+        admin_command_method.command_instance = command_value_instance
+        assert based_pack.answer_chance == 100
+
+        result = await admin_command_method.execute()
+        excepted_answer_pack = await Chat.async_first(
+            db=db, where=Chat.id == admin_command_method.member_service.chat.id
+        )
+
+        assert result.text in admin_command_method.COMPLETE_MESSAGES
+        assert excepted_answer_pack.morph_answer_chance == int(answer_chance)
+
+    @pytest.mark.parametrize(
+        "answer_chance",
+        [
+            "100",
+            "20",
+            "80",
+            "15",
+        ],
+    )
+    async def test_get_answer_chance(
+        self,
+        db,
+        admin_command_method,
+        command_instance,
+        based_pack,
+        answer_chance,
+    ):
+        admin_command_method.member_service.chat.morph_answer_chance = answer_chance
+        await Chat.async_add(db, admin_command_method.member_service.chat)
+        admin_command_method.command_instance = command_instance
+
+        result = await admin_command_method.execute()
+
+        assert result.text == answer_chance
+
+    @pytest.mark.parametrize(
+        "answer_chance",
+        [
+            "some_string",
+            "-1",
+            "0.11",
+            "101",
+            "140",
+            "100.1",
+            "",
+            None,
+        ],
+    )
+    async def test_invalid_value(
+        self,
+        db,
+        admin_command_method,
+        command_value_instance,
+        based_pack,
+        answer_chance,
+    ):
+        command_value_instance.value = answer_chance
+        admin_command_method.command_instance = command_value_instance
+        assert admin_command_method.member_service.chat.morph_answer_chance == 100
+
+        with pytest.raises(RaiseUpException) as error:
+            await admin_command_method.execute()
+
+        excepted_answer_pack = await Chat.async_first(
+            db=db, where=Chat.id == admin_command_method.member_service.chat.id
+        )
+        assert error.value.args[0] == "Некорректное значение. Необходимо ввести число от 0 до 100"
+        assert excepted_answer_pack.morph_answer_chance == 100
