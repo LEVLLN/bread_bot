@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for bread_bot/common/services/handlers/answer_handler.py: 87.2%</title>
+    <title>Coverage for bread_bot/common/services/handlers/answer_handler.py: 88.8%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>bread_bot/common/services/handlers/answer_handler.py</b>:
-            <span class="pc_cov">87.2%</span>
+            <span class="pc_cov">88.8%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">125 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">109<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">16<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">111<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">14<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_cb25ced56932bb31_command_handler_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.3">coverage.py v7.2.3</a>,
-            created at 2023-04-25 20:56 +0000
+            created at 2023-04-25 21:37 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -158,11 +158,11 @@
     <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">TEXT</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">                <span class="key">return</span> <span class="nam">TextAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">text</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">PICTURE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">                <span class="key">return</span> <span class="nam">PhotoAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">photo</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span> <span class="nam">caption</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">description</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t">                <span class="key">return</span> <span class="nam">PhotoAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">photo</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">,</span> <span class="nam">caption</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">description</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">STICKER</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">                <span class="key">return</span> <span class="nam">StickerAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">sticker</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t">                <span class="key">return</span> <span class="nam">StickerAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">sticker</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VOICE</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">                <span class="key">return</span> <span class="nam">VoiceAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">voice</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t">                <span class="key">return</span> <span class="nam">VoiceAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">voice</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">ANIMATION</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t">                <span class="key">return</span> <span class="nam">GifAnswerSchema</span><span class="op">(</span><span class="op">**</span><span class="nam">base_message_params</span><span class="op">,</span> <span class="nam">animation</span><span class="op">=</span><span class="nam">result</span><span class="op">.</span><span class="nam">value</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t">            <span class="key">case</span> <span class="nam">AnswerEntityContentTypesEnum</span><span class="op">.</span><span class="nam">VIDEO</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -284,8 +284,8 @@
     <p class="pln"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t">    <span class="key">async</span> <span class="key">def</span> <span class="nam">process</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">BaseAnswerSchema</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t">        <span class="key">if</span> <span class="nam">random</span><span class="op">.</span><span class="nam">random</span><span class="op">(</span><span class="op">)</span> <span class="op">></span> <span class="nam">self</span><span class="op">.</span><span class="nam">default_answer_pack</span><span class="op">.</span><span class="nam">answer_chance</span> <span class="op">/</span> <span class="num">100</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">            <span class="key">raise</span> <span class="nam">NextStepException</span><span class="op">(</span><span class="str">"&#1055;&#1088;&#1086;&#1087;&#1091;&#1089;&#1082; &#1086;&#1090;&#1074;&#1077;&#1090;&#1072; &#1087;&#1086; &#1087;&#1088;&#1086;&#1094;&#1077;&#1085;&#1090;&#1091; &#1089;&#1088;&#1072;&#1073;&#1072;&#1090;&#1099;&#1074;&#1072;&#1085;&#1080;&#1103;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t">        <span class="key">if</span> <span class="nam">random</span><span class="op">.</span><span class="nam">random</span><span class="op">(</span><span class="op">)</span> <span class="op">></span> <span class="nam">self</span><span class="op">.</span><span class="nam">member_service</span><span class="op">.</span><span class="nam">chat</span><span class="op">.</span><span class="nam">morph_answer_chance</span> <span class="op">/</span> <span class="num">100</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t">            <span class="key">raise</span> <span class="nam">NextStepException</span><span class="op">(</span><span class="str">"&#1055;&#1088;&#1086;&#1087;&#1091;&#1089;&#1082; &#1086;&#1090;&#1074;&#1077;&#1090;&#1072; &#1087;&#1086; &#1087;&#1088;&#1086;&#1094;&#1077;&#1085;&#1090;&#1091; &#1089;&#1088;&#1072;&#1073;&#1072;&#1090;&#1099;&#1074;&#1072;&#1085;&#1080;&#1103;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t">        <span class="key">return</span> <span class="key">await</span> <span class="nam">self</span><span class="op">.</span><span class="nam">process_morph</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
@@ -296,7 +296,7 @@
             <a id="nextFileLink" class="nav" href="d_cb25ced56932bb31_command_handler_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.3">coverage.py v7.2.3</a>,
-            created at 2023-04-25 20:56 +0000
+            created at 2023-04-25 21:37 +0000
         </p>
     </div>
 </footer>
