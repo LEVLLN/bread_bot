@@ -33,11 +33,11 @@
 | bread\_bot/common/services/handlers/command\_handler.py                                |       28 |        9 |     67.9% | 23, 35-42 |
 | bread\_bot/common/services/handlers/command\_methods/admin\_command\_method.py         |      151 |       15 |     90.1% |50, 67-68, 71, 108, 119, 164-165, 198, 208-209, 220-221, 245, 265 |
 | bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |       25 |     54.5% |     74-99 |
-| bread\_bot/common/services/handlers/command\_methods/entertainment\_command\_method.py |      155 |       72 |     53.5% |39-52, 93-106, 109-127, 130-143, 146-149, 152-155, 158-161, 164-172, 184 |
+| bread\_bot/common/services/handlers/command\_methods/entertainment\_command\_method.py |      156 |       72 |     53.8% |40-53, 94-107, 110-128, 131-144, 151-154, 157-160, 163-166, 169-177, 189 |
 | bread\_bot/common/services/handlers/command\_methods/integration\_command\_method.py   |       41 |        2 |     95.1% |     21-22 |
 | bread\_bot/common/services/handlers/command\_methods/member\_command\_method.py        |       68 |        4 |     94.1% |47-48, 80, 83 |
 | bread\_bot/common/services/handlers/handler.py                                         |       36 |        1 |     97.2% |        26 |
-| bread\_bot/common/services/member\_service.py                                          |      101 |       12 |     88.1% |32, 53-54, 56-62, 75-76, 156, 158, 160 |
+| bread\_bot/common/services/member\_service.py                                          |      100 |       12 |     88.0% |31, 52-53, 55-61, 74-75, 155, 157, 159 |
 | bread\_bot/common/services/messages/message\_receiver.py                               |       44 |        2 |     95.5% |    40, 51 |
 | bread\_bot/common/services/messages/message\_sender.py                                 |       57 |       29 |     49.1% |33-45, 63, 79-102 |
 | bread\_bot/common/services/messages/message\_service.py                                |       42 |        3 |     92.9% |66, 73, 90 |
