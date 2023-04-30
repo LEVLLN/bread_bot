@@ -7,6 +7,7 @@ from sqlalchemy import select, and_
 
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerEntity
+from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.commands.command_settings import CommandSettings
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
@@ -140,7 +141,11 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 result = await morph_service.morph_text(content.caption)
             case _:
                 raise RaiseUpException("Тип контента не поддерживается")
-        return super()._return_answer(result)
+        return TextAnswerSchema(
+            text=result,
+            chat_id=self.member_service.chat.chat_id,
+            reply_to_message_id=self.message_service.message.reply.message_id,
+        )
 
     async def add_morph_values(self):
         if not self.command_instance.value_list:

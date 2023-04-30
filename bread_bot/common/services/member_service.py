@@ -130,7 +130,7 @@ class ExternalMemberService:
                 Member.is_bot == False,
                 Member.id is not None,
                 Member.username is not None,
-                ChatToMember.updated_at >= datetime.datetime.now() - datetime.timedelta(days=30),
+                ChatToMember.updated_at >= datetime.datetime.now() - datetime.timedelta(days=10),
             ),
             select_in_load=ChatToMember.member,
         )
@@ -167,11 +167,8 @@ class ExternalMemberService:
             return [
                 self.message_service.message.source,
             ]
-        admin_members, members = await asyncio.gather(
-            self._get_chat_members(),
-            self.get_admin_members(),
-        )
-        return list({**admin_members, **members}.values())
+        members = await self._get_chat_members()
+        return [v for v in members.values()]
 
     async def get_one_of_group(self) -> str:
         """Получение случайного пользователя из группы"""
