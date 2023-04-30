@@ -12,17 +12,17 @@ from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
     KeyValueParameterCommandSchema,
     ValueListCommandSchema,
-    ValueParameterCommandSchema,
     CommandSchema,
     ValueCommandSchema,
 )
+from bread_bot.common.schemas.telegram_messages import MemberSchema
 from bread_bot.common.services.handlers.command_methods.admin_command_method import AdminCommandMethod
+from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     CommandAnswerParametersEnum,
     AnswerEntityReactionTypesEnum,
-    ANSWER_ENTITY_MAP,
     AnswerEntityContentTypesEnum,
 )
 
@@ -457,123 +457,79 @@ class TestRemember(BaseAdminCommand):
         assert len(entities) == 2
 
 
-@pytest.mark.skip
 class TestDelete(BaseAdminCommand):
     @pytest.fixture
     async def command_instance(
         self,
     ):
-        yield ValueParameterCommandSchema(
+        yield CommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.DELETE,
-            parameter=CommandAnswerParametersEnum.SUBSTRING,
-            value="LOL",
             raw_command="удали",
         )
 
     @pytest.fixture
-    async def command_key_value_instance(
-        self,
-    ):
-        yield KeyValueParameterCommandSchema(
-            header="хлеб",
-            command=AdminCommandsEnum.DELETE,
-            parameter=CommandAnswerParametersEnum.SUBSTRING,
-            key="TEST",
-            value="LOL",
-            raw_command="удали",
-        )
+    async def get_admin_mock(self, admin_command_method, mocker):
+        get_admin_members_result = {
+            params["user"]["id"]: MemberSchema(**params["user"])
+            for params in [
+                {
+                    "user": {
+                        "id": admin_command_method.member_service.member.member_id,
+                        "is_bot": False,
+                        "username": "uname1",
+                        "first_name": "Atest",
+                        "last_name": "Atestov",
+                    }
+                },
+            ]
+        }
+        yield mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=get_admin_members_result)
 
-    async def test_not_existed_packs(self, db, admin_command_method, command_instance):
+    async def test_not_existed_packs(self, db, admin_command_method, command_instance, get_admin_mock, reply_text):
+        admin_command_method.message_service.message.reply = reply_text.message
         admin_command_method.default_answer_pack = None
-        result = await admin_command_method.execute()
-        assert result.text == "У чата нет ни одного пакета под управлением"
+        with pytest.raises(RaiseUpException) as error:
+            await admin_command_method.execute()
+        assert error.value.args[0] == "У чата нет ни одного пакета под управлением"
 
-    @pytest.mark.parametrize(
-        "expected_model",
-        [
-            AnswerEntity,
-        ],
-    )
-    @pytest.mark.parametrize(
-        "content_type",
-        [
-            AnswerEntityContentTypesEnum.TEXT,
-            AnswerEntityContentTypesEnum.STICKER,
-            AnswerEntityContentTypesEnum.VOICE,
-            AnswerEntityContentTypesEnum.PICTURE,
-        ],
-    )
-    @pytest.mark.parametrize(
-        "parameter",
-        [
-            CommandAnswerParametersEnum.SUBSTRING_LIST,
-            CommandAnswerParametersEnum.SUBSTRING,
-            CommandAnswerParametersEnum.TRIGGER,
-            CommandAnswerParametersEnum.TRIGGER_LIST,
-        ],
-    )
-    async def test(
-        self, db, admin_command_method, command_instance, based_pack, expected_model, parameter, content_type
-    ):
-        admin_command_method.command_instance.parameter = parameter
-        entities = []
-        for key in ["other_key", command_instance.value]:
-            entities.append(
-                expected_model(
-                    key=key,
-                    value="something",
-                    reaction_type=ANSWER_ENTITY_MAP[parameter],
-                    pack_id=based_pack.id,
-                    content_type=content_type,
-                )
-            )
-        await expected_model.async_add_all(db, entities)
+    async def test_not_admin(self, db, admin_command_method, command_instance, get_admin_mock, reply_text):
+        get_admin_mock.return_value = {}
+        admin_command_method.message_service.message.reply = reply_text.message
+        admin_command_method.default_answer_pack = None
+        with pytest.raises(RaiseUpException) as error:
+            await admin_command_method.execute()
+        assert error.value.args[0] == "Нет прав для удаления контента в данном чате"
 
-        pre_expected = await expected_model.async_filter(db, where=expected_model.pack_id == based_pack.id)
-        assert len(pre_expected) == 2
-        assert pre_expected == entities
-
-        result = await admin_command_method.execute()
-        expected = await expected_model.async_filter(
-            db, where=and_(expected_model.pack_id == based_pack.id, expected_model.content_type == content_type)
+    async def test(self, db, admin_command_method, command_instance, based_pack, reply_text, get_admin_mock, mocker):
+        check_admin_spy = mocker.spy(ExternalMemberService, "check_admin_permission")
+        admin_command_method.message_service.message.reply = reply_text.message
+        await AnswerEntity.async_add(
+            db,
+            AnswerEntity(
+                key="some_key",
+                value=reply_text.message.text,
+                pack_id=based_pack.id,
+                content_type=AnswerEntityContentTypesEnum.TEXT,
+                reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
+            ),
         )
 
-        assert result.text in admin_command_method.COMPLETE_MESSAGES
-        assert len(expected) == 1
-        assert expected[0].key == "other_key"
-        assert expected[0].reaction_type == ANSWER_ENTITY_MAP[parameter]
-        assert expected[0].pack_id == based_pack.id
+        pre_expected = await AnswerEntity.async_filter(db, where=AnswerEntity.pack_id == based_pack.id)
+        assert len(pre_expected) == 1
 
-    async def test_key_value(
-        self,
-        db,
-        admin_command_method,
-        command_key_value_instance,
-        based_pack,
-    ):
-        admin_command_method.command_instance = command_key_value_instance
-        admin_command_method.default_answer_pack = based_pack
-        entity = AnswerEntity(
-            key=command_key_value_instance.key,
-            value=command_key_value_instance.value,
-            reaction_type=ANSWER_ENTITY_MAP[command_key_value_instance.parameter],
-            pack_id=based_pack.id,
-            content_type=AnswerEntityContentTypesEnum.TEXT,
-        )
-        await AnswerEntity.async_add(db, entity)
-
-        assert (
-            await AnswerEntity.async_first(
-                db,
-            )
-            == entity
-        )
         result = await admin_command_method.execute()
-        expected = await AnswerEntity.async_filter(db, where=AnswerEntity.pack_id == based_pack.id)
+        expected = await AnswerEntity.async_filter(
+            db,
+            where=and_(
+                AnswerEntity.pack_id == based_pack.id, AnswerEntity.content_type == AnswerEntityContentTypesEnum.TEXT
+            ),
+        )
 
-        assert result.text in admin_command_method.COMPLETE_MESSAGES
-        assert expected == []
+        assert result.text == "Удалено это значение для ключей: [some_key]"
+        assert len(expected) == 0
+        check_admin_spy.assert_called_once()
+        assert check_admin_spy.return_value
 
 
 class TestAnswerChance(BaseAdminCommand):

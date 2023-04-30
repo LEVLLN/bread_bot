@@ -121,23 +121,10 @@ class TestCommandParser:
                 ),
             ),
             (
-                "Хлеб удали триггер my_value",
-                ValueParameterCommandSchema(
+                "Хлеб удали",
+                CommandSchema(
                     header="Хлеб",
                     command=AdminCommandsEnum.DELETE,
-                    parameter=CommandAnswerParametersEnum.TRIGGER,
-                    value="my_value",
-                    raw_command="удали",
-                ),
-            ),
-            (
-                "Хлеб удали триггер my_key=my_value",
-                KeyValueParameterCommandSchema(
-                    header="Хлеб",
-                    command=AdminCommandsEnum.DELETE,
-                    parameter=CommandAnswerParametersEnum.TRIGGER,
-                    key="my_key",
-                    value="my_value",
                     raw_command="удали",
                 ),
             ),
@@ -284,17 +271,6 @@ class TestCommandParser:
                     command=IntegrationCommandsEnum.QUOTE,
                     rest_text="цит",
                     raw_command="цитата",
-                ),
-            ),
-            (
-                "Хлеб удали подстроки лол, цит",
-                ValueParameterCommandSchema(
-                    header="Хлеб",
-                    command=AdminCommandsEnum.DELETE,
-                    rest_text="",
-                    parameter=CommandAnswerParametersEnum.SUBSTRING_LIST,
-                    raw_command="удали",
-                    value="лол, цит",
                 ),
             ),
         ],

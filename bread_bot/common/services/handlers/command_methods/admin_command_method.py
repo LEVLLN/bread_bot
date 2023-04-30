@@ -17,6 +17,7 @@ from bread_bot.common.services.handlers.answer_handler import (
     AnswerHandler,
 )
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
+from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
@@ -145,7 +146,29 @@ class AdminCommandMethod(BaseCommandMethod):
 
     async def delete(self):
         """Удаление по ключам и по ключам-значениям"""
-        return super()._return_answer("Фича временно отключена. В процессе доработки.")
+        self._check_reply_existed()
+        reply = self.message_service.message.reply
+        value, content_type, description = self.message_service.select_content_from_message(reply)
+        is_admin = await ExternalMemberService(
+            self.db, self.member_service, self.message_service
+        ).check_admin_permission()
+        if not is_admin:
+            raise RaiseUpException("Нет прав для удаления контента в данном чате")
+        if self.default_answer_pack is None:
+            raise RaiseUpException("У чата нет ни одного пакета под управлением")
+        answer_entities = await AnswerEntity.async_filter(
+            db=self.db,
+            where=and_(
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.value == value,
+                AnswerEntity.content_type == content_type,
+            ),
+        )
+        key_list = ", ".join([answer_entity.key for answer_entity in answer_entities])
+        await AnswerEntity.async_delete(
+            db=self.db, where=AnswerEntity.id.in_([answer_entity.id for answer_entity in answer_entities])
+        )
+        return super()._return_answer(f"Удалено это значение для ключей: [{key_list}]")
 
     def _get_chance_value(self) -> int:
         chance_value = self.command_instance.value
@@ -225,7 +248,6 @@ class AdminCommandMethod(BaseCommandMethod):
                 AnswerEntity.pack_id == self.default_answer_pack.id,
                 AnswerEntity.value == value,
                 AnswerEntity.content_type == content_type,
-                AnswerEntity.description == description,
             ),
         )
         if not answer_entities:

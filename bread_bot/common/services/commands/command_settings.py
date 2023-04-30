@@ -87,14 +87,9 @@ class CommandSettings:
                 "удали",
             ],
             command=AdminCommandsEnum.DELETE,
-            available_parameters=CommandAnswerParametersEnum.list(),
-            to_find_for_values=True,
-            to_find_for_key_values=True,
-            description="Удаляет указанные данные",
+            description="[Надо выбрать сообщение в качестве ответа] Удаляет указанные данные",
             examples=[
-                f"{BOT_NAME} удали подстроки my_key",
-                f"{BOT_NAME} удали триггер my_key",
-                f"{BOT_NAME} удали подстроки my_key=my_value",
+                f"{BOT_NAME} удали",
             ],
         ),
         CommandSettingsSchema(

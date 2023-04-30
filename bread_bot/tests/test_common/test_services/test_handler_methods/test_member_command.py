@@ -142,7 +142,7 @@ class TestMemberCommands:
     ):
         response = member_content_response_mock
 
-        result = await external_member_service._get_admin_members()
+        result = await external_member_service.get_admin_members()
         assert response.called
 
         assert result == {params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list}
@@ -168,7 +168,7 @@ class TestMemberCommands:
         get_admin_members_result = {
             params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list
         }
-        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=get_admin_members_result)
+        mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=get_admin_members_result)
 
         result = await external_member_service.get_members()
 
@@ -189,7 +189,7 @@ class TestMemberCommands:
         ex_member_add,
     ):
         member_command_method.member_service.chat.chat_id = -10000
-        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=administrators_members)
+        mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=administrators_members)
 
         result = await external_member_service.get_one_of_group()
         assert result in [
@@ -214,7 +214,7 @@ class TestMemberCommands:
         get_admin_members_result = {
             params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list
         }
-        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=get_admin_members_result)
+        mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=get_admin_members_result)
 
         result = await external_member_service.get_one_of_group()
         member = member_command_method.member_service.member
@@ -249,7 +249,7 @@ class TestMemberCommands:
     async def test_top_command_only_db(self, mocker, member_command_method, ex_member_add):
         member_command_method.command_instance.command = MemberCommandsEnum.TOP
         member_command_method.command_instance.raw_command = "топ"
-        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value={})
+        mocker.patch.object(ExternalMemberService, "get_admin_members", return_value={})
 
         result = await member_command_method.execute()
         for member in [ex_member_add, member_command_method.member_service.member]:
@@ -258,7 +258,7 @@ class TestMemberCommands:
     async def test_top_command_with_admins(self, mocker, member_command_method, ex_member_add, administrators_members):
         member_command_method.command_instance.command = MemberCommandsEnum.TOP
         member_command_method.command_instance.raw_command = "топ"
-        mocker.patch.object(ExternalMemberService, "_get_admin_members", return_value=administrators_members)
+        mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=administrators_members)
 
         result = await member_command_method.execute()
         for member in administrators_members.values():

@@ -120,7 +120,7 @@ class ExternalMemberService:
             user_name = f"{member.first_name.strip()} {member.last_name.strip()}"
         return user_name.strip()
 
-    async def _get_chat_members(self) -> dict:
+    async def _get_chat_members(self) -> dict[int, MemberSchema]:
         """Получение из сохраненных members из БД"""
         result = {}
         chat_to_members = await ChatToMember.async_filter(
@@ -147,7 +147,7 @@ class ExternalMemberService:
                 result[member_schema.id] = member_schema
         return result
 
-    async def _get_admin_members(self) -> dict:
+    async def get_admin_members(self) -> dict[int, MemberSchema]:
         """Получение администраторов группы"""
         response = await TelegramClient().get_chat(self.member_service.chat.chat_id)
         result = {}
@@ -169,7 +169,7 @@ class ExternalMemberService:
             ]
         admin_members, members = await asyncio.gather(
             self._get_chat_members(),
-            self._get_admin_members(),
+            self.get_admin_members(),
         )
         return list({**admin_members, **members}.values())
 
@@ -177,3 +177,7 @@ class ExternalMemberService:
         """Получение случайного пользователя из группы"""
         member = random.choice(await self.get_members())
         return self.get_username(member)
+
+    async def check_admin_permission(self) -> bool:
+        admins = await self.get_admin_members()
+        return admins.get(self.member_service.member.member_id) is not None
