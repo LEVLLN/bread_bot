@@ -1,6 +1,15 @@
+from pydantic import BaseModel
+
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.schemas.telegram_messages import StandardBodySchema, MessageSchema, BaseMessageSchema
 from bread_bot.common.utils.structs import AnswerEntityContentTypesEnum
+
+
+class Content(BaseModel):
+    value: str
+    content_type: AnswerEntityContentTypesEnum
+    caption: str | None = None
+    file_unique_id: str | None = None
 
 
 class MessageService(object):
@@ -33,33 +42,49 @@ class MessageService(object):
             return self.request_body.message
 
     @classmethod
-    def select_content_from_message(
-        cls, message: BaseMessageSchema
-    ) -> tuple[str, AnswerEntityContentTypesEnum, str | None]:
-        description = None
+    def select_content_from_message(cls, message: BaseMessageSchema) -> Content:
         if message.voice:
-            value = message.voice.file_id
-            content_type = AnswerEntityContentTypesEnum.VOICE
+            return Content(
+                value=message.voice.file_id,
+                file_unique_id=message.voice.file_unique_id,
+                content_type=AnswerEntityContentTypesEnum.VOICE,
+            )
         elif message.photo:
-            value = message.photo[0].file_id
-            description = message.caption
-            content_type = AnswerEntityContentTypesEnum.PICTURE
+            return Content(
+                value=message.photo[0].file_id,
+                file_unique_id=message.photo[0].file_unique_id,
+                caption=message.caption,
+                content_type=AnswerEntityContentTypesEnum.PICTURE,
+            )
         elif message.sticker:
-            value = message.sticker.file_id
-            content_type = AnswerEntityContentTypesEnum.STICKER
+            return Content(
+                value=message.sticker.file_id,
+                file_unique_id=message.sticker.file_unique_id,
+                content_type=AnswerEntityContentTypesEnum.STICKER,
+            )
         elif message.video:
-            value = message.video.file_id
-            description = message.caption
-            content_type = AnswerEntityContentTypesEnum.VIDEO
+            return Content(
+                value=message.video.file_id,
+                file_unique_id=message.video.file_unique_id,
+                caption=message.caption,
+                content_type=AnswerEntityContentTypesEnum.VIDEO,
+            )
         elif message.video_note:
-            value = message.video_note.file_id
-            content_type = AnswerEntityContentTypesEnum.VIDEO_NOTE
+            return Content(
+                value=message.video_note.file_id,
+                file_unique_id=message.video_note.file_unique_id,
+                content_type=AnswerEntityContentTypesEnum.VIDEO_NOTE,
+            )
         elif message.animation:
-            value = message.animation.file_id
-            content_type = AnswerEntityContentTypesEnum.ANIMATION
+            return Content(
+                value=message.animation.file_id,
+                file_unique_id=message.animation.file_unique_id,
+                content_type=AnswerEntityContentTypesEnum.ANIMATION,
+            )
         elif message.text:
-            value = message.text
-            content_type = AnswerEntityContentTypesEnum.TEXT
+            return Content(
+                value=message.text,
+                content_type=AnswerEntityContentTypesEnum.TEXT,
+            )
         else:
             raise RaiseUpException("Данный тип данных не поддерживается")
-        return value, content_type, description

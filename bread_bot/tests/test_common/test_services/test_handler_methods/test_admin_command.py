@@ -196,6 +196,7 @@ class TestShowKeys(BaseAdminCommand):
             instance=AnswerEntity(
                 pack_id=based_pack.id,
                 value=reply_photo.message.reply.photo[0].file_id,
+                file_unique_id=reply_photo.message.reply.photo[0].file_unique_id,
                 key="my_key",
                 reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING,
                 content_type=AnswerEntityContentTypesEnum.PICTURE,
@@ -284,6 +285,7 @@ class TestRemember(BaseAdminCommand):
         assert photo_message_service.message.reply.photo[0].file_id == entities[0].value
         assert entities[0].reaction_type == reaction_type
         assert entities[0].description is None
+        assert entities[0].file_unique_id == photo_message_service.message.reply.photo[0].file_unique_id
 
     @pytest.mark.parametrize(
         "command, reaction_type",
@@ -318,6 +320,7 @@ class TestRemember(BaseAdminCommand):
         assert command_instance.value_list == [entity.key for entity in entities]
         assert reply_gif.message.reply.animation.file_id == entities[0].value
         assert entities[0].reaction_type == reaction_type
+        assert entities[0].file_unique_id == reply_gif.message.reply.animation.file_unique_id
 
     @pytest.mark.parametrize(
         "command, reaction_type",
@@ -388,6 +391,7 @@ class TestRemember(BaseAdminCommand):
         assert command_instance.value_list == [entity.key for entity in entities]
         assert reply_voice.message.reply.voice.file_id == entities[0].value
         assert entities[0].reaction_type == reaction_type
+        assert entities[0].file_unique_id == reply_voice.message.reply.voice.file_unique_id
 
     @pytest.mark.parametrize(
         "command, reaction_type",
@@ -421,6 +425,7 @@ class TestRemember(BaseAdminCommand):
         assert command_instance.value_list == [entity.key for entity in entities]
         assert reply_sticker.message.reply.sticker.file_id == entities[0].value
         assert entities[0].reaction_type == reaction_type
+        assert entities[0].file_unique_id == reply_sticker.message.reply.sticker.file_unique_id
 
     @pytest.mark.parametrize(
         "command, reaction_type",

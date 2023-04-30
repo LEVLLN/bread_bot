@@ -11,6 +11,7 @@ class AnswerEntity(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CR
 
     key = Column(String(255), nullable=False)
     value = Column(Text, nullable=False)
+    file_unique_id = Column(String(255), nullable=True)
     reaction_type = Column(Enum(AnswerEntityReactionTypesEnum), nullable=False)
     content_type = Column(Enum(AnswerEntityContentTypesEnum), nullable=False)
     description = Column(Text, nullable=True)

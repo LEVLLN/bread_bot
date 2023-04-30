@@ -129,15 +129,15 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def regenerate_message(self):
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        value, content_type, description = self.message_service.select_content_from_message(reply)
+        content = self.message_service.select_content_from_message(reply)
         morph_service = MorphService(db=self.db, chat_id=self.member_service.chat.id)
-        match content_type:
+        match content.content_type:
             case AnswerEntityContentTypesEnum.TEXT:
-                result = await morph_service.morph_text(value)
+                result = await morph_service.morph_text(content.value)
             case AnswerEntityContentTypesEnum.PICTURE | AnswerEntityContentTypesEnum.VIDEO:
-                if not description:
+                if not content.caption:
                     raise RaiseUpException("Контент не содержит подписи")
-                result = await morph_service.morph_text(description)
+                result = await morph_service.morph_text(content.caption)
             case _:
                 raise RaiseUpException("Тип контента не поддерживается")
         return super()._return_answer(result)

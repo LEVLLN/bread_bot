@@ -1,6 +1,7 @@
 import logging
 
 from sqlalchemy import and_
+from sqlalchemy.sql.elements import BinaryExpression
 
 from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
 from bread_bot.common.models import (
@@ -18,6 +19,7 @@ from bread_bot.common.services.handlers.answer_handler import (
 )
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
 from bread_bot.common.services.member_service import ExternalMemberService
+from bread_bot.common.services.messages.message_service import Content
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
@@ -29,6 +31,12 @@ logger = logging.getLogger(__name__)
 
 
 class AdminCommandMethod(BaseCommandMethod):
+    def _get_filter_expression(self, content: Content) -> BinaryExpression:
+        if content.file_unique_id is not None:
+            return AnswerEntity.file_unique_id == content.file_unique_id
+        else:
+            return AnswerEntity.value == content.value
+
     async def execute(self) -> TextAnswerSchema:
         match self.command_instance.command:
             case AdminCommandsEnum.ADD:
@@ -105,7 +113,7 @@ class AdminCommandMethod(BaseCommandMethod):
         """Команда Запомни"""
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        value, content_type, description = self.message_service.select_content_from_message(reply)
+        content = self.message_service.select_content_from_message(reply)
 
         if not self.default_answer_pack:
             self.default_answer_pack: AnswerPack = await AnswerPack.create_by_chat_id(
@@ -119,8 +127,8 @@ class AdminCommandMethod(BaseCommandMethod):
                 where=and_(
                     AnswerEntity.pack_id == self.default_answer_pack.id,
                     AnswerEntity.key.in_(self.command_instance.value_list),
-                    AnswerEntity.value == value,
-                    AnswerEntity.content_type == content_type,
+                    self._get_filter_expression(content),
+                    AnswerEntity.content_type == content.content_type,
                 ),
             )
         ]
@@ -129,17 +137,17 @@ class AdminCommandMethod(BaseCommandMethod):
             self._check_length_key(reaction_type, key)
             if key in keys_to_skip:
                 continue
-            instance_params = dict(
-                pack_id=self.default_answer_pack.id,
-                key=key.lower(),
-                value=value,
-                content_type=content_type,
-                reaction_type=reaction_type,
+            entities.append(
+                AnswerEntity(
+                    pack_id=self.default_answer_pack.id,
+                    key=key.lower(),
+                    value=content.value,
+                    content_type=content.content_type,
+                    reaction_type=reaction_type,
+                    description=content.caption,
+                    file_unique_id=content.file_unique_id,
+                )
             )
-            if description is not None:
-                instance_params.update(dict(description=description))
-            entities.append(AnswerEntity(**instance_params))
-
         await AnswerEntity.async_add_all(db=self.db, instances=entities)
 
         return super()._return_answer()
@@ -148,7 +156,7 @@ class AdminCommandMethod(BaseCommandMethod):
         """Удаление по ключам и по ключам-значениям"""
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        value, content_type, description = self.message_service.select_content_from_message(reply)
+        content = self.message_service.select_content_from_message(reply)
         try:
             is_admin = await ExternalMemberService(
                 self.db, self.member_service, self.message_service
@@ -163,8 +171,8 @@ class AdminCommandMethod(BaseCommandMethod):
             db=self.db,
             where=and_(
                 AnswerEntity.pack_id == self.default_answer_pack.id,
-                AnswerEntity.value == value,
-                AnswerEntity.content_type == content_type,
+                self._get_filter_expression(content),
+                AnswerEntity.content_type == content.content_type,
             ),
         )
         key_list = ", ".join([answer_entity.key for answer_entity in answer_entities])
@@ -244,13 +252,13 @@ class AdminCommandMethod(BaseCommandMethod):
     async def show_keys(self):
         self._check_reply_existed()
         reply = self.message_service.message.reply
-        value, content_type, description = self.message_service.select_content_from_message(reply)
+        content = self.message_service.select_content_from_message(reply)
         answer_entities = await AnswerEntity.async_filter(
             db=self.db,
             where=and_(
                 AnswerEntity.pack_id == self.default_answer_pack.id,
-                AnswerEntity.value == value,
-                AnswerEntity.content_type == content_type,
+                self._get_filter_expression(content),
+                AnswerEntity.content_type == content.content_type,
             ),
         )
         if not answer_entities:

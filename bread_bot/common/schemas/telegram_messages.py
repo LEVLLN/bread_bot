@@ -20,27 +20,33 @@ class ChatSchema(BaseModel):
 class VoiceSchema(BaseModel):
     duration: Optional[int]
     mime_type: Optional[str]
-    file_id: Optional[str]
+    file_id: str | None = None
+    file_unique_id: str | None = None
 
 
 class PhotoSchema(BaseModel):
-    file_id: Optional[str]
+    file_id: str | None = None
+    file_unique_id: str | None = None
 
 
 class StickerSchema(BaseModel):
-    file_id: Optional[str]
+    file_id: str | None = None
+    file_unique_id: str | None = None
 
 
 class GifSchema(BaseModel):
-    file_id: Optional[str]
+    file_id: str | None = None
+    file_unique_id: str | None = None
 
 
 class VideoSchema(BaseModel):
-    file_id: Optional[str]
+    file_id: str | None = None
+    file_unique_id: str | None = None
 
 
 class VideoNoteSchema(BaseModel):
-    file_id: Optional[str]
+    file_id: str | None = None
+    file_unique_id: str | None = None
 
 
 class BaseMessageSchema(BaseModel):
