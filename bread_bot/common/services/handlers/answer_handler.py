@@ -116,7 +116,7 @@ class AnswerHandler(AbstractHandler):
         if reaction_type is AnswerEntityReactionTypesEnum.SUBSTRING:
             check_method = self._check_substring
             message_text = message_text.split()
-        elif reaction_type is reaction_type is AnswerEntityReactionTypesEnum.TRIGGER:
+        elif reaction_type is AnswerEntityReactionTypesEnum.TRIGGER:
             check_method = self._check_trigger
         else:
             raise NextStepException("Неподходящий тип данных")
