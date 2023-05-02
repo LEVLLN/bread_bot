@@ -33,16 +33,22 @@ class AnswerEntity(mixins.AbstractIsActiveBaseModel, mixins.BaseModel, mixins.CR
         )
 
     @classmethod
-    async def get_keys(cls, db: AsyncSession, pack_id: int, reaction_type: AnswerEntityReactionTypesEnum):
-        statement = (
-            select(cls.key)
-            .where(
-                and_(
-                    cls.reaction_type == reaction_type,
-                    cls.pack_id == pack_id,
-                )
+    async def get_keys(
+        cls,
+        db: AsyncSession,
+        pack_id: int,
+        reaction_type: AnswerEntityReactionTypesEnum,
+        exclude_keys: set,
+    ):
+        if exclude_keys:
+            filter_params = and_(
+                cls.reaction_type == reaction_type, cls.pack_id == pack_id, cls.key.notin_(exclude_keys)
             )
-            .distinct(cls.key)
-        )
+        else:
+            filter_params = and_(
+                cls.reaction_type == reaction_type,
+                cls.pack_id == pack_id,
+            )
+        statement = select(cls.key).where(filter_params).distinct(cls.key)
         result = await db.execute(statement)
         return result.scalars().all()

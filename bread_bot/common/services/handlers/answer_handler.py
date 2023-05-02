@@ -1,5 +1,4 @@
 import random
-import re
 
 import pymorphy2
 from sqlalchemy import and_
@@ -21,7 +20,6 @@ from bread_bot.common.schemas.bread_bot_answers import (
 from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.services.morph_service import MorphService
-from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
     AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
@@ -36,28 +34,6 @@ class AnswerHandler(AbstractHandler):
     @property
     def condition(self) -> bool:
         return self.message_service and self.message_service.message and self.message_service.message.text
-
-    def _find_keys(
-        self, keys, reaction_type: AnswerEntityReactionTypesEnum, message_text: str | None = None
-    ) -> list[str]:
-        """Поиск ключей из БД среди сообщения"""
-        match reaction_type:
-            case AnswerEntityReactionTypesEnum.SUBSTRING:
-                regex = f"({composite_mask(keys, split=True)})"
-            case AnswerEntityReactionTypesEnum.TRIGGER:
-                regex = f"^({composite_mask(keys)})$"
-            case _:
-                raise NextStepException("Неподходящий тип данных")
-
-        if message_text is not None:
-            message_text = message_text.lower()
-        else:
-            message_text = self.message_service.message.text.lower()
-
-        groups = re.findall(regex, message_text, re.IGNORECASE)
-        if len(groups) == 0:
-            raise NextStepException("Подходящих ключей не найдено")
-        return groups
 
     def check_process_ability(self, check_edited_message: bool = True):
         if not self.condition:
@@ -90,18 +66,28 @@ class AnswerHandler(AbstractHandler):
             case _:
                 raise NextStepException("Полученный тип контента не подлежит ответу")
 
-    @classmethod
-    def _get_morphed_words_to_keys(cls, answer_keys: set) -> dict[str, str]:
-        morphed_words_to_keys = {}
+    def _get_excluded_keys(self) -> set[str]:
+        chat_id = self.member_service.chat.id
+        if chat_id not in morphed_keys_cache:
+            morphed_keys_cache[chat_id] = {}
+        return morphed_keys_cache[chat_id].values()
+
+    def _get_morphed_words_to_keys(self, answer_keys: set) -> dict[str, str]:
+        chat_id = self.member_service.chat.id
         for answer_key in answer_keys:
-            if answer_key in morphed_words_to_keys:
-                continue
+            morphed_keys_cache[chat_id][answer_key] = answer_key
             parsed_word = morph.parse(answer_key)[0]
             for item in parsed_word.lexeme:
-                if item.word in morphed_words_to_keys:
-                    continue
-                morphed_words_to_keys[item.word] = answer_key
-        return morphed_words_to_keys
+                morphed_keys_cache[chat_id][item.word] = answer_key
+        return morphed_keys_cache[chat_id]
+
+    def _check_substring(self, word: str, message_list: list[str]) -> bool:
+        if len(word) < 3:
+            raise NextStepException("Подходящих ключей не найдено")
+        return word in message_list
+
+    def _check_trigger(self, word: str, message_text: str) -> bool:
+        return word == message_text
 
     async def process_message(
         self,
@@ -111,7 +97,10 @@ class AnswerHandler(AbstractHandler):
         answer_keys = {
             answer_entity_key
             for answer_entity_key in await AnswerEntity.get_keys(
-                db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
+                db=self.db,
+                pack_id=self.default_answer_pack.id,
+                reaction_type=reaction_type,
+                exclude_keys=self._get_excluded_keys(),
             )
         }
         morphed_words_to_keys = self._get_morphed_words_to_keys(answer_keys)
@@ -119,23 +108,35 @@ class AnswerHandler(AbstractHandler):
         if not morphed_words_to_keys:
             raise NextStepException("Значения не найдено")
 
-        keys = self._find_keys(
-            keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
-        )
-        results = None
-        random.shuffle(keys)
-        for key in keys:
-            results = await AnswerEntity.async_filter(
-                db=self.db,
-                where=and_(
-                    AnswerEntity.pack_id == self.default_answer_pack.id,
-                    AnswerEntity.reaction_type == reaction_type,
-                    AnswerEntity.key == morphed_words_to_keys[key],
-                ),
-            )
-            if results:
-                break
+        if message_text is not None:
+            message_text = message_text.lower()
+        else:
+            message_text = self.message_service.message.text.lower()
 
+        if reaction_type is AnswerEntityReactionTypesEnum.SUBSTRING:
+            check_method = self._check_substring
+            message_text = message_text.split()
+        elif reaction_type is reaction_type is AnswerEntityReactionTypesEnum.TRIGGER:
+            check_method = self._check_trigger
+        else:
+            raise NextStepException("Неподходящий тип данных")
+
+        keys = []
+        for string in sorted(morphed_words_to_keys.keys(), key=len, reverse=True):
+            if check_method(string, message_text):
+                keys.append(morphed_words_to_keys[string])
+
+        if not keys:
+            raise NextStepException("Подходящих ключей не найдено")
+
+        results = await AnswerEntity.async_filter(
+            db=self.db,
+            where=and_(
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.reaction_type == reaction_type,
+                AnswerEntity.key.in_(keys),
+            ),
+        )
         if not results:
             raise NextStepException("Значения не найдено")
 
