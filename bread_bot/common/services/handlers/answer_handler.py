@@ -137,6 +137,7 @@ class AnswerHandler(AbstractHandler):
                 AnswerEntity.key.in_(keys),
             ),
         )
+        print(results, keys)
         if not results:
             raise NextStepException("Значения не найдено")
 
