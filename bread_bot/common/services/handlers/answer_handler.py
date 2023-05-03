@@ -83,7 +83,7 @@ class AnswerHandler(AbstractHandler):
 
     def _check_substring(self, word: str, message_list: list[str]) -> bool:
         if len(word) < 3:
-            raise NextStepException("Подходящих ключей не найдено")
+            return False
         return word in message_list
 
     def _check_trigger(self, word: str, message_text: str) -> bool:
@@ -137,7 +137,6 @@ class AnswerHandler(AbstractHandler):
                 AnswerEntity.key.in_(keys),
             ),
         )
-        print(results, keys)
         if not results:
             raise NextStepException("Значения не найдено")
 
