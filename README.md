@@ -29,7 +29,7 @@
 | bread\_bot/common/schemas/telegram\_messages.py                                        |       62 |        0 |    100.0% |           |
 | bread\_bot/common/services/commands/command\_parser.py                                 |      114 |       14 |     87.7% |64-65, 107-108, 127, 159-163, 182, 200, 206-207 |
 | bread\_bot/common/services/commands/command\_settings.py                               |       28 |        0 |    100.0% |           |
-| bread\_bot/common/services/handlers/answer\_handler.py                                 |      128 |       17 |     86.7% |40, 55, 57, 59, 62-67, 86, 109, 122, 142, 147, 184, 193 |
+| bread\_bot/common/services/handlers/answer\_handler.py                                 |      127 |       15 |     88.2% |40, 57, 62-67, 86, 109, 122, 141, 146, 183, 192 |
 | bread\_bot/common/services/handlers/command\_handler.py                                |       28 |        9 |     67.9% | 23, 35-42 |
 | bread\_bot/common/services/handlers/command\_methods/admin\_command\_method.py         |      151 |       15 |     90.1% |50, 67-68, 71, 108, 119, 164-165, 198, 208-209, 220-221, 245, 265 |
 | bread\_bot/common/services/handlers/command\_methods/base\_command\_method.py          |       55 |       25 |     54.5% |     74-99 |
@@ -56,7 +56,7 @@
 | bread\_bot/utils/middlewares.py                                                        |      122 |       11 |     91.0% |80, 103-104, 203, 214-216, 239-240, 248-249 |
 | bread\_bot/utils/testing\_tools.py                                                     |       35 |        4 |     88.6% |     35-39 |
 | bread\_bot/utils/utils\_schemas.py                                                     |       38 |        0 |    100.0% |           |
-|                                                                              **TOTAL** | **2277** |  **325** | **85.7%** |           |
+|                                                                              **TOTAL** | **2276** |  **323** | **85.8%** |           |
 
 
 ## Setup coverage badge
