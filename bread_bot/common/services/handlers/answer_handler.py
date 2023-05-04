@@ -96,6 +96,7 @@ class AnswerHandler(AbstractHandler):
         for answer_key in answer_keys:
             if answer_key in morphed_words_to_keys:
                 continue
+            morphed_words_to_keys[answer_key] = answer_key
             parsed_word = morph.parse(answer_key)[0]
             for item in parsed_word.lexeme:
                 if item.word in morphed_words_to_keys:
