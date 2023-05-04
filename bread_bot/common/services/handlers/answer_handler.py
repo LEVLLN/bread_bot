@@ -120,21 +120,34 @@ class AnswerHandler(AbstractHandler):
         if not morphed_words_to_keys:
             raise NextStepException("Значения не найдено")
 
-        keys = self._find_keys(
-            keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
+        # keys = self._find_keys(
+        #     keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
+        # )
+        if message_text is not None:
+            message_text = message_text.lower()
+        else:
+            message_text = self.message_service.message.text.lower()
+        keys = []
+        for morphed_key in morphed_words_to_keys.keys():
+            match reaction_type:
+                case AnswerEntityReactionTypesEnum.SUBSTRING:
+                    if " " + morphed_key + " " in " " + message_text + " ":
+                        keys.append(morphed_key)
+                case AnswerEntityReactionTypesEnum.TRIGGER:
+                    if morphed_key == message_text:
+                        keys.append(morphed_key)
+                case _:
+                    raise NextStepException("Неподходящий тип данных")
+        if not keys:
+            raise NextStepException("Подходящих ключей не найдено")
+        results = await AnswerEntity.async_filter(
+            db=self.db,
+            where=and_(
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.reaction_type == reaction_type,
+                AnswerEntity.key.in_([morphed_words_to_keys[key] for key in keys]),
+            ),
         )
-        results = None
-        for key in keys:
-            results = await AnswerEntity.async_filter(
-                db=self.db,
-                where=and_(
-                    AnswerEntity.pack_id == self.default_answer_pack.id,
-                    AnswerEntity.reaction_type == reaction_type,
-                    AnswerEntity.key == morphed_words_to_keys[key],
-                ),
-            )
-            if results:
-                break
 
         if not results:
             raise NextStepException("Значения не найдено")
