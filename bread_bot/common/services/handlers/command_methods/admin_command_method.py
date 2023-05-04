@@ -15,7 +15,7 @@ from bread_bot.common.schemas.commands import (
     ValueCommandSchema,
 )
 from bread_bot.common.services.handlers.answer_handler import (
-    AnswerHandler,
+    SubstringAnswerHandler,
 )
 from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
 from bread_bot.common.services.member_service import ExternalMemberService
@@ -224,23 +224,15 @@ class AdminCommandMethod(BaseCommandMethod):
         if not isinstance(self.command_instance, ValueCommandSchema):
             return super()._return_answer("Необходимо указать параметром, что надо искать")
 
-        result = None
-        for reaction_type in (AnswerEntityReactionTypesEnum.SUBSTRING,):
-            handler = AnswerHandler(next_handler=None)
-            handler.db = self.db
-            handler.message_service = self.message_service
-            handler.default_answer_pack = self.default_answer_pack
-            handler.member_service = self.member_service
-
-            try:
-                handler.check_process_ability(check_edited_message=False)
-                result = await handler.process_message(
-                    reaction_type=reaction_type, message_text=self.command_instance.value
-                )
-            except NextStepException as e:
-                logger.error("Error: %s %s", self.__class__.__name__, str(e))
-                continue
-        if result is None:
+        handler = SubstringAnswerHandler(next_handler=None)
+        handler.db = self.db
+        handler.message_service = self.message_service
+        handler.default_answer_pack = self.default_answer_pack
+        handler.member_service = self.member_service
+        try:
+            handler.check_process_ability(check_edited_message=False)
+            result = await handler.process_message(message_text=self.command_instance.value)
+        except NextStepException:
             return super()._return_answer("Ничего не было найдено")
         return result
 

@@ -681,11 +681,8 @@ class TestCheckAnswer(BaseAdminCommand):
         assert result.text == "my_value"
 
     @pytest.mark.parametrize("answer_chance", [0, 100])
-    @pytest.mark.parametrize(
-        "reaction_type", [AnswerEntityReactionTypesEnum.SUBSTRING, AnswerEntityReactionTypesEnum.TRIGGER]
-    )
     async def test_existed_substring(
-        self, db, admin_command_method, based_pack, command_instance, answer_chance, reaction_type
+        self, db, admin_command_method, based_pack, command_instance, answer_chance
     ):
         based_pack.answer_chance = answer_chance
         await AnswerPack.async_add(db, based_pack)

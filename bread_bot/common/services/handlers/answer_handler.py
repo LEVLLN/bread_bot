@@ -109,17 +109,26 @@ class AnswerHandler(AbstractHandler):
 
     async def process_message(
         self,
-        reaction_type: AnswerEntityReactionTypesEnum,
+        message_text: str | None = None,
+    ) -> BaseAnswerSchema:
+        raise NextStepException("Базовый класс")
+
+    async def process(self) -> BaseAnswerSchema:
+        raise NextStepException("Базовый класс")
+
+
+class SubstringAnswerHandler(AnswerHandler):
+    async def process_message(
+        self,
         message_text: str | None = None,
     ) -> BaseAnswerSchema:
         self._init_cached_keys()
-
         start = time.time()
         exclude = set(cached_keys[self.member_service.chat.id].values())
         answer_keys = {
             answer_entity_key
             for answer_entity_key in await AnswerEntity.get_keys(
-                db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
+                db=self.db, pack_id=self.default_answer_pack.id, reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING
             )
             if answer_entity_key not in exclude
         }
@@ -133,29 +142,25 @@ class AnswerHandler(AbstractHandler):
             message_text = message_text.lower()
         else:
             message_text = self.message_service.message.text.lower()
+
         keys = set()
         start = time.time()
         substring_message_text = " " + message_text + " "
+
         for morphed_key, key_for_search in morphed_words_to_keys.items():
-            match reaction_type:
-                case AnswerEntityReactionTypesEnum.SUBSTRING:
-                    if len(morphed_key) < 3:
-                        continue
-                    if " " + morphed_key + " " in substring_message_text:
-                        keys.add(key_for_search)
-                case AnswerEntityReactionTypesEnum.TRIGGER:
-                    if morphed_key == message_text:
-                        keys.add(key_for_search)
-                case _:
-                    raise NextStepException("Неподходящий тип данных")
+            if len(morphed_key) < 3:
+                continue
+            if " " + morphed_key + " " in substring_message_text:
+                keys.add(key_for_search)
         logger.info("Search time: %s", time.time() - start)
+
         if not keys:
             raise NextStepException("Подходящих ключей не найдено")
         results = await AnswerEntity.async_filter(
             db=self.db,
             where=and_(
                 AnswerEntity.pack_id == self.default_answer_pack.id,
-                AnswerEntity.reaction_type == reaction_type,
+                AnswerEntity.reaction_type == AnswerEntityReactionTypesEnum.SUBSTRING,
                 AnswerEntity.key.in_(keys),
             ),
         )
@@ -166,22 +171,62 @@ class AnswerHandler(AbstractHandler):
         return self._choose_content(random.choice(results))
 
     async def process(self) -> BaseAnswerSchema:
-        raise NextStepException("Базовый класс")
-
-
-class SubstringAnswerHandler(AnswerHandler):
-    async def process(self) -> BaseAnswerSchema:
         self.check_process_ability()
         if random.random() > self.default_answer_pack.answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
 
-        return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.SUBSTRING)
+        return await self.process_message()
 
 
 class TriggerAnswerHandler(AnswerHandler):
+    async def process_message(
+        self,
+        message_text: str | None = None,
+    ) -> BaseAnswerSchema:
+        start = time.time()
+        answer_keys = {
+            answer_entity_key
+            for answer_entity_key in await AnswerEntity.get_keys(
+                db=self.db, pack_id=self.default_answer_pack.id, reaction_type=AnswerEntityReactionTypesEnum.TRIGGER
+            )
+        }
+        logger.info("Get morphed words time: %s", time.time() - start)
+
+        if not answer_keys:
+            raise NextStepException("Значения не найдено")
+
+        if message_text is not None:
+            message_text = message_text.lower()
+        else:
+            message_text = self.message_service.message.text.lower()
+
+        keys = set()
+        start = time.time()
+
+        for key_for_search in answer_keys:
+            if key_for_search == message_text:
+                keys.add(key_for_search)
+        logger.info("Search time: %s", time.time() - start)
+
+        if not keys:
+            raise NextStepException("Подходящих ключей не найдено")
+        results = await AnswerEntity.async_filter(
+            db=self.db,
+            where=and_(
+                AnswerEntity.pack_id == self.default_answer_pack.id,
+                AnswerEntity.reaction_type == AnswerEntityReactionTypesEnum.TRIGGER,
+                AnswerEntity.key.in_(keys),
+            ),
+        )
+
+        if not results:
+            raise NextStepException("Значения не найдено")
+
+        return self._choose_content(random.choice(results))
+
     async def process(self) -> BaseAnswerSchema:
         self.check_process_ability()
-        return await super().process_message(reaction_type=AnswerEntityReactionTypesEnum.TRIGGER)
+        return await self.process_message()
 
 
 class PictureAnswerHandler(AnswerHandler):
