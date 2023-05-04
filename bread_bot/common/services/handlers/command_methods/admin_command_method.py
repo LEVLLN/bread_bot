@@ -225,7 +225,7 @@ class AdminCommandMethod(BaseCommandMethod):
             return super()._return_answer("Необходимо указать параметром, что надо искать")
 
         result = None
-        for reaction_type in (AnswerEntityReactionTypesEnum.SUBSTRING, ):
+        for reaction_type in (AnswerEntityReactionTypesEnum.SUBSTRING,):
             handler = AnswerHandler(next_handler=None)
             handler.db = self.db
             handler.message_service = self.message_service
