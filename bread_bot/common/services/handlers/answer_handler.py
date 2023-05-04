@@ -1,5 +1,6 @@
 import random
 import re
+import time
 
 import pymorphy2
 from sqlalchemy import and_
@@ -19,7 +20,7 @@ from bread_bot.common.schemas.bread_bot_answers import (
     VideoNoteAnswerSchema,
 )
 from bread_bot.common.services.handlers.handler import AbstractHandler
-from bread_bot.common.services.member_service import ExternalMemberService
+from bread_bot.common.services.member_service import ExternalMemberService, logger
 from bread_bot.common.services.morph_service import MorphService
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
@@ -29,7 +30,7 @@ from bread_bot.common.utils.structs import (
 
 morph = pymorphy2.MorphAnalyzer()
 
-morphed_keys_cache = {}
+cached_keys: dict[int, dict[str, str]] = {}
 
 
 class AnswerHandler(AbstractHandler):
@@ -90,54 +91,64 @@ class AnswerHandler(AbstractHandler):
             case _:
                 raise NextStepException("Полученный тип контента не подлежит ответу")
 
-    @classmethod
-    def _get_morphed_words_to_keys(cls, answer_keys: set) -> dict[str, str]:
-        morphed_words_to_keys = {}
+    def _init_cached_keys(self):
+        chat_id = self.member_service.chat.id
+        if chat_id not in cached_keys:
+            logger.info("Cached keys was inited for chat: %s", chat_id)
+            cached_keys[chat_id] = {}
+        return cached_keys
+
+    def _get_morphed_words_to_keys(self, answer_keys: set) -> dict[str, str]:
+        chat_id = self.member_service.chat.id
         for answer_key in answer_keys:
-            if answer_key in morphed_words_to_keys:
-                continue
-            morphed_words_to_keys[answer_key] = answer_key
+            cached_keys[chat_id][answer_key] = answer_key
             parsed_word = morph.parse(answer_key)[0]
             for item in parsed_word.lexeme:
-                if item.word in morphed_words_to_keys:
-                    continue
-                morphed_words_to_keys[item.word] = answer_key
-        return morphed_words_to_keys
+                cached_keys[chat_id][item.word] = answer_key
+        return cached_keys[chat_id]
 
     async def process_message(
         self,
         reaction_type: AnswerEntityReactionTypesEnum,
         message_text: str | None = None,
     ) -> BaseAnswerSchema:
+        self._init_cached_keys()
+
+        start = time.time()
+        exclude = set(cached_keys[self.member_service.chat.id].values())
         answer_keys = {
             answer_entity_key
             for answer_entity_key in await AnswerEntity.get_keys(
                 db=self.db, pack_id=self.default_answer_pack.id, reaction_type=reaction_type
             )
+            if answer_entity_key not in exclude
         }
         morphed_words_to_keys = self._get_morphed_words_to_keys(answer_keys)
+        logger.info("Get morphed words time: %s", time.time() - start)
 
         if not morphed_words_to_keys:
             raise NextStepException("Значения не найдено")
 
-        # keys = self._find_keys(
-        #     keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
-        # )
         if message_text is not None:
             message_text = message_text.lower()
         else:
             message_text = self.message_service.message.text.lower()
-        keys = []
-        for morphed_key in morphed_words_to_keys.keys():
+        keys = set()
+        start = time.time()
+        substring_message_text = " " + message_text + " "
+        for morphed_key, key_for_search in morphed_words_to_keys.items():
             match reaction_type:
                 case AnswerEntityReactionTypesEnum.SUBSTRING:
-                    if " " + morphed_key + " " in " " + message_text + " ":
-                        keys.append(morphed_key)
+                    if len(morphed_key) < 3:
+                        continue
+                    if " " + morphed_key + " " in substring_message_text:
+                        keys.add(key_for_search)
                 case AnswerEntityReactionTypesEnum.TRIGGER:
                     if morphed_key == message_text:
-                        keys.append(morphed_key)
+                        keys.add(key_for_search)
                 case _:
                     raise NextStepException("Неподходящий тип данных")
+        logger.info("Search time: %s", time.time() - start)
         if not keys:
             raise NextStepException("Подходящих ключей не найдено")
         results = await AnswerEntity.async_filter(
@@ -145,7 +156,7 @@ class AnswerHandler(AbstractHandler):
             where=and_(
                 AnswerEntity.pack_id == self.default_answer_pack.id,
                 AnswerEntity.reaction_type == reaction_type,
-                AnswerEntity.key.in_([morphed_words_to_keys[key] for key in keys]),
+                AnswerEntity.key.in_(keys),
             ),
         )
 
