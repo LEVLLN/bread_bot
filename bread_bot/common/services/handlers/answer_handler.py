@@ -123,7 +123,6 @@ class AnswerHandler(AbstractHandler):
             keys=morphed_words_to_keys.keys(), reaction_type=reaction_type, message_text=message_text
         )
         results = None
-        random.shuffle(keys)
         for key in keys:
             results = await AnswerEntity.async_filter(
                 db=self.db,
