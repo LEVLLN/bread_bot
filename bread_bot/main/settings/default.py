@@ -116,7 +116,7 @@ DEFAULT_SENSITIVE_KEY_WORDS = (
 )
 
 AUTO_MASK_LOGS = os.getenv("AUTO_MASK_LOGS", "false") == "true"
-DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = "|".join(map(lambda x: f"\\b{x}\\b", DEFAULT_SENSITIVE_KEY_WORDS))
+DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = "|".join(f"\\b{x}\\b" for x in DEFAULT_SENSITIVE_KEY_WORDS)
 # Telegramer
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 APP_HOST = os.getenv("APP_HOST", "localhost:8080")

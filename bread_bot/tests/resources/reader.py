@@ -143,7 +143,7 @@ var dle_del_agree  = 'Вы действительно хотите удалит�
                                                                            title="Самые рейтингуемые вверху">по
             рейтингу</a>] [<a href="/browse"
                               title="Самые свежие вверху">по дате</a>] [<a href="/search/"
-                                                                           title="Найти цитату по ключевым словам">поиск</a>]
+            title="Найти цитату по ключевым словам">поиск</a>]
         [<a href="/rss.xml"
             title="Разве вы ещё не получаете свежие цитаты не заходя на сайт?">RSS</a>] <br/>
         яма: [<a href="/pit" title="Все непроверенные цитаты">яма</a>] [<a href="/pittop"
@@ -151,7 +151,7 @@ var dle_del_agree  = 'Вы действительно хотите удалит�
             ямы</a>] [<a href="/addquote"
                          title="Добавить цитату" style="color:red;">добавить</a>] <br/>
         иное: [<a href="/feedback/" title="Напишите нам что вы думаете о нас :)">контакты</a>] [<a href="/help.html"
-                                                                                                   title="Вы тут впервые? Тогда вам сюда!"><strong>помощь
+            title="Вы тут впервые? Тогда вам сюда!"><strong>помощь
             по сайту</strong></a>]<br/>
         <!--  анекдоты: [<a href="/anecdots/" title="Анекдоты:)">последние</a>] -->
     </div>
@@ -175,7 +175,7 @@ escape(document.referrer)+((typeof(screen)=="undefined")?"":
 screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
 ";"+Math.random()+
 "' alt='' title='LiveInternet' "+
-"border=0 width=31 height=31><\/a>")//
+"border=0 width=31 height=31><\\/a>")//
 					-->
 
 </script>
@@ -317,7 +317,7 @@ baneks_resource = """
         } else {
             f();
         }
-    })(document, window, "yandex_metrika_callbacks"); 
+    })(document, window, "yandex_metrika_callbacks");
 	</script>
 	<noscript>
 		<div><img src="https://mc.yandex.ru/watch/36131715" style="position:absolute; left:-9999px;" alt=""/></div>

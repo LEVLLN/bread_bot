@@ -7,8 +7,8 @@ from sqlalchemy import and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.common.clients.telegram_client import TelegramClient
-from bread_bot.common.models import Member, Chat, ChatToMember
-from bread_bot.common.schemas.telegram_messages import MessageSchema, MemberSchema
+from bread_bot.common.models import Chat, ChatToMember, Member
+from bread_bot.common.schemas.telegram_messages import MemberSchema, MessageSchema
 from bread_bot.common.services.messages.message_service import MessageService
 
 logger = logging.getLogger(__name__)
@@ -126,7 +126,7 @@ class ExternalMemberService:
             db=self.db,
             where=and_(
                 ChatToMember.chat_id == self.member_service.chat.id,
-                Member.is_bot == False,
+                Member.is_bot is False,
                 Member.id is not None,
                 Member.username is not None,
                 ChatToMember.updated_at >= datetime.datetime.now() - datetime.timedelta(days=10),
@@ -167,7 +167,7 @@ class ExternalMemberService:
                 self.message_service.message.source,
             ]
         members = await self._get_chat_members()
-        return [v for v in members.values()]
+        return list(members.values())
 
     async def get_one_of_group(self) -> str:
         """Получение случайного пользователя из группы"""

@@ -11,21 +11,21 @@ from bread_bot.common.models import (
 )
 from bread_bot.common.schemas.bread_bot_answers import (
     BaseAnswerSchema,
-    TextAnswerSchema,
+    GifAnswerSchema,
     PhotoAnswerSchema,
     StickerAnswerSchema,
-    VoiceAnswerSchema,
-    GifAnswerSchema,
+    TextAnswerSchema,
     VideoAnswerSchema,
     VideoNoteAnswerSchema,
+    VoiceAnswerSchema,
 )
 from bread_bot.common.services.handlers.handler import AbstractHandler
 from bread_bot.common.services.member_service import ExternalMemberService, logger
 from bread_bot.common.services.morph_service import MorphService
 from bread_bot.common.utils.functions import composite_mask
 from bread_bot.common.utils.structs import (
-    AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
+    AnswerEntityReactionTypesEnum,
 )
 
 morph = pymorphy2.MorphAnalyzer()
@@ -69,10 +69,10 @@ class AnswerHandler(AbstractHandler):
             raise NextStepException("Отсутствуют пакеты с ответами")
 
     def _choose_content(self, result: AnswerEntity):
-        base_message_params = dict(
-            reply_to_message_id=self.message_service.message.message_id,
-            chat_id=self.message_service.message.chat.id,
-        )
+        base_message_params = {
+            "reply_to_message_id": self.message_service.message.message_id,
+            "chat_id": self.message_service.message.chat.id,
+        }
         match result.content_type:
             case AnswerEntityContentTypesEnum.TEXT:
                 return TextAnswerSchema(**base_message_params, text=result.value)
@@ -184,12 +184,9 @@ class TriggerAnswerHandler(AnswerHandler):
         message_text: str | None = None,
     ) -> BaseAnswerSchema:
         start = time.time()
-        answer_keys = {
-            answer_entity_key
-            for answer_entity_key in await AnswerEntity.get_keys(
+        answer_keys = set(await AnswerEntity.get_keys(
                 db=self.db, pack_id=self.default_answer_pack.id, reaction_type=AnswerEntityReactionTypesEnum.TRIGGER
-            )
-        }
+            ))
         logger.info("Get morphed words time: %s", time.time() - start)
 
         if not answer_keys:

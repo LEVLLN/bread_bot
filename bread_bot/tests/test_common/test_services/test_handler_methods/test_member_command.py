@@ -27,7 +27,7 @@ class TestMemberCommands:
     async def command_instance(
         self,
     ):
-        yield CommandSchema(header="хлеб", command=MemberCommandsEnum.WHO, raw_command="кто", rest_text="Some text?")
+        return CommandSchema(header="хлеб", command=MemberCommandsEnum.WHO, raw_command="кто", rest_text="Some text?")
 
     @pytest.fixture
     async def based_pack(self, db, member_command_method):
@@ -39,11 +39,11 @@ class TestMemberCommands:
                 pack_id=answer_pack.id,
             ),
         )
-        yield answer_pack
+        return answer_pack
 
     @pytest.fixture
     async def external_member_service(self, db, message_service, member_service):
-        yield ExternalMemberService(db, member_service, message_service)
+        return ExternalMemberService(db, member_service, message_service)
 
     @pytest.fixture
     async def member_command_method(
@@ -61,7 +61,7 @@ class TestMemberCommands:
             default_answer_pack=await AnswerPack.get_by_chat_id(db, member_service.chat.id),
         )
         member_command_method.member_service.chat.chat_id = -10000
-        yield member_command_method
+        return member_command_method
 
     @pytest.fixture
     def member_content_list(self, member_service):
@@ -130,11 +130,11 @@ class TestMemberCommands:
         )
         chat.members.append(ChatToMember(chat_id=chat.id, member_id=ex_member.id))
         await chat.commit(db=db)
-        yield ex_member
+        return ex_member
 
     @pytest.fixture
     async def administrators_members(self, member_content_list):
-        yield {params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list}
+        return {params["user"]["id"]: MemberSchema(**params["user"]) for params in member_content_list}
 
     @respx.mock
     async def test_get_admin_members(

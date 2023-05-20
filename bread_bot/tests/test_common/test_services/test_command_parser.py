@@ -1,22 +1,21 @@
 import pytest
 
 from bread_bot.common.exceptions.commands import (
-    NotAvailableCommandException,
     CommandParseException,
+    NotAvailableCommandException,
 )
 from bread_bot.common.schemas.commands import (
-    ParameterCommandSchema,
-    ValueListCommandSchema,
-    KeyValueParameterCommandSchema,
-    ValueParameterCommandSchema,
     CommandSchema,
+    KeyValueParameterCommandSchema,
+    ParameterCommandSchema,
     ValueCommandSchema,
+    ValueListCommandSchema,
 )
 from bread_bot.common.services.commands.command_parser import CommandParser
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    EntertainmentCommandsEnum,
     CommandAnswerParametersEnum,
+    EntertainmentCommandsEnum,
     IntegrationCommandsEnum,
 )
 

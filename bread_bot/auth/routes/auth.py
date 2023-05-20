@@ -6,10 +6,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bread_bot.auth.methods.auth_methods import (
-    get_password_hash,
     authenticate_user,
     create_access_token,
     get_current_active_admin_user,
+    get_password_hash,
 )
 from bread_bot.auth.models import User
 from bread_bot.auth.schemas.auth import TokenSchema, UserCreateSchema, UserInfoSchema

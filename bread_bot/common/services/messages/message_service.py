@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
-from bread_bot.common.schemas.telegram_messages import StandardBodySchema, MessageSchema, BaseMessageSchema
+from bread_bot.common.schemas.telegram_messages import BaseMessageSchema, MessageSchema, StandardBodySchema
 from bread_bot.common.utils.structs import AnswerEntityContentTypesEnum
 
 
@@ -12,7 +12,7 @@ class Content(BaseModel):
     file_unique_id: str | None = None
 
 
-class MessageService(object):
+class MessageService:
     """Сервис сообщений"""
 
     def __init__(

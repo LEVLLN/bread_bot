@@ -12,7 +12,7 @@ def chunks(chunked_list, n: int):
 
 
 def mask_string(
-    source_string: str, additional_mask_keys: tuple = tuple(), additional_mask_values: tuple = tuple()
+    source_string: str, additional_mask_keys: tuple = (), additional_mask_values: tuple = ()
 ) -> str:
     """
     Маскирование уязвимых данных по ключам в строке.
@@ -27,10 +27,7 @@ def mask_string(
 
     if additional_mask_keys:
         mask_keys += "|" + "|".join(
-            map(
-                lambda x: f"\\b{x}\\b",
-                additional_mask_keys,
-            )
+            f"\\b{x}\\b" for x in additional_mask_keys
         )
     mask_regex = rf"\\?[\"|\']?({mask_keys})" r"\\?[\"|\']?[:|=]\s?\\?[\"|\']?(.+?)\\?[\\|\"|\'|,]\}?"
     # Поиск подходящих ключ-значений
@@ -42,10 +39,7 @@ def mask_string(
     sensitive_data_set = "|".join((f"\\b{v}\\b" for k, v in set(groups)))
     if additional_mask_values:
         sensitive_data_set += "|" + "|".join(
-            map(
-                lambda x: f"\\b{x}\\b",
-                additional_mask_values,
-            )
+            f"\\b{x}\\b" for x in additional_mask_values
         )
     # Маскирование
     result = re.sub(

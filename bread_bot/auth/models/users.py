@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Boolean, Column, String
 from sqlalchemy.orm import Session
 
 from bread_bot.main.database import mixins

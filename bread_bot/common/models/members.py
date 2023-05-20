@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, BigInteger
+from sqlalchemy import BigInteger, Boolean, Column, String
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins

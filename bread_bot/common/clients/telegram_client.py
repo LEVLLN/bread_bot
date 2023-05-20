@@ -4,10 +4,10 @@ from httpx import Response
 
 from bread_bot.common.schemas.bread_bot_answers import (
     BaseAnswerSchema,
-    VoiceAnswerSchema,
     PhotoAnswerSchema,
-    TextAnswerSchema,
     StickerAnswerSchema,
+    TextAnswerSchema,
+    VoiceAnswerSchema,
 )
 from bread_bot.common.schemas.telegram_messages import (
     ChatMemberBodySchema,

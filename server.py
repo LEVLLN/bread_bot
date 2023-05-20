@@ -3,8 +3,8 @@ import uvicorn
 from bread_bot.main.settings import (
     APP_NAME,
     PORT,
-    WORKERS_COUNT,
     SERVER_RELOAD,
+    WORKERS_COUNT,
 )
 
 if __name__ == "__main__":

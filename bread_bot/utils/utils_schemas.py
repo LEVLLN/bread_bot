@@ -1,4 +1,3 @@
-from typing import Union
 
 from pydantic import BaseModel, Field
 
@@ -8,7 +7,7 @@ class BaseJsonLogSchema(BaseModel):
     Схема основного тела лога в формате JSON
     """
 
-    thread: Union[int, str]
+    thread: int | str
     level: int
     level_name: str
     message: str
@@ -18,7 +17,7 @@ class BaseJsonLogSchema(BaseModel):
     app_version: str
     app_env: str
     duration: int
-    exceptions: Union[list[str], str] = None
+    exceptions: list[str] | str = None
     trace_id: str = None
     span_id: str = None
     parent_id: str = None
@@ -41,12 +40,12 @@ class RequestJsonLogSchema(BaseModel):
     request_size: int
     request_content_type: str
     request_headers: str
-    request_body: Union[str, dict, list]
+    request_body: str | dict | list
     request_direction: str
     remote_ip: str
     remote_port: str
     response_status_code: int
     response_size: int
     response_headers: str
-    response_body: Union[str, dict, list]
+    response_body: str | dict | list
     duration: int

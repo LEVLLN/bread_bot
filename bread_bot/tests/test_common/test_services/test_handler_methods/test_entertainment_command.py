@@ -2,16 +2,16 @@ import datetime
 
 import pytest
 
-from bread_bot.common.models import AnswerPacksToChats, AnswerPack, AnswerEntity
+from bread_bot.common.models import AnswerEntity, AnswerPack, AnswerPacksToChats
 from bread_bot.common.schemas.commands import (
-    ValueListCommandSchema,
     CommandSchema,
+    ValueListCommandSchema,
 )
 from bread_bot.common.services.handlers.command_methods.entertainment_command_method import EntertainmentCommandMethod
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
-    EntertainmentCommandsEnum,
     AnswerEntityContentTypesEnum,
+    EntertainmentCommandsEnum,
 )
 
 
@@ -24,7 +24,7 @@ class TestEntertainmentCommand:
         member_service,
         command_instance,
     ):
-        yield EntertainmentCommandMethod(
+        return EntertainmentCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
@@ -35,7 +35,7 @@ class TestEntertainmentCommand:
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб", command=EntertainmentCommandsEnum.CHANCE, rest_text="события", raw_command="вероятность"
         )
 
@@ -229,7 +229,7 @@ class TestRegenerateMessage:
                 pack_id=answer_pack.id,
             ),
         )
-        yield answer_pack
+        return answer_pack
 
     @pytest.fixture
     async def text_answer_entities(self, db, based_pack, member_service, command_method):
@@ -244,7 +244,7 @@ class TestRegenerateMessage:
                     content_type=AnswerEntityContentTypesEnum.TEXT,
                 ),
             )
-        yield None
+        return None
 
     @pytest.fixture
     async def command_method(
@@ -255,7 +255,7 @@ class TestRegenerateMessage:
         command_instance,
         based_pack,
     ):
-        yield EntertainmentCommandMethod(
+        return EntertainmentCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
@@ -267,13 +267,13 @@ class TestRegenerateMessage:
     async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
         message_service = MessageService(request_body=request_body_message)
         message_service.message.reply = reply_photo.message.reply
-        yield message_service
+        return message_service
 
     @pytest.fixture
     async def command_instance(
         self,
     ):
-        yield ValueListCommandSchema(
+        return ValueListCommandSchema(
             header="хлеб",
             command=EntertainmentCommandsEnum.REGENERATE_MESSAGE,
             value_list=["my_value", "my_value1"],

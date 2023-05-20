@@ -1,10 +1,10 @@
 import pytest
 
 from bread_bot.common.models import (
-    Member,
-    Chat,
     AnswerEntity,
+    Chat,
     DictionaryEntity,
+    Member,
 )
 from bread_bot.common.utils.structs import AnswerEntityContentTypesEnum
 
@@ -14,7 +14,7 @@ async def member_factory(db):
     async def _factory(username, member_id, **kwargs):
         return await Member.async_add_by_kwargs(db=db, username=username, member_id=member_id, **kwargs)
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -22,7 +22,7 @@ async def chat_factory(db):
     async def _factory(chat_id, name):
         return await Chat.async_add_by_kwargs(db=db, chat_id=chat_id, name=name)
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -38,7 +38,7 @@ async def text_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -54,7 +54,7 @@ async def voice_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -70,7 +70,7 @@ async def sticker_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -86,7 +86,7 @@ async def photo_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -102,7 +102,7 @@ async def gif_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -118,7 +118,7 @@ async def answer_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory
 
 
 @pytest.fixture
@@ -131,4 +131,4 @@ async def dictionary_entity_factory(db):
             **kwargs,
         )
 
-    yield _factory
+    return _factory

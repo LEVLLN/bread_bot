@@ -3,17 +3,17 @@ from sqlalchemy import and_
 
 from bread_bot.common.exceptions.base import RaiseUpException
 from bread_bot.common.models import (
+    AnswerEntity,
     AnswerPack,
     AnswerPacksToChats,
-    AnswerEntity,
     Chat,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
-    KeyValueParameterCommandSchema,
-    ValueListCommandSchema,
     CommandSchema,
+    KeyValueParameterCommandSchema,
     ValueCommandSchema,
+    ValueListCommandSchema,
 )
 from bread_bot.common.schemas.telegram_messages import MemberSchema
 from bread_bot.common.services.handlers.command_methods.admin_command_method import AdminCommandMethod
@@ -21,9 +21,9 @@ from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
     AdminCommandsEnum,
-    CommandAnswerParametersEnum,
-    AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
+    AnswerEntityReactionTypesEnum,
+    CommandAnswerParametersEnum,
 )
 
 
@@ -38,7 +38,7 @@ class BaseAdminCommand:
                 pack_id=answer_pack.id,
             ),
         )
-        yield answer_pack
+        return answer_pack
 
     @pytest.fixture
     async def admin_command_method(
@@ -49,7 +49,7 @@ class BaseAdminCommand:
         command_instance,
         based_pack,
     ):
-        yield AdminCommandMethod(
+        return AdminCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
@@ -65,7 +65,7 @@ class BaseAdminCommand:
         member_service,
         command_instance,
     ):
-        yield AdminCommandMethod(
+        return AdminCommandMethod(
             db=db,
             member_service=member_service,
             message_service=message_service,
@@ -79,7 +79,7 @@ class TestAdd(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield KeyValueParameterCommandSchema(
+        return KeyValueParameterCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.ADD,
             parameter=CommandAnswerParametersEnum.TRIGGER,
@@ -90,7 +90,7 @@ class TestAdd(BaseAdminCommand):
 
     @pytest.fixture
     async def text_answer_entity(self, db, based_pack, member_service, admin_command_method):
-        yield await AnswerEntity.async_add(
+        return await AnswerEntity.async_add(
             db=db,
             instance=AnswerEntity(
                 key=admin_command_method.command_instance.key,
@@ -177,7 +177,7 @@ class TestShowKeys(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.SHOW_KEYS,
             raw_command="покажи ключи",
@@ -187,7 +187,7 @@ class TestShowKeys(BaseAdminCommand):
     async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
         message_service = MessageService(request_body=request_body_message)
         message_service.message.reply = reply_photo.message.reply
-        yield message_service
+        return message_service
 
     @pytest.fixture
     async def answer_entity(self, db, based_pack, reply_photo):
@@ -218,13 +218,13 @@ class TestRemember(BaseAdminCommand):
     async def photo_message_service(self, request_body_message, reply_photo) -> MessageService:
         message_service = MessageService(request_body=request_body_message)
         message_service.message.reply = reply_photo.message.reply
-        yield message_service
+        return message_service
 
     @pytest.fixture
     async def command_instance(
         self,
     ):
-        yield ValueListCommandSchema(
+        return ValueListCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.REMEMBER,
             value_list=["my_value", "my_value1"],
@@ -446,7 +446,7 @@ class TestRemember(BaseAdminCommand):
     ):
         admin_command_method.message_service.message.reply = reply_sticker.message.reply
         admin_command_method.command_instance.command = command
-        result = await admin_command_method.execute()
+        await admin_command_method.execute()
         entities = await AnswerEntity.async_filter(
             db,
             where=and_(
@@ -454,7 +454,7 @@ class TestRemember(BaseAdminCommand):
             ),
         )
         assert len(entities) == 2
-        result = await admin_command_method.execute()
+        await admin_command_method.execute()
         entities = await AnswerEntity.async_filter(
             db,
             where=AnswerEntity.pack_id == based_pack.id,
@@ -467,7 +467,7 @@ class TestDelete(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.DELETE,
             raw_command="удали",
@@ -489,7 +489,7 @@ class TestDelete(BaseAdminCommand):
                 },
             ]
         }
-        yield mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=get_admin_members_result)
+        return mocker.patch.object(ExternalMemberService, "get_admin_members", return_value=get_admin_members_result)
 
     async def test_not_existed_packs(self, db, admin_command_method, command_instance, get_admin_mock, reply_text):
         admin_command_method.message_service.message.reply = reply_text.message
@@ -542,7 +542,7 @@ class TestAnswerChance(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.ANSWER_CHANCE,
             raw_command="процент",
@@ -552,7 +552,7 @@ class TestAnswerChance(BaseAdminCommand):
     async def command_value_instance(
         self,
     ):
-        yield ValueCommandSchema(
+        return ValueCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.ANSWER_CHANCE,
             value="100",
@@ -652,7 +652,7 @@ class TestCheckAnswer(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield ValueCommandSchema(
+        return ValueCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.CHECK_ANSWER,
             value="my_substring",
@@ -663,7 +663,7 @@ class TestCheckAnswer(BaseAdminCommand):
     @pytest.mark.parametrize(
         "reaction_type", [AnswerEntityReactionTypesEnum.SUBSTRING, AnswerEntityReactionTypesEnum.TRIGGER]
     )
-    async def test_existed_substring(
+    async def test_existed_reaction_type(
         self, db, admin_command_method, based_pack, command_instance, text_entity_factory, answer_chance, reaction_type
     ):
         based_pack.answer_chance = answer_chance
@@ -681,7 +681,7 @@ class TestCheckAnswer(BaseAdminCommand):
         assert result.text == "my_value"
 
     @pytest.mark.parametrize("answer_chance", [0, 100])
-    async def test_existed_substring(
+    async def test_not_existed_substring(
         self, db, admin_command_method, based_pack, command_instance, answer_chance
     ):
         based_pack.answer_chance = answer_chance
@@ -720,7 +720,7 @@ class TestSay(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield ValueCommandSchema(
+        return ValueCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.SAY,
             value="my_value",
@@ -746,7 +746,7 @@ class TestMorphAnswerChance(BaseAdminCommand):
     async def command_instance(
         self,
     ):
-        yield CommandSchema(
+        return CommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.MORPH_ANSWER_CHANCE,
             raw_command="процент бреда",
@@ -756,7 +756,7 @@ class TestMorphAnswerChance(BaseAdminCommand):
     async def command_value_instance(
         self,
     ):
-        yield ValueCommandSchema(
+        return ValueCommandSchema(
             header="хлеб",
             command=AdminCommandsEnum.MORPH_ANSWER_CHANCE,
             value="100",

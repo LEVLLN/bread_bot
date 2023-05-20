@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Text, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 
 from bread_bot.main.database import mixins

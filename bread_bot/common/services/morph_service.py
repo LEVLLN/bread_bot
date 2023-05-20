@@ -91,7 +91,7 @@ class MorphService:
         existed_dictionary_entities = await DictionaryEntity.async_filter(
             self.db, and_(DictionaryEntity.chat_id == self.chat_id, DictionaryEntity.value.in_(values))
         )
-        existed_values = set([item.value for item in existed_dictionary_entities])
+        existed_values = {item.value for item in existed_dictionary_entities}
         to_create_entities = []
         for value in values:
             if value in existed_values:

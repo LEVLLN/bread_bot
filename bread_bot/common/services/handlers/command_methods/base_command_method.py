@@ -8,17 +8,17 @@ from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.commands import (
     CommandSchema,
     KeyValueParameterCommandSchema,
-    ValueListCommandSchema,
-    ValueCommandSchema,
     ParameterCommandSchema,
+    ValueCommandSchema,
+    ValueListCommandSchema,
     ValueListParameterCommandSchema,
 )
 from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.member_service import MemberService
 from bread_bot.common.services.messages.message_service import MessageService
 from bread_bot.common.utils.structs import (
-    AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
+    AnswerEntityReactionTypesEnum,
 )
 
 COMMAND_INSTANCE_TYPE = (

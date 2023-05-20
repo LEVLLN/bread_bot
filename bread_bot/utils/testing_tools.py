@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from bread_bot.main.database.base import DeclarativeBase
 from bread_bot.main.webserver import app
-from bread_bot.utils.dependencies import get_sync_session, get_async_session
+from bread_bot.utils.dependencies import get_async_session, get_sync_session
 
 # Синхронные механизмы БД
 test_sync_engine = create_engine("sqlite:///:memory:?check_same_thread=False")

@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,8 +7,8 @@ from starlette import status
 from bread_bot.auth.methods.auth_methods import get_current_active_admin_user
 from bread_bot.common.clients.telegram_client import TelegramClient
 from bread_bot.common.models import Chat
-from bread_bot.common.schemas.api_models import SendMessageSchema, ChatSchema, ReleaseNotesSchema
-from bread_bot.common.schemas.telegram_messages import StandardBodySchema, ChatMemberBodySchema
+from bread_bot.common.schemas.api_models import ChatSchema, ReleaseNotesSchema, SendMessageSchema
+from bread_bot.common.schemas.telegram_messages import ChatMemberBodySchema, StandardBodySchema
 from bread_bot.common.services.messages.message_receiver import MessageReceiver
 from bread_bot.common.services.messages.message_sender import MessageSender
 from bread_bot.utils.dependencies import get_async_session
@@ -49,7 +48,7 @@ async def send_message_to_chat(
     return RESPONSE_OK
 
 
-@router.get("/chats", response_model=List[ChatSchema], dependencies=[Depends(get_current_active_admin_user)])
+@router.get("/chats", response_model=list[ChatSchema], dependencies=[Depends(get_current_active_admin_user)])
 async def get_chats(db: AsyncSession = Depends(get_async_session)):
     return await Chat.async_filter(db, where=Chat.chat_id < 0)
 

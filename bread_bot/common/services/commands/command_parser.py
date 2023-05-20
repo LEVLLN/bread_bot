@@ -1,22 +1,21 @@
 import re
 from functools import wraps
-from typing import Tuple
 
 from pydantic import ValidationError
 
 from bread_bot.common.exceptions.commands import (
-    NotAvailableCommandException,
     CommandParseException,
+    NotAvailableCommandException,
 )
 from bread_bot.common.schemas.commands import (
     CommandSchema,
-    ParameterCommandSchema,
-    ValueListCommandSchema,
-    ValueCommandSchema,
-    KeyValueParameterCommandSchema,
-    ValueParameterCommandSchema,
-    ValueListParameterCommandSchema,
     CommandSettingsSchema,
+    KeyValueParameterCommandSchema,
+    ParameterCommandSchema,
+    ValueCommandSchema,
+    ValueListCommandSchema,
+    ValueListParameterCommandSchema,
+    ValueParameterCommandSchema,
 )
 from bread_bot.common.services.commands.command_settings import CommandSettings
 from bread_bot.common.utils import structs
@@ -43,7 +42,7 @@ class CommandParser:
         return wrapper
 
     @staticmethod
-    def parse_properties(keys: list, source_text: str) -> Tuple[str, str]:
+    def parse_properties(keys: list, source_text: str) -> tuple[str, str]:
         """
         Парсинг свойств исходного текста и отделение ключевого значения
         """
@@ -65,9 +64,9 @@ class CommandParser:
             parameter_list = [
                 rest,
             ]
-        return list(map(lambda x: x.strip(), parameter_list))
+        return [x.strip() for x in parameter_list]
 
-    def _find_header(self) -> Tuple[str, str]:
+    def _find_header(self) -> tuple[str, str]:
         """
         Поиск обращения к боту
         """
@@ -76,7 +75,7 @@ class CommandParser:
         except IndexError:
             raise NotAvailableCommandException("Не найдено ключевое слово бота")
 
-    def _find_command(self, rest: str) -> Tuple[str, str]:
+    def _find_command(self, rest: str) -> tuple[str, str]:
         """
         Поиск команд
         """
@@ -87,7 +86,7 @@ class CommandParser:
         else:
             return command.strip().lower(), rest
 
-    def _find_parameters(self, rest: str) -> Tuple[CommandAnswerParametersEnum, str]:
+    def _find_parameters(self, rest: str) -> tuple[CommandAnswerParametersEnum, str]:
         """
         Поиск параметров
         """

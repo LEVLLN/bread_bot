@@ -1,4 +1,3 @@
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -25,7 +24,7 @@ class ChatSchema(BaseModel):
 
 
 class MemberDBSchema(MemberSchema):
-    member_id: Optional[int] = None
+    member_id: int | None = None
 
     class Config:
         orm_mode = True
@@ -33,7 +32,7 @@ class MemberDBSchema(MemberSchema):
 
 class ForismaticQuote(BaseModel):
     text: str = Field(..., alias="quoteText")
-    author: Optional[str] = Field("Unknown", alias="quoteAuthor")
+    author: str | None = Field("Unknown", alias="quoteAuthor")
 
     class Config:
         allow_population_by_field_name = True

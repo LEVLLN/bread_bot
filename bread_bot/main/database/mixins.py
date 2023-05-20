@@ -2,13 +2,13 @@ import datetime
 import logging
 
 from sqlalchemy import (
-    Column,
-    Integer,
-    DateTime,
-    inspect,
     Boolean,
-    select,
+    Column,
+    DateTime,
+    Integer,
     delete,
+    inspect,
+    select,
 )
 from sqlalchemy.engine import ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -51,7 +51,7 @@ class BaseModel(DeclarativeBase):
         return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
 
 
-class CRUDMixin(object):
+class CRUDMixin:
     """
     Различные методы, которые упрощают реализацию запросов
     """

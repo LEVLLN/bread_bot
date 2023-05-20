@@ -3,7 +3,7 @@ import math
 import random
 import re
 
-from sqlalchemy import select, and_
+from sqlalchemy import and_, select
 
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerEntity
@@ -15,8 +15,8 @@ from bread_bot.common.services.morph_service import MorphService
 from bread_bot.common.utils.structs import (
     ALTER_NAMES,
     BOT_NAME,
-    EntertainmentCommandsEnum,
     AnswerEntityContentTypesEnum,
+    EntertainmentCommandsEnum,
 )
 
 

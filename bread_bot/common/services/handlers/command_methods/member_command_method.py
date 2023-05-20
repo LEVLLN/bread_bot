@@ -8,8 +8,8 @@ from bread_bot.common.models import (
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.services.handlers.command_methods.base_command_method import (
-    BaseCommandMethod,
     COMMAND_INSTANCE_TYPE,
+    BaseCommandMethod,
 )
 from bread_bot.common.services.member_service import ExternalMemberService, MemberService
 from bread_bot.common.services.messages.message_service import MessageService

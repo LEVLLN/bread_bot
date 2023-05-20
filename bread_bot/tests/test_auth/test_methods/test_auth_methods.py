@@ -7,15 +7,15 @@ from freezegun import freeze_time
 from jose import jwt
 
 from bread_bot.auth.methods.auth_methods import (
-    get_password_hash,
-    verify_password,
     authenticate_user,
     create_access_token,
-    get_current_user,
     get_current_active_user,
+    get_current_user,
+    get_password_hash,
+    verify_password,
 )
 from bread_bot.auth.models import User
-from bread_bot.main.settings import ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY, ALGORITHM
+from bread_bot.main.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 from bread_bot.utils.testing_tools import init_async_session
 
 

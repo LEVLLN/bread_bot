@@ -1,6 +1,5 @@
 import logging
 import random
-from typing import Optional
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -29,7 +28,7 @@ class BaneksClient(BaseHTTPClient):
         )
         return response.text
 
-    async def get_text(self) -> Optional[str]:
+    async def get_text(self) -> str | None:
         try:
             html = await self.get_quote()
             text = (

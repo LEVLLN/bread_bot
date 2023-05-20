@@ -3,12 +3,10 @@ import unittest
 
 from httpx import AsyncClient
 
-from bread_bot.auth.methods.auth_methods import get_password_hash, \
-    create_access_token
+from bread_bot.auth.methods.auth_methods import create_access_token, get_password_hash
 from bread_bot.auth.models import User
 from bread_bot.auth.schemas.auth import UserInfoSchema
-from bread_bot.utils.testing_tools import init_async_session, test_app, \
-    TEST_SERVER_URL
+from bread_bot.utils.testing_tools import TEST_SERVER_URL, init_async_session, test_app
 
 
 class GetUsersTestCase(unittest.IsolatedAsyncioTestCase):

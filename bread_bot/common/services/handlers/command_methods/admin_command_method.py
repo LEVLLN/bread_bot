@@ -3,10 +3,10 @@ import logging
 from sqlalchemy import and_
 from sqlalchemy.sql.elements import BinaryExpression
 
-from bread_bot.common.exceptions.base import RaiseUpException, NextStepException
+from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import (
-    AnswerPack,
     AnswerEntity,
+    AnswerPack,
     Chat,
 )
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
@@ -21,10 +21,10 @@ from bread_bot.common.services.handlers.command_methods.base_command_method impo
 from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.services.messages.message_service import Content
 from bread_bot.common.utils.structs import (
-    AdminCommandsEnum,
     ANSWER_ENTITY_MAP,
-    AnswerEntityReactionTypesEnum,
+    AdminCommandsEnum,
     AnswerEntityContentTypesEnum,
+    AnswerEntityReactionTypesEnum,
 )
 
 logger = logging.getLogger(__name__)
@@ -97,15 +97,15 @@ class AdminCommandMethod(BaseCommandMethod):
             for_update=True,
         )
         if entity is None:
-            instance_params = dict(
-                pack_id=self.default_answer_pack.id,
-                key=key.lower(),
-                value=value,
-                reaction_type=reaction_type,
-                content_type=content_type,
-            )
+            instance_params = {
+                "pack_id": self.default_answer_pack.id,
+                "key": key.lower(),
+                "value": value,
+                "reaction_type": reaction_type,
+                "content_type": content_type,
+            }
             if description is not None:
-                instance_params.update(dict(description=description))
+                instance_params.update({"description": description})
             await AnswerEntity.async_add(db=self.db, instance=AnswerEntity(**instance_params))
         return super()._return_answer()
 
