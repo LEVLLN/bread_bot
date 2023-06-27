@@ -31,9 +31,15 @@ DATABASE_SETTINGS = {
     }
 }
 
-DATABASE_URI = "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}".format(**DATABASE_SETTINGS["default"])
-ASYNC_DATABASE_URI = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}".format(
-    **DATABASE_SETTINGS["default"]
+DATABASE_URI = (
+    "postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}".format(
+        **DATABASE_SETTINGS["default"]
+    )
+)
+ASYNC_DATABASE_URI = (
+    "postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}".format(
+        **DATABASE_SETTINGS["default"]
+    )
 )
 
 # Security
@@ -41,7 +47,12 @@ SECRET_KEY = os.getenv("SECRET_KEY", "some_secret_key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-CORS_ALLOW_ORIGINS = json.dumps(os.getenv("CORS_ALLOW_ORIGINS", "[localhost:8000,localhost:8080]"))
+CORS_ALLOW_ORIGINS = json.dumps(
+    os.getenv("CORS_ALLOW_ORIGINS", "[localhost:8000,localhost:8080]")
+)
+
+OPENAI_TOKEN: str | None = os.getenv("OPENAI_TOKEN", None)
+OPENAI_ORGANIZATION: str | None = os.getenv("OPENAI_ORGANIZATION", None)
 
 # Logging
 ENABLE_TELEMETRY = os.getenv("ENABLE_TELEMETRY", "true") == "true"
@@ -116,7 +127,9 @@ DEFAULT_SENSITIVE_KEY_WORDS = (
 )
 
 AUTO_MASK_LOGS = os.getenv("AUTO_MASK_LOGS", "false") == "true"
-DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = "|".join(map(lambda x: f"\\b{x}\\b", DEFAULT_SENSITIVE_KEY_WORDS))
+DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = "|".join(
+    map(lambda x: f"\\b{x}\\b", DEFAULT_SENSITIVE_KEY_WORDS)
+)
 # Telegramer
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 APP_HOST = os.getenv("APP_HOST", "localhost:8080")
