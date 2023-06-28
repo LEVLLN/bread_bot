@@ -306,6 +306,14 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
+            aliases=["что думаешь про"],
+            command=EntertainmentCommandsEnum.THINK,
+            description="",
+            examples=[
+                f"{BOT_NAME} что думаешь про солнце",
+            ],
+        ),
+        CommandSettingsSchema(
             aliases=["добавь бред"],
             command=EntertainmentCommandsEnum.ADD_MORPH_ENTITIES,
             description="Наполнение словаря для бреда",
@@ -406,7 +414,10 @@ class CommandSettings:
 
     @cached_property
     def parameters_value_to_enum(self):
-        return {parameter.value: parameter for parameter in CommandAnswerParametersEnum.list()}
+        return {
+            parameter.value: parameter
+            for parameter in CommandAnswerParametersEnum.list()
+        }
 
     @property
     def command_settings(self):

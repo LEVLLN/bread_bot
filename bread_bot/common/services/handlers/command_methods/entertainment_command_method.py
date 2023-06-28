@@ -5,13 +5,17 @@ import re
 
 from sqlalchemy import select, and_
 
+from bread_bot.common.clients.openai_client import get_chat_gpt_client  # noqa
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerEntity
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.commands.command_settings import CommandSettings
-from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
+from bread_bot.common.services.handlers.command_methods.base_command_method import (
+    BaseCommandMethod,
+)
 from bread_bot.common.services.morph_service import MorphService
+from bread_bot.common.services.think_service import ThinkService
 from bread_bot.common.utils.structs import (
     ALTER_NAMES,
     BOT_NAME,
@@ -49,6 +53,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return await self.morph_word()
             case EntertainmentCommandsEnum.MORPH_WORD_DEBUG:
                 return await self.morph_word(debug=True)
+            case EntertainmentCommandsEnum.THINK:
+                return await self.think_about()
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -58,7 +64,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         )
 
     def choose_variant(self):
-        return super()._return_answer(random.choice(self.command_instance.value_list).strip())
+        return super()._return_answer(
+            random.choice(self.command_instance.value_list).strip()
+        )
 
     def get_random(self):
         return super()._return_answer(str(random.randint(0, 10000)))
@@ -78,7 +86,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         else:
             date = today - delta
         str_date = date.strftime("%d.%m.%Y")
-        verb = self.command_instance.raw_command.lower().replace("когда", "").replace("ё", "е").lstrip()
+        verb = (
+            self.command_instance.raw_command.lower()
+            .replace("когда", "")
+            .replace("ё", "е")
+            .lstrip()
+        )
         if verb == "":
             super()._return_answer(f"{rest_text} в {str_date}")
         return super()._return_answer(f"{rest_text} {verb} в {str_date}")
@@ -106,7 +119,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
             keys.update(value_list)
         return keys
 
-    async def _replace_strategy(self, reply: BaseMessageSchema, content_type: AnswerEntityContentTypesEnum):
+    async def _replace_strategy(
+        self, reply: BaseMessageSchema, content_type: AnswerEntityContentTypesEnum
+    ):
         values_for_replacing = await self._get_values_for_replacing()
         match content_type:
             case AnswerEntityContentTypesEnum.TEXT:
@@ -122,7 +137,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 for i in range(0, math.ceil(words_count * coefficient)):
                     if words[random.randint(0, words_count - 1)] == "\n":
                         continue
-                    words[random.randint(0, words_count - 1)] = random.choice(list(values_for_replacing))
+                    words[random.randint(0, words_count - 1)] = random.choice(
+                        list(values_for_replacing)
+                    )
                 return " ".join(words)
             case _:
                 raise NextStepException
@@ -150,17 +167,23 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def add_morph_values(self):
         if not self.command_instance.value_list:
             raise RaiseUpException("Укажите слова через запятую")
-        await MorphService(db=self.db, chat_id=self.member_service.chat.id).add_values(self.command_instance.value_list)
+        await MorphService(db=self.db, chat_id=self.member_service.chat.id).add_values(
+            self.command_instance.value_list
+        )
         return super()._return_answer()
 
     async def delete_morph_value(self):
         if not self.command_instance.value:
             raise RaiseUpException("Укажите слово, которое надо удалить")
-        await MorphService(db=self.db, chat_id=self.member_service.chat.id).delete_value(self.command_instance.value)
+        await MorphService(
+            db=self.db, chat_id=self.member_service.chat.id
+        ).delete_value(self.command_instance.value)
         return super()._return_answer()
 
     async def show_morph_values(self):
-        result = await MorphService(db=self.db, chat_id=self.member_service.chat.id).show_values()
+        result = await MorphService(
+            db=self.db, chat_id=self.member_service.chat.id
+        ).show_values()
         if not result:
             return super()._return_answer("Не найдено слов")
         return super()._return_answer(f"{result}")
@@ -176,6 +199,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
             return super()._return_answer("Не найдено слов")
         return super()._return_answer(f"{result}")
 
+    async def think_about(self):
+        things = await ThinkService().think_about(
+            f"{self.command_instance.raw_command} {self.command_instance.rest_text}"
+        )
+        return self._return_answer(things)
+
     def help(self):
         if not self.command_instance.rest_text:
             result = (
@@ -184,7 +213,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
             )
             return super()._return_answer(result)
 
-        command = CommandSettings().alias_to_settings.get(self.command_instance.rest_text)
+        command = CommandSettings().alias_to_settings.get(
+            self.command_instance.rest_text
+        )
         if not command:
             return super()._return_answer(self._show_all_commands())
 
@@ -198,7 +229,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         if command.to_find_for_key_values:
             result += "   - Можно указать ключ и значение в виде: my_key=my_value\n"
         if command.to_find_for_values_list:
-            result += "   - Можно указать список значений, перечисляя через ',' / 'или'\n"
+            result += (
+                "   - Можно указать список значений, перечисляя через ',' / 'или'\n"
+            )
         for i, example in enumerate(command.examples, 1):
             result += f"   Пример {i}: {example}\n"
 

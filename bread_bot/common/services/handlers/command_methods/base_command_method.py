@@ -46,7 +46,7 @@ class BaseCommandMethod:
         self.message_service: MessageService = message_service
         self.default_answer_pack: AnswerPack = default_answer_pack
 
-    COMPLETE_MESSAGES = ["Сделал", "Есть, сэр!", "Выполнено", "Принял"]
+    COMPLETE_MESSAGES = ["Слушаю и повинуюсь", "Есть, сэр!", "Выполнено", "Принял"]
 
     def _return_answer(self, text: str | None = None):
         """Вернуть текстовый ответ пользователю"""
@@ -60,12 +60,16 @@ class BaseCommandMethod:
     def _check_length_key(reaction_type: AnswerEntityReactionTypesEnum, key: str):
         """Обязательная проверка ключей"""
         if reaction_type != AnswerEntityReactionTypesEnum.TRIGGER and len(key) < 3:
-            raise RaiseUpException("Ключ для подстроки не может быть меньше 3-х символов")
+            raise RaiseUpException(
+                "Ключ для подстроки не может быть меньше 3-х символов"
+            )
 
     def _check_reply_existed(self):
         """Обязательная проверка значения"""
         if self.message_service.message.reply is None:
-            raise RaiseUpException("Необходимо выбрать сообщение в качестве ответа для обработки")
+            raise RaiseUpException(
+                "Необходимо выбрать сообщение в качестве ответа для обработки"
+            )
 
     @classmethod
     def _select_content_from_reply(
