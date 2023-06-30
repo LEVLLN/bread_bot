@@ -414,10 +414,7 @@ class CommandSettings:
 
     @cached_property
     def parameters_value_to_enum(self):
-        return {
-            parameter.value: parameter
-            for parameter in CommandAnswerParametersEnum.list()
-        }
+        return {parameter.value: parameter for parameter in CommandAnswerParametersEnum.list()}
 
     @property
     def command_settings(self):

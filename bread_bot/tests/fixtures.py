@@ -207,7 +207,9 @@ def reply_gif():
                         "width": 220,
                         "height": 220,
                         "thumb": {
-                            "file_id": "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ",
+                            "file_id": (
+                                "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ"
+                            ),
                             "file_unique_id": "AQADDAMAAuTuDVNy",
                             "file_size": 7292,
                             "width": 220,
@@ -221,7 +223,9 @@ def reply_gif():
                         "file_name": "scrubs-dr-perrycox.mp4",
                         "mime_type": "video/mp4",
                         "thumb": {
-                            "file_id": "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ",
+                            "file_id": (
+                                "AAMCBAADGQEAAoqiY3wUIwAByXTLsz_tohgT0iQnyDpaAAIMAwAC5O4NUyOsp4F0bTr0AQAHbQADKwQ"
+                            ),
                             "file_unique_id": "AQADDAMAAuTuDVNy",
                             "file_size": 7292,
                             "width": 220,

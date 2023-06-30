@@ -19,9 +19,7 @@ class ChatGptClient:
         try:
             chat_completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "user", "content": f"{context_prompt} {user_prompt}"}
-                ],
+                messages=[{"role": "user", "content": f"{context_prompt} {user_prompt}"}],
             )
         except OpenAIError as e:
             logger.exception("ChatGPT service exception", exc_info=e)
