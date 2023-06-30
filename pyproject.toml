@@ -39,6 +39,7 @@ pydantic = {version = "1.10.2", extras = ["email"]}
 certifi = "2022.12.07"
 pymorphy2 = { git = "https://github.com/LEVLLN/pymorphy3-11" }
 pymorphy2-dicts-ru = "^2.4.417127.4579844"
+openai = "^0.27.8"
 
 
 [tool.poetry.group.dev.dependencies]
