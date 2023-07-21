@@ -46,7 +46,7 @@ class BaseCommandMethod:
         self.message_service: MessageService = message_service
         self.default_answer_pack: AnswerPack = default_answer_pack
 
-    COMPLETE_MESSAGES = ["Слушаю и повинуюсь", "Есть, сэр!", "Выполнено", "Принял"]
+    COMPLETE_MESSAGES = ["Сделал", "Слушаю и повинуюсь", "Есть, сэр!", "Выполнено", "Принял"]
 
     def _return_answer(self, text: str | None = None):
         """Вернуть текстовый ответ пользователю"""

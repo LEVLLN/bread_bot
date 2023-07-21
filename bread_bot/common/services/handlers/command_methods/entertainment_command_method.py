@@ -183,9 +183,9 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         return super()._return_answer(f"{result}")
 
     async def think_about(self):
-        things = await ThinkService().think_about(
-            f"{self.command_instance.raw_command} {self.command_instance.rest_text}"
-        )
+        if not self.member_service.chat.is_openai_enabled:
+            raise RaiseUpException("Для данной группы функция недоступна. Скоро будет платной.")
+        things = await ThinkService().think_about(self.command_instance.rest_text)
         return self._return_answer(things)
 
     def help(self):

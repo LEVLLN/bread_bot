@@ -56,19 +56,21 @@ async def test_what_you_think_is_available(db, message_factory):
     assert message is not None
 
 
-async def test_chat_gpt_excepted(db, message_factory):
+async def test_chat_gpt_excepted(db, chat_factory, message_factory):
     message = f"{BOT_NAME} что думаешь про воду"
     body = message_factory(message)
+    await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
     message_receiver = MessageReceiver(db=db, request_body=body)
 
     result = await message_receiver.receive()
 
-    assert result.text == "Не могу думать, думалка не работает((("
+    assert result.text == "Ошибка работы получения ответа"
 
 
-async def test_what_you_think(db, message_factory, mocker: MockerFixture):
+async def test_what_you_think(db, chat_factory, message_factory, mocker: MockerFixture):
     message = f"{BOT_NAME} что думаешь про воду"
     body = message_factory(message)
+    await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
     message_receiver = MessageReceiver(db=db, request_body=body)
 
     spy = AsyncMock(return_value="Вода чертовски хороша!")
@@ -77,6 +79,7 @@ async def test_what_you_think(db, message_factory, mocker: MockerFixture):
         return_value=MagicMock(get_chatgpt_answer=spy),
     )
     result = await message_receiver.receive()
-
     assert result.text == "Вода чертовски хороша!"
-    spy.assert_called_once_with("Будь мудр и эпичен при ответе", "что думаешь про воду")
+    spy.assert_called_once_with(
+        "Расскажи, что ты думаешь про воду. Расскажи об этом в юмористической и саркастической форме."
+    )

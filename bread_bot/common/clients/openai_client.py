@@ -15,11 +15,11 @@ class ChatGptClient:
         openai.organization = self.organization = OPENAI_ORGANIZATION
         openai.api_key = self.api_key = OPENAI_TOKEN
 
-    async def get_chatgpt_answer(self, context_prompt: str, user_prompt: str) -> str:
+    async def get_chatgpt_answer(self, query: str) -> str:
         try:
             chat_completion = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": f"{context_prompt} {user_prompt}"}],
+                messages=[{"role": "user", "content": query}],
             )
         except OpenAIError as e:
             logger.exception("ChatGPT service exception", exc_info=e)

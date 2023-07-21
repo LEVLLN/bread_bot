@@ -20,6 +20,6 @@ async def test_get_chatgpt_answer_without_credentilas():
     client = get_chat_gpt_client()
 
     with pytest.raises(RequestError) as t:
-        await client.get_chatgpt_answer("", "")
+        await client.get_chatgpt_answer("")
 
     assert t.match("No API key provided")

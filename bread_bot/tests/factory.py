@@ -19,8 +19,8 @@ async def member_factory(db):
 
 @pytest.fixture
 async def chat_factory(db):
-    async def _factory(chat_id, name):
-        return await Chat.async_add_by_kwargs(db=db, chat_id=chat_id, name=name)
+    async def _factory(chat_id, name, **kwargs):
+        return await Chat.async_add_by_kwargs(db=db, chat_id=chat_id, name=name, **kwargs)
 
     yield _factory
 

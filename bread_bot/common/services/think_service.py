@@ -7,18 +7,16 @@ from bread_bot.common.clients.openai_client import get_chat_gpt_client
 
 
 class ThinkService:
-    async def think_about(self, question: str) -> str:
+    async def _get_answer(self, full_query: str) -> str:
         client = get_chat_gpt_client()
         try:
-            result = await client.get_chatgpt_answer(
-                await self.get_prompt(),
-                question,
-            )
-            return result
+            result = await client.get_chatgpt_answer(full_query)
         except RequestError:
-            return "Не могу думать, думалка не работает((("
+            return "Ошибка работы получения ответа"
+        else:
+            return result
 
-    @lru_cache
-    async def get_prompt(self) -> str:
-        # TODO: Нужна более гибкая система добавления промпта
-        return os.getenv("MAIN_PROMPT", "Будь мудр и эпичен при ответе")
+    async def think_about(self, question: str) -> str:
+        return await self._get_answer(
+            f"Расскажи, что ты думаешь про {question}. Расскажи об этом в юмористической и саркастической форме."
+        )

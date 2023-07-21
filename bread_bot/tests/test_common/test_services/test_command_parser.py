@@ -8,7 +8,6 @@ from bread_bot.common.schemas.commands import (
     ParameterCommandSchema,
     ValueListCommandSchema,
     KeyValueParameterCommandSchema,
-    ValueParameterCommandSchema,
     CommandSchema,
     ValueCommandSchema,
 )
