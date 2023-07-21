@@ -15,5 +15,6 @@ class ThinkService:
 
     async def think_about(self, question: str) -> str:
         return await self._get_answer(
-            f"Расскажи, что ты думаешь про {question}. Расскажи об этом в юмористической и саркастической форме."
+            f"Расскажи, что ты думаешь про {question}. Уложись в три-четыре предложения. Расскажи об этом в "
+            f"юмористической и саркастической форме."
         )
