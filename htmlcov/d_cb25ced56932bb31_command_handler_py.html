@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for bread_bot/common/services/handlers/command_handler.py: 67.9%</title>
+    <title>Coverage for bread_bot/common/services/handlers/command_handler.py: 78.6%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>bread_bot/common/services/handlers/command_handler.py</b>:
-            <span class="pc_cov">67.9%</span>
+            <span class="pc_cov">78.6%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">28 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">19<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">9<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">22<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">6<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_0cd7dd7b8d371720_admin_command_method_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-07-07 21:41 +0000
+            created at 2023-07-21 12:45 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -102,7 +102,7 @@
     <p class="pln"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">    <span class="key">async</span> <span class="key">def</span> <span class="nam">process</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span> <span class="op">-></span> <span class="nam">BaseAnswerSchema</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">        <span class="key">if</span> <span class="key">not</span> <span class="key">await</span> <span class="nam">self</span><span class="op">.</span><span class="nam">condition</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">            <span class="key">raise</span> <span class="nam">NextStepException</span><span class="op">(</span><span class="str">"&#1053;&#1077; &#1087;&#1086;&#1076;&#1093;&#1086;&#1076;&#1080;&#1090; &#1091;&#1089;&#1083;&#1086;&#1074;&#1080;&#1077; &#1076;&#1083;&#1103; &#1086;&#1073;&#1088;&#1072;&#1073;&#1086;&#1090;&#1082;&#1080;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">            <span class="key">raise</span> <span class="nam">NextStepException</span><span class="op">(</span><span class="str">"&#1053;&#1077; &#1087;&#1086;&#1076;&#1093;&#1086;&#1076;&#1080;&#1090; &#1091;&#1089;&#1083;&#1086;&#1074;&#1080;&#1077; &#1076;&#1083;&#1103; &#1086;&#1073;&#1088;&#1072;&#1073;&#1086;&#1090;&#1082;&#1080;"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">        <span class="nam">command_instance</span> <span class="op">=</span> <span class="nam">CommandParser</span><span class="op">(</span><span class="nam">message_text</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">message_service</span><span class="op">.</span><span class="nam">message</span><span class="op">.</span><span class="nam">text</span><span class="op">)</span><span class="op">.</span><span class="nam">parse</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="nam">command_params</span> <span class="op">=</span> <span class="nam">dict</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">            <span class="nam">db</span><span class="op">=</span><span class="nam">self</span><span class="op">.</span><span class="nam">db</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -114,8 +114,8 @@
     <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">        <span class="key">match</span> <span class="nam">command_instance</span><span class="op">.</span><span class="nam">command</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">            <span class="key">case</span> <span class="nam">AdminCommandsEnum</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">                <span class="key">return</span> <span class="key">await</span> <span class="nam">AdminCommandMethod</span><span class="op">(</span><span class="op">**</span><span class="nam">command_params</span><span class="op">)</span><span class="op">.</span><span class="nam">execute</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">            <span class="key">case</span> <span class="nam">EntertainmentCommandsEnum</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">                <span class="key">return</span> <span class="key">await</span> <span class="nam">EntertainmentCommandMethod</span><span class="op">(</span><span class="op">**</span><span class="nam">command_params</span><span class="op">)</span><span class="op">.</span><span class="nam">execute</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t">            <span class="key">case</span> <span class="nam">EntertainmentCommandsEnum</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t">                <span class="key">return</span> <span class="key">await</span> <span class="nam">EntertainmentCommandMethod</span><span class="op">(</span><span class="op">**</span><span class="nam">command_params</span><span class="op">)</span><span class="op">.</span><span class="nam">execute</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">            <span class="key">case</span> <span class="nam">MemberCommandsEnum</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t">                <span class="key">return</span> <span class="key">await</span> <span class="nam">MemberCommandMethod</span><span class="op">(</span><span class="op">**</span><span class="nam">command_params</span><span class="op">)</span><span class="op">.</span><span class="nam">execute</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t">            <span class="key">case</span> <span class="nam">IntegrationCommandsEnum</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -131,7 +131,7 @@
             <a id="nextFileLink" class="nav" href="d_0cd7dd7b8d371720_admin_command_method_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-07-07 21:41 +0000
+            created at 2023-07-21 12:45 +0000
         </p>
     </div>
 </footer>
