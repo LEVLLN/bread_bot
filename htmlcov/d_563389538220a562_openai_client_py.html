@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_563389538220a562_telegram_client_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-07-21 12:45 +0000
+            created at 2023-07-21 17:09 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -97,11 +97,11 @@
     <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">        <span class="nam">openai</span><span class="op">.</span><span class="nam">organization</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">organization</span> <span class="op">=</span> <span class="nam">OPENAI_ORGANIZATION</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">        <span class="nam">openai</span><span class="op">.</span><span class="nam">api_key</span> <span class="op">=</span> <span class="nam">self</span><span class="op">.</span><span class="nam">api_key</span> <span class="op">=</span> <span class="nam">OPENAI_TOKEN</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="key">async</span> <span class="key">def</span> <span class="nam">get_chatgpt_answer</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">context_prompt</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span> <span class="nam">user_prompt</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="key">async</span> <span class="key">def</span> <span class="nam">get_chatgpt_answer</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">query</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">        <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">            <span class="nam">chat_completion</span> <span class="op">=</span> <span class="nam">openai</span><span class="op">.</span><span class="nam">ChatCompletion</span><span class="op">.</span><span class="nam">create</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">                <span class="nam">model</span><span class="op">=</span><span class="str">"gpt-3.5-turbo"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">                <span class="nam">messages</span><span class="op">=</span><span class="op">[</span><span class="op">{</span><span class="str">"role"</span><span class="op">:</span> <span class="str">"user"</span><span class="op">,</span> <span class="str">"content"</span><span class="op">:</span> <span class="str">f"{context_prompt} {user_prompt}"</span><span class="op">}</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">                <span class="nam">messages</span><span class="op">=</span><span class="op">[</span><span class="op">{</span><span class="str">"role"</span><span class="op">:</span> <span class="str">"user"</span><span class="op">,</span> <span class="str">"content"</span><span class="op">:</span> <span class="nam">query</span><span class="op">}</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">            <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">        <span class="key">except</span> <span class="nam">OpenAIError</span> <span class="key">as</span> <span class="nam">e</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">exception</span><span class="op">(</span><span class="str">"ChatGPT service exception"</span><span class="op">,</span> <span class="nam">exc_info</span><span class="op">=</span><span class="nam">e</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -122,7 +122,7 @@
             <a id="nextFileLink" class="nav" href="d_563389538220a562_telegram_client_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.2.7">coverage.py v7.2.7</a>,
-            created at 2023-07-21 12:45 +0000
+            created at 2023-07-21 17:09 +0000
         </p>
     </div>
 </footer>
