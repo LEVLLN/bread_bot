@@ -446,7 +446,7 @@ class TestRemember(BaseAdminCommand):
     ):
         admin_command_method.message_service.message.reply = reply_sticker.message.reply
         admin_command_method.command_instance.command = command
-        result = await admin_command_method.execute()
+        await admin_command_method.execute()
         entities = await AnswerEntity.async_filter(
             db,
             where=and_(
@@ -454,7 +454,7 @@ class TestRemember(BaseAdminCommand):
             ),
         )
         assert len(entities) == 2
-        result = await admin_command_method.execute()
+        await admin_command_method.execute()
         entities = await AnswerEntity.async_filter(
             db,
             where=AnswerEntity.pack_id == based_pack.id,
@@ -660,9 +660,7 @@ class TestCheckAnswer(BaseAdminCommand):
         )
 
     @pytest.mark.parametrize("answer_chance", [0, 100])
-    @pytest.mark.parametrize(
-        "reaction_type", [AnswerEntityReactionTypesEnum.SUBSTRING, AnswerEntityReactionTypesEnum.TRIGGER]
-    )
+    @pytest.mark.parametrize("reaction_type", [AnswerEntityReactionTypesEnum.SUBSTRING])
     async def test_existed_substring(
         self, db, admin_command_method, based_pack, command_instance, text_entity_factory, answer_chance, reaction_type
     ):
@@ -681,9 +679,7 @@ class TestCheckAnswer(BaseAdminCommand):
         assert result.text == "my_value"
 
     @pytest.mark.parametrize("answer_chance", [0, 100])
-    async def test_existed_substring(
-        self, db, admin_command_method, based_pack, command_instance, answer_chance
-    ):
+    async def test_not_existed_substring(self, db, admin_command_method, based_pack, command_instance, answer_chance):
         based_pack.answer_chance = answer_chance
         await AnswerPack.async_add(db, based_pack)
 

@@ -46,8 +46,10 @@ async def test_receive_fallback(db, mocker, message_service, exception, expected
 
 
 @pytest.mark.parametrize(
-    "message_text, called_command_handler, called_trigger_handler, "
-    "called_substring_handler, called_empty_result_handler, expected",
+    (
+        "message_text, called_command_handler, called_trigger_handler, "
+        "called_substring_handler, called_empty_result_handler, expected"
+    ),
     [
         (
             "Хлеб добавь подстроку",

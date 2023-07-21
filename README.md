@@ -48,7 +48,7 @@
       бизнес-сущностью) структуры для удобства использования
 - модуль [server.py](server.py) запускает настроенный веб-сервер приложения
 - папка `requirements` - папка с зависимостями проекта
-- файл [tox.ini](tox.ini) - Конфигурация для codestyle проекта
+- файл [tox.ini](pyproject.toml) - Конфигурация для codestyle проекта
 
 # settings Примеры некоторых настроек
 
@@ -235,13 +235,13 @@ coverage run -m pytest bread_bot/tests
 Запустить вывод отчета по покрытию тестами
 
 ```shell
-coverage report -m 
+coverage report -m
 ```
 
 Запустить вывод отчета в html формате
 
 ```shell
-coverage html 
+coverage html
 ```
 
 Удалить данные отчета

@@ -306,6 +306,14 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
+            aliases=["что думаешь про"],
+            command=EntertainmentCommandsEnum.THINK,
+            description="",
+            examples=[
+                f"{BOT_NAME} что думаешь про солнце",
+            ],
+        ),
+        CommandSettingsSchema(
             aliases=["добавь бред"],
             command=EntertainmentCommandsEnum.ADD_MORPH_ENTITIES,
             description="Наполнение словаря для бреда",

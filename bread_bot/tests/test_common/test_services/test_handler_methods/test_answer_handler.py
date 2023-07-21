@@ -392,16 +392,16 @@ class TestAnswerHandler:
         ],
     )
     async def test_performance(
-            self,
-            db,
-            prepare_data,
-            text_entity_factory,
-            based_pack,
-            substring_answer_handler,
-            dictionary_entity_factory,
-            morph_text,
-            entity_key,
-            raw_word_in_text,
+        self,
+        db,
+        prepare_data,
+        text_entity_factory,
+        based_pack,
+        substring_answer_handler,
+        dictionary_entity_factory,
+        morph_text,
+        entity_key,
+        raw_word_in_text,
     ):
         keys = [f"{key}-слово" for key in range(1, 5154)]
         for key in keys:

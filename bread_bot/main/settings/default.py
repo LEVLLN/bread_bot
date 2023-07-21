@@ -43,6 +43,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 CORS_ALLOW_ORIGINS = json.dumps(os.getenv("CORS_ALLOW_ORIGINS", "[localhost:8000,localhost:8080]"))
 
+OPENAI_TOKEN: str | None = os.getenv("OPENAI_TOKEN", None)
+OPENAI_ORGANIZATION: str | None = os.getenv("OPENAI_ORGANIZATION", None)
+
 # Logging
 ENABLE_TELEMETRY = os.getenv("ENABLE_TELEMETRY", "true") == "true"
 LOG_DATE_FMT = "%Y-%m-%d %H:%M:%S"

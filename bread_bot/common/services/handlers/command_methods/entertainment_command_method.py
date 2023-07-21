@@ -5,13 +5,17 @@ import re
 
 from sqlalchemy import select, and_
 
+from bread_bot.common.clients.openai_client import get_chat_gpt_client  # noqa
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerEntity
 from bread_bot.common.schemas.bread_bot_answers import TextAnswerSchema
 from bread_bot.common.schemas.telegram_messages import BaseMessageSchema
 from bread_bot.common.services.commands.command_settings import CommandSettings
-from bread_bot.common.services.handlers.command_methods.base_command_method import BaseCommandMethod
+from bread_bot.common.services.handlers.command_methods.base_command_method import (
+    BaseCommandMethod,
+)
 from bread_bot.common.services.morph_service import MorphService
+from bread_bot.common.services.think_service import ThinkService
 from bread_bot.common.utils.structs import (
     ALTER_NAMES,
     BOT_NAME,
@@ -49,6 +53,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return await self.morph_word()
             case EntertainmentCommandsEnum.MORPH_WORD_DEBUG:
                 return await self.morph_word(debug=True)
+            case EntertainmentCommandsEnum.THINK:
+                return await self.think_about()
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -175,6 +181,12 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         if not result:
             return super()._return_answer("Не найдено слов")
         return super()._return_answer(f"{result}")
+
+    async def think_about(self):
+        things = await ThinkService().think_about(
+            f"{self.command_instance.raw_command} {self.command_instance.rest_text}"
+        )
+        return self._return_answer(things)
 
     def help(self):
         if not self.command_instance.rest_text:
