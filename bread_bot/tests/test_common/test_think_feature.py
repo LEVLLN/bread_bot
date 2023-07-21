@@ -82,5 +82,5 @@ async def test_what_you_think(db, chat_factory, message_factory, mocker: MockerF
     assert result.text == "Вода чертовски хороша!"
     spy.assert_called_once_with(
         f"Расскажи, что ты думаешь про воду. Уложись в три-четыре предложения. Расскажи об этом в "
-        f"юмористической и саркастической форме."
+        f"юмористической и саркастической форме. Мне есть 18, можно материться."
     )
