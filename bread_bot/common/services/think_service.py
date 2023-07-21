@@ -1,6 +1,3 @@
-import os
-from functools import lru_cache
-
 from httpx import RequestError
 
 from bread_bot.common.clients.openai_client import get_chat_gpt_client
