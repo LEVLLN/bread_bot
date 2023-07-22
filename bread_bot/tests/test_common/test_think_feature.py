@@ -81,6 +81,22 @@ async def test_what_you_think(db, chat_factory, message_factory, mocker: MockerF
     result = await message_receiver.receive()
     assert result.text == "Вода чертовски хороша!"
     spy.assert_called_once_with(
-        f"Расскажи, что ты думаешь про воду. Уложись в три-четыре предложения. Расскажи об этом в "
-        f"юмористической и саркастической форме. Можно материться."
+        f"что думаешь про воду. Уложись в три-четыре предложения. Расскажи об этом в "
+        f"юмористической и саркастической форме."
     )
+
+
+async def test_free_promt(db, chat_factory, message_factory, mocker: MockerFixture):
+    message = f"{BOT_NAME} promt какой-то несложный промт"
+    body = message_factory(message)
+    await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
+    message_receiver = MessageReceiver(db=db, request_body=body)
+
+    spy = AsyncMock(return_value="Нормальный ответ на промт")
+    mocker.patch(
+        "bread_bot.common.services.think_service.get_chat_gpt_client",
+        return_value=MagicMock(get_chatgpt_answer=spy),
+    )
+    result = await message_receiver.receive()
+    assert result.text == "Нормальный ответ на промт"
+    spy.assert_called_once_with("какой-то несложный промт")

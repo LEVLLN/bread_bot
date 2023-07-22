@@ -15,7 +15,7 @@ from bread_bot.common.services.handlers.command_methods.base_command_method impo
     BaseCommandMethod,
 )
 from bread_bot.common.services.morph_service import MorphService
-from bread_bot.common.services.think_service import ThinkService
+from bread_bot.common.services.think_service import OpenAIService
 from bread_bot.common.utils.structs import (
     ALTER_NAMES,
     BOT_NAME,
@@ -55,6 +55,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return await self.morph_word(debug=True)
             case EntertainmentCommandsEnum.THINK:
                 return await self.think_about()
+            case EntertainmentCommandsEnum.FREE_PROMT:
+                return await self.free_openai_query()
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -184,9 +186,15 @@ class EntertainmentCommandMethod(BaseCommandMethod):
 
     async def think_about(self):
         if not self.member_service.chat.is_openai_enabled:
-            raise RaiseUpException("Для данной группы функция недоступна. Скоро будет платной.")
-        things = await ThinkService().think_about(self.command_instance.rest_text)
+            raise RaiseUpException("Для данной группы функция недоступна.")
+        things = await OpenAIService().think_about(self.command_instance.raw_command, self.command_instance.rest_text)
         return self._return_answer(things)
+
+    async def free_openai_query(self):
+        if not self.member_service.chat.is_openai_enabled:
+            raise RaiseUpException("Для данной группы функция недоступна.")
+        result = await OpenAIService().free_promt(self.command_instance.rest_text)
+        return self._return_answer(result)
 
     def help(self):
         if not self.command_instance.rest_text:

@@ -60,6 +60,7 @@ class EntertainmentCommandsEnum(str, Enum):
     MORPH_WORD = "MORPH_WORD"
     MORPH_WORD_DEBUG = "MORPH_WORD_DEBUG"
     THINK = "THINK"
+    FREE_PROMT = "FREE_PROMT"
 
 
 class IntegrationCommandsEnum(str, Enum):

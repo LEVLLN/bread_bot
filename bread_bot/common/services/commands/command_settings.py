@@ -306,11 +306,24 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
-            aliases=["что думаешь про"],
+            aliases=["что думаешь про", "расскажи про", "what do you think about"],
             command=EntertainmentCommandsEnum.THINK,
             description="",
             examples=[
                 f"{BOT_NAME} что думаешь про солнце",
+                f"{BOT_NAME} расскажи про солнце",
+                f"{BOT_NAME} what do you think about sun",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["promt", "промт", "чатгпт", "chatgpt"],
+            command=EntertainmentCommandsEnum.FREE_PROMT,
+            description="",
+            examples=[
+                f"{BOT_NAME} promt попробуй рассказать сказку",
+                f"{BOT_NAME} промт попробуй рассказать историю",
+                f"{BOT_NAME} чатгпт напиши мне код",
+                f"{BOT_NAME} chatgpt посоветуй чего почитать",
             ],
         ),
         CommandSettingsSchema(
