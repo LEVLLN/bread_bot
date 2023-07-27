@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -24,20 +24,23 @@ router = APIRouter(
 RESPONSE_OK = "OK"
 
 
-@router.post("/")
-async def handle_message(request_body: StandardBodySchema, db: AsyncSession = Depends(get_async_session)):
+async def _handle_message(db, request_body):
     message_receiver = MessageReceiver(db=db, request_body=request_body)
     message = await message_receiver.receive()
-
     message_sender = MessageSender(message=message)
     await message_sender.send_messages_to_chat()
+
+
+@router.post("/")
+async def handle_message(
+    request_body: StandardBodySchema, background_tasks: BackgroundTasks, db: AsyncSession = Depends(get_async_session)
+):
+    background_tasks.add_task(_handle_message, db, request_body)
     return RESPONSE_OK
 
 
 @router.post("/send_message", dependencies=[Depends(get_current_active_admin_user)])
-async def send_message_to_chat(
-    message: SendMessageSchema,
-):
+async def send_message_to_chat(message: SendMessageSchema):
     telegram_client = TelegramClient()
     try:
         await telegram_client.send_message(
