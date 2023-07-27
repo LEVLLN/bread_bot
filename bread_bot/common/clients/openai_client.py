@@ -20,7 +20,7 @@ class ChatGptClient:
             chat_completion = await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
                 messages=[{"role": "user", "content": query}],
-                timeout=5 * 360,
+                timeout=60,
             )
         except OpenAIError as e:
             logger.exception("ChatGPT service exception", exc_info=e)
