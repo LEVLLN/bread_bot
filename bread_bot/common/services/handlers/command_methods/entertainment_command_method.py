@@ -16,7 +16,6 @@ from bread_bot.common.services.handlers.command_methods.base_command_method impo
     BaseCommandMethod,
 )
 from bread_bot.common.services.morph_service import MorphService
-from bread_bot.common.services.think_service import OpenAIService
 from bread_bot.common.utils.structs import (
     ALTER_NAMES,
     BOT_NAME,
