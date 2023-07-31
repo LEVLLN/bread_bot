@@ -29,7 +29,7 @@ services:
   bread_bot_worker:
     image: levkey/bread_bot:app
     restart: unless-stopped
-    command: bash -c "procrastinate --app=bread_bot.main.procrastinate.app schema --apply && procrastinate --verbose --app=bread_bot.main.procrastinate.app worker"
+    command: bash -c "procrastinate --verbose --app=bread_bot.main.procrastinate.app worker --concurrency=30"
     env_file:
       - /root/environments.env
     networks:
