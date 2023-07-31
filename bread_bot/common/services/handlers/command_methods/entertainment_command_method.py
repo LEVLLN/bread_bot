@@ -187,7 +187,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def think_about(self):
         if not self.member_service.chat.is_openai_enabled:
             raise RaiseUpException("Для данной группы функция недоступна.")
-        async_think_about.defer(
+        await async_think_about.defer_async(
             pre_promt=self.command_instance.raw_command,
             text=self.command_instance.rest_text,
             chat_id=self.member_service.chat.chat_id,
@@ -197,7 +197,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def free_openai_query(self):
         if not self.member_service.chat.is_openai_enabled:
             raise RaiseUpException("Для данной группы функция недоступна.")
-        async_free_promt.defer(
+        await async_free_promt.defer_async(
             text=self.command_instance.rest_text,
             chat_id=self.member_service.chat.chat_id,
             reply_to_message_id=self.message_service.message.message_id,

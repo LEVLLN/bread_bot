@@ -38,14 +38,14 @@ def message_factory() -> Callable:
 @pytest.fixture
 def think_about_defer(mocker):
     return mocker.patch(
-        "bread_bot.common.services.handlers.command_methods.entertainment_command_method.async_think_about.defer"
+        "bread_bot.common.services.handlers.command_methods.entertainment_command_method.async_think_about.defer_async"
     )
 
 
 @pytest.fixture
 def free_promt_defer(mocker):
     return mocker.patch(
-        "bread_bot.common.services.handlers.command_methods.entertainment_command_method.async_free_promt.defer"
+        "bread_bot.common.services.handlers.command_methods.entertainment_command_method.async_free_promt.defer_async"
     )
 
 
