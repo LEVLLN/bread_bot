@@ -11,4 +11,3 @@ app = App(
     connector=connector,
     import_paths=["bread_bot.common.async_tasks"],
 )
-app.open()

@@ -22,6 +22,7 @@ from bread_bot.common.utils.structs import (
     EntertainmentCommandsEnum,
     AnswerEntityContentTypesEnum,
 )
+from bread_bot.main.procrastinate import app
 
 
 class EntertainmentCommandMethod(BaseCommandMethod):
@@ -187,21 +188,23 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def think_about(self):
         if not self.member_service.chat.is_openai_enabled:
             raise RaiseUpException("Для данной группы функция недоступна.")
-        await async_think_about.defer_async(
-            pre_promt=self.command_instance.raw_command,
-            text=self.command_instance.rest_text,
-            chat_id=self.member_service.chat.chat_id,
-            reply_to_message_id=self.message_service.message.message_id,
-        )
+        async with app.open_async():
+            await async_think_about.defer_async(
+                pre_promt=self.command_instance.raw_command,
+                text=self.command_instance.rest_text,
+                chat_id=self.member_service.chat.chat_id,
+                reply_to_message_id=self.message_service.message.message_id,
+            )
 
     async def free_openai_query(self):
         if not self.member_service.chat.is_openai_enabled:
             raise RaiseUpException("Для данной группы функция недоступна.")
-        await async_free_promt.defer_async(
-            text=self.command_instance.rest_text,
-            chat_id=self.member_service.chat.chat_id,
-            reply_to_message_id=self.message_service.message.message_id,
-        )
+        async with app.open_async():
+            await async_free_promt.defer_async(
+                text=self.command_instance.rest_text,
+                chat_id=self.member_service.chat.chat_id,
+                reply_to_message_id=self.message_service.message.message_id,
+            )
 
     def help(self):
         if not self.command_instance.rest_text:
