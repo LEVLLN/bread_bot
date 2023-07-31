@@ -26,6 +26,17 @@ services:
       - bread_bot_net
     depends_on:
       - postgres
+  bread_bot_worker:
+    image: levkey/bread_bot:app
+    restart: unless-stopped
+    command: bash -c "procrastinate --app=bread_bot.main.procrastinate.app schema --apply && procrastinate --verbose --app=bread_bot.main.procrastinate.app worker"
+    env_file:
+      - /root/environments.env
+    networks:
+      - bread_bot_net
+    depends_on:
+      - postgres
+      - bread_bot
   postgres:
     image: postgres:13.3
     volumes:
@@ -41,4 +52,4 @@ networks:
   bread_bot_net:
     external: True
 volumes:
-    pgdata:
+  pgdata:

@@ -3,8 +3,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.testclient import TestClient
-from pytest_mock import MockerFixture
 
+from bread_bot.common.async_tasks import async_free_promt, async_think_about
 from bread_bot.common.schemas.telegram_messages import (
     StandardBodySchema,
     MessageSchema,
@@ -35,6 +35,20 @@ def message_factory() -> Callable:
     return wrap
 
 
+@pytest.fixture
+def think_about_defer(mocker):
+    return mocker.patch(
+        "bread_bot.common.services.handlers.command_methods.entertainment_command_method.async_think_about.defer"
+    )
+
+
+@pytest.fixture
+def free_promt_defer(mocker):
+    return mocker.patch(
+        "bread_bot.common.services.handlers.command_methods.entertainment_command_method.async_free_promt.defer"
+    )
+
+
 async def test_can_handle_message(message_factory):
     body = message_factory().dict()
     response = client.post(
@@ -52,51 +66,70 @@ async def test_what_you_think_is_available(db, message_factory):
 
     message_receiver = MessageReceiver(db=db, request_body=body)
     message = await message_receiver.receive()
-
     assert message is not None
 
 
-async def test_chat_gpt_excepted(db, chat_factory, message_factory):
+async def test_chat_gpt_excepted(db, chat_factory, message_factory, think_about_defer):
     message = f"{BOT_NAME} что думаешь про воду"
     body = message_factory(message)
     await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
     message_receiver = MessageReceiver(db=db, request_body=body)
 
-    result = await message_receiver.receive()
+    await message_receiver.receive()
+    think_about_defer.assert_called_once()
 
-    assert result.text == "Ошибка работы получения ответа"
 
-
-async def test_what_you_think(db, chat_factory, message_factory, mocker: MockerFixture):
+async def test_what_you_think(db, chat_factory, message_factory, think_about_defer):
     message = f"{BOT_NAME} что думаешь про воду"
     body = message_factory(message)
     await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
     message_receiver = MessageReceiver(db=db, request_body=body)
-
-    spy = AsyncMock(return_value="Вода чертовски хороша!")
-    mocker.patch(
-        "bread_bot.common.services.think_service.get_chat_gpt_client",
-        return_value=MagicMock(get_chatgpt_answer=spy),
-    )
-    result = await message_receiver.receive()
-    assert result.text == "Вода чертовски хороша!"
-    spy.assert_called_once_with(
-        f"что думаешь про воду. Уложись в три-четыре предложения. Расскажи об этом в "
-        f"юмористической и саркастической форме."
+    await message_receiver.receive()
+    think_about_defer.assert_called_once_with(
+        pre_promt="что думаешь про", text="воду", chat_id=body.message.source.id, reply_to_message_id=1
     )
 
 
-async def test_free_promt(db, chat_factory, message_factory, mocker: MockerFixture):
-    message = f"{BOT_NAME} promt какой-то несложный промт"
-    body = message_factory(message)
-    await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
-    message_receiver = MessageReceiver(db=db, request_body=body)
-
+async def test_what_you_think_task(mocker):
     spy = AsyncMock(return_value="Нормальный ответ на промт")
     mocker.patch(
         "bread_bot.common.services.think_service.get_chat_gpt_client",
         return_value=MagicMock(get_chatgpt_answer=spy),
     )
-    result = await message_receiver.receive()
-    assert result.text == "Нормальный ответ на промт"
-    spy.assert_called_once_with("какой-то несложный промт")
+    send_mock = mocker.patch("bread_bot.common.clients.telegram_client.TelegramClient.send")
+    await async_think_about(pre_promt="что думаешь про", text="LOL", chat_id=1, reply_to_message_id=1)
+    send_mock.assert_called_once_with(
+        **{
+            "data": {"chat_id": 1, "reply_to_message_id": 1, "text": "Нормальный ответ на промт"},
+            "method": "sendMessage",
+        }
+    )
+
+
+async def test_free_promt(db, chat_factory, message_factory, free_promt_defer):
+    message = f"{BOT_NAME} promt какой-то несложный промт"
+    body = message_factory(message)
+    await chat_factory(chat_id=body.message.source.id, name="lol", is_openai_enabled=True)
+    message_receiver = MessageReceiver(db=db, request_body=body)
+    await message_receiver.receive()
+    free_promt_defer.assert_called_once_with(
+        text="какой-то несложный промт",
+        chat_id=body.message.source.id,
+        reply_to_message_id=1,
+    )
+
+
+async def test_free_promt_task(mocker):
+    spy = AsyncMock(return_value="Нормальный ответ на промт")
+    mocker.patch(
+        "bread_bot.common.services.think_service.get_chat_gpt_client",
+        return_value=MagicMock(get_chatgpt_answer=spy),
+    )
+    send_mock = mocker.patch("bread_bot.common.clients.telegram_client.TelegramClient.send")
+    await async_free_promt(text="LOL", chat_id=1, reply_to_message_id=1)
+    send_mock.assert_called_once_with(
+        **{
+            "data": {"chat_id": 1, "reply_to_message_id": 1, "text": "Нормальный ответ на промт"},
+            "method": "sendMessage",
+        }
+    )

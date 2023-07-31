@@ -5,6 +5,7 @@ import re
 
 from sqlalchemy import select, and_
 
+from bread_bot.common.async_tasks import async_free_promt, async_think_about
 from bread_bot.common.clients.openai_client import get_chat_gpt_client  # noqa
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerEntity
@@ -187,14 +188,21 @@ class EntertainmentCommandMethod(BaseCommandMethod):
     async def think_about(self):
         if not self.member_service.chat.is_openai_enabled:
             raise RaiseUpException("Для данной группы функция недоступна.")
-        things = await OpenAIService().think_about(self.command_instance.raw_command, self.command_instance.rest_text)
-        return self._return_answer(things)
+        async_think_about.defer(
+            pre_promt=self.command_instance.raw_command,
+            text=self.command_instance.rest_text,
+            chat_id=self.member_service.chat.chat_id,
+            reply_to_message_id=self.message_service.message.message_id,
+        )
 
     async def free_openai_query(self):
         if not self.member_service.chat.is_openai_enabled:
             raise RaiseUpException("Для данной группы функция недоступна.")
-        result = await OpenAIService().free_promt(self.command_instance.rest_text)
-        return self._return_answer(result)
+        async_free_promt.defer(
+            text=self.command_instance.rest_text,
+            chat_id=self.member_service.chat.chat_id,
+            reply_to_message_id=self.message_service.message.message_id,
+        )
 
     def help(self):
         if not self.command_instance.rest_text:
