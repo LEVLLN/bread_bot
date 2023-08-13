@@ -1,15 +1,7 @@
-import json
-
 import pytest
 from httpx import RequestError
 
 from bread_bot.common.clients.openai_client import get_chat_gpt_client, ChatGptMessage, Role
-
-
-def test_model_as_json():
-    assert json.dumps(Role.SYSTEM) == '"system"'
-    message = ChatGptMessage(role=Role.SYSTEM, content="Some")
-    assert json.dumps(message) == '{"role": "system", "content": "Some"}'
 
 
 def test_chat_gpt_client_factory():

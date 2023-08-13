@@ -1,6 +1,6 @@
 from httpx import RequestError
 
-from bread_bot.common.clients.openai_client import get_chat_gpt_client, Role, ChatGptMessage
+from bread_bot.common.clients.openai_client import get_chat_gpt_client, Role, ChatGptMessage, DallEPicture, DallEPrompt
 
 
 class OpenAIService:
@@ -28,3 +28,8 @@ class OpenAIService:
     async def free_prompt(self, question: str) -> str:
         answer = await self._get_answer([ChatGptMessage(role=Role.USER, content=question)])
         return answer.content
+
+    @staticmethod
+    async def imagine(prompt: DallEPrompt) -> list[DallEPicture]:
+        client = get_chat_gpt_client()
+        return await client.get_dalle_image(prompt=prompt)

@@ -1,4 +1,3 @@
-from typing import Callable
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -6,34 +5,11 @@ from fastapi.testclient import TestClient
 
 from bread_bot.common.async_tasks import async_free_promt, async_think_about
 from bread_bot.common.clients.openai_client import ChatGptMessage, Role
-from bread_bot.common.schemas.telegram_messages import (
-    StandardBodySchema,
-    MessageSchema,
-    MemberSchema,
-    ChatSchema,
-)
 from bread_bot.common.services.messages.message_receiver import MessageReceiver
 from bread_bot.common.utils.structs import BOT_NAME
 from bread_bot.main.webserver import app
 
 client = TestClient(app)
-
-
-@pytest.fixture
-def message_factory() -> Callable:
-    def wrap(message_text: str = "") -> StandardBodySchema:
-        return StandardBodySchema(
-            update_id=1,
-            message=MessageSchema(
-                message_id=1,
-                source=MemberSchema(id=1, is_bot=False),
-                chat=ChatSchema(id=1),
-                text=message_text,
-            ),
-            edited_message=None,
-        )
-
-    return wrap
 
 
 @pytest.fixture
@@ -120,7 +96,7 @@ async def test_free_promt(db, chat_factory, message_factory, free_promt_defer):
     )
 
 
-async def test_free_promt_task(mocker):
+async def test_free_prompt_task(mocker):
     spy = AsyncMock(return_value=ChatGptMessage(role=Role.BOT, content="Нормальный ответ на промт"))
     mocker.patch(
         "bread_bot.common.services.think_service.get_chat_gpt_client",
