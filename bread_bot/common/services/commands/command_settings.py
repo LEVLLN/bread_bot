@@ -327,7 +327,7 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
-            aliases=["представь", "imagine", "нарисуй"],
+            aliases=["представь", "imagine", "нарисуй", "имаджинируй"],
             command=EntertainmentCommandsEnum.IMAGINE,
             description="Генерация картинки по заданному промпту",
             examples=[
