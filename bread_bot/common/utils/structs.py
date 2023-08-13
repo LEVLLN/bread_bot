@@ -1,17 +1,17 @@
 import os
-from enum import Enum
+from enum import StrEnum
 
 BOT_NAME = os.getenv("BOT_NAME", "Хлеб")
 ALTER_NAMES = os.getenv("ALTER_NAMES", "хлебушек,хлеб,bread_bot")
 TRIGGER_WORDS = [BOT_NAME.lower()] + ALTER_NAMES.split(",")
 
 
-class AnswerEntityReactionTypesEnum(str, Enum):
+class AnswerEntityReactionTypesEnum(StrEnum):
     TRIGGER = "TRIGGER"
     SUBSTRING = "SUBSTRING"
 
 
-class AnswerEntityContentTypesEnum(str, Enum):
+class AnswerEntityContentTypesEnum(StrEnum):
     TEXT = "TEXT"
     VOICE = "VOICE"
     PICTURE = "PICTURE"
@@ -21,7 +21,7 @@ class AnswerEntityContentTypesEnum(str, Enum):
     STICKER = "STICKER"
 
 
-class AdminCommandsEnum(str, Enum):
+class AdminCommandsEnum(StrEnum):
     SHOW = "SHOW"
     ADD = "ADD"
     REMEMBER = "REMEMBER"
@@ -37,7 +37,7 @@ class AdminCommandsEnum(str, Enum):
     SHOW_KEYS = "SHOW_KEYS"
 
 
-class MemberCommandsEnum(str, Enum):
+class MemberCommandsEnum(StrEnum):
     WHO = "WHO"
     TOP = "TOP"
     COUPLE = "COUPLE"
@@ -45,7 +45,7 @@ class MemberCommandsEnum(str, Enum):
     CHANNEL = "CHANNEL"
 
 
-class EntertainmentCommandsEnum(str, Enum):
+class EntertainmentCommandsEnum(StrEnum):
     CHANCE = "CHANCE"
     HELP = "HELP"
     CHOOSE_VARIANT = "CHOOSE_VARIANT"
@@ -61,16 +61,17 @@ class EntertainmentCommandsEnum(str, Enum):
     MORPH_WORD_DEBUG = "MORPH_WORD_DEBUG"
     THINK = "THINK"
     FREE_PROMT = "FREE_PROMT"
+    IMAGINE = "IMAGINE"
 
 
-class IntegrationCommandsEnum(str, Enum):
+class IntegrationCommandsEnum(StrEnum):
     ADVICE = "ADVICE"
     QUOTE = "QUOTE"
     INSULT = "INSULT"
     JOKE = "JOKE"
 
 
-class IterEnum(str, Enum):
+class IterEnum(StrEnum):
     @classmethod
     def list(cls):
         return [value for value in cls._member_map_.values()]

@@ -5,7 +5,7 @@ import re
 
 from sqlalchemy import select, and_
 
-from bread_bot.common.async_tasks import async_free_promt, async_think_about
+from bread_bot.common.async_tasks import async_free_promt, async_think_about, async_imagine
 from bread_bot.common.clients.openai_client import get_chat_gpt_client  # noqa
 from bread_bot.common.exceptions.base import NextStepException, RaiseUpException
 from bread_bot.common.models import AnswerEntity
@@ -58,6 +58,8 @@ class EntertainmentCommandMethod(BaseCommandMethod):
                 return await self.think_about()
             case EntertainmentCommandsEnum.FREE_PROMT:
                 return await self.free_openai_query()
+            case EntertainmentCommandsEnum.IMAGINE:
+                return await self.imagine()
             case _:
                 raise NextStepException("Не найдена команде")
 
@@ -202,6 +204,18 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         async with app.open_async():
             await async_free_promt.defer_async(
                 text=self.command_instance.rest_text,
+                chat_id=self.member_service.chat.chat_id,
+                reply_to_message_id=self.message_service.message.message_id,
+            )
+
+    async def imagine(self):
+        if not self.member_service.chat.is_openai_enabled:
+            raise RaiseUpException("Для данной группы функция недоступна.")
+        async with app.open_async():
+            await async_imagine.defer_async(
+                prompt=self.command_instance.rest_text,
+                # TODO: Поддержка нескольких вариантов фото?
+                count_variants=1,
                 chat_id=self.member_service.chat.chat_id,
                 reply_to_message_id=self.message_service.message.message_id,
             )

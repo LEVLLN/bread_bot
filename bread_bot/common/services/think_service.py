@@ -1,23 +1,35 @@
 from httpx import RequestError
 
-from bread_bot.common.clients.openai_client import get_chat_gpt_client
+from bread_bot.common.clients.openai_client import get_chat_gpt_client, Role, ChatGptMessage, DallEPicture, DallEPrompt
 
 
 class OpenAIService:
-    async def _get_answer(self, full_query: str) -> str:
+    async def _get_answer(self, messages: list[ChatGptMessage]) -> ChatGptMessage:
         client = get_chat_gpt_client()
         try:
-            result = await client.get_chatgpt_answer(full_query)
+            result = await client.get_chatgpt_answer(messages)
         except RequestError:
-            return "Ошибка работы получения ответа"
+            return ChatGptMessage(role=Role.SYSTEM, content="Ошибка работы получения ответа")
         else:
             return result
 
     async def think_about(self, pre_promt: str, question: str) -> str:
-        return await self._get_answer(
-            f"{pre_promt} {question}. Уложись в три-четыре предложения. Расскажи об этом в "
-            "юмористической и саркастической форме."
-        )
+        messages = [
+            ChatGptMessage(role=Role.SYSTEM, content=pre_promt),
+            ChatGptMessage(
+                role=Role.SYSTEM,
+                content="Уложись в три-четыре предложения. Расскажи об этом в юмористической и саркастической форме.",
+            ),
+            ChatGptMessage(role=Role.USER, content=question),
+        ]
+        answer = await self._get_answer(messages)
+        return answer.content
 
-    async def free_promt(self, question: str) -> str:
-        return await self._get_answer(question)
+    async def free_prompt(self, question: str) -> str:
+        answer = await self._get_answer([ChatGptMessage(role=Role.USER, content=question)])
+        return answer.content
+
+    @staticmethod
+    async def imagine(prompt: DallEPrompt) -> list[DallEPicture]:
+        client = get_chat_gpt_client()
+        return await client.get_dalle_image(prompt=prompt)

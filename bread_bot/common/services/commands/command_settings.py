@@ -306,7 +306,7 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
-            aliases=["что думаешь про", "расскажи про", "what do you think about"],
+            aliases=["что думаешь про", "расскажи про", "what do you think about", "мнение"],
             command=EntertainmentCommandsEnum.THINK,
             description="",
             examples=[
@@ -316,7 +316,7 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
-            aliases=["promt", "промт", "чатгпт", "chatgpt"],
+            aliases=["promt", "промт", "чатгпт", "chatgpt", "промпт", "prompt"],
             command=EntertainmentCommandsEnum.FREE_PROMT,
             description="",
             examples=[
@@ -324,6 +324,15 @@ class CommandSettings:
                 f"{BOT_NAME} промт попробуй рассказать историю",
                 f"{BOT_NAME} чатгпт напиши мне код",
                 f"{BOT_NAME} chatgpt посоветуй чего почитать",
+            ],
+        ),
+        CommandSettingsSchema(
+            aliases=["представь", "imagine", "нарисуй"],
+            command=EntertainmentCommandsEnum.IMAGINE,
+            description="Генерация картинки по заданному промпту",
+            examples=[
+                f"{BOT_NAME} представь солнце",
+                f"{BOT_NAME} imagine the sun",
             ],
         ),
         CommandSettingsSchema(
