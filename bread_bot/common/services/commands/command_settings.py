@@ -316,7 +316,7 @@ class CommandSettings:
             ],
         ),
         CommandSettingsSchema(
-            aliases=["promt", "промт", "чатгпт", "chatgpt"],
+            aliases=["promt", "промт", "чатгпт", "chatgpt", "промпт", "prompt"],
             command=EntertainmentCommandsEnum.FREE_PROMT,
             description="",
             examples=[

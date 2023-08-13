@@ -5,6 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from bread_bot.common.async_tasks import async_free_promt, async_think_about
+from bread_bot.common.clients.openai_client import ChatGptMessage, Role
 from bread_bot.common.schemas.telegram_messages import (
     StandardBodySchema,
     MessageSchema,
@@ -91,7 +92,7 @@ async def test_what_you_think(db, chat_factory, message_factory, think_about_def
 
 
 async def test_what_you_think_task(mocker):
-    spy = AsyncMock(return_value="Нормальный ответ на промт")
+    spy = AsyncMock(return_value=ChatGptMessage(role=Role.BOT, content="Нормальный ответ на промт"))
     mocker.patch(
         "bread_bot.common.services.think_service.get_chat_gpt_client",
         return_value=MagicMock(get_chatgpt_answer=spy),
@@ -120,7 +121,7 @@ async def test_free_promt(db, chat_factory, message_factory, free_promt_defer):
 
 
 async def test_free_promt_task(mocker):
-    spy = AsyncMock(return_value="Нормальный ответ на промт")
+    spy = AsyncMock(return_value=ChatGptMessage(role=Role.BOT, content="Нормальный ответ на промт"))
     mocker.patch(
         "bread_bot.common.services.think_service.get_chat_gpt_client",
         return_value=MagicMock(get_chatgpt_answer=spy),

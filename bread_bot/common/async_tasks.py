@@ -15,7 +15,7 @@ from bread_bot.main.procrastinate import app
 async def async_free_promt(text: str, chat_id: int, reply_to_message_id: int):
     await MessageSender(
         message=TextAnswerSchema(
-            text=await OpenAIService().free_promt(text),
+            text=await OpenAIService().free_prompt(text),
             chat_id=chat_id,
             reply_to_message_id=reply_to_message_id,
         )
