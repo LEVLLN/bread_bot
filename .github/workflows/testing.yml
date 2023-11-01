@@ -17,9 +17,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install --with dev
-      - name: Flake8 check
+      - name: Black check
         run: |
-          poetry run flake8
+          poetry run black ./
       - name: Test with pytest coverage
         run: |
           ENV=TESTING poetry run pytest bread_bot --cov=bread_bot
