@@ -1,0 +1,8 @@
+FROM python:3.11.0
+
+WORKDIR /code
+
+COPY . /code/
+
+ENV ENV=TESTING
+RUN  pip install --upgrade pip && pip install poetry && poetry config virtualenvs.create false && poetry install

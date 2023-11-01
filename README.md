@@ -217,13 +217,18 @@ python server.py
 Запустить проверку codestyle проекта (А эта проверка будет работать и при CI)
 
 ```shell
-flake8
+black ./
 ```
 
 Запустить тесты:
 
 ```shell
 pytest bread_bot/tests
+```
+
+Запустить тесты в docker:
+```shell
+docker build -f ci/Dockerfile.tests -t bread_bot:tests . && docker run bread_bot:tests poetry run pytest bread_bot 
 ```
 
 Запустить создания данных по покрытию тестами
