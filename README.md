@@ -182,6 +182,7 @@ pip install poetry && poetry install
 CREATE DATABASE bread_bot;
 CREATE ROLE bread_bot with LOGIN PASSWORD 'my_password';
 GRANT ALL PRIVILEGES ON DATABASE bread_bot TO bread_bot;
+GRANT USAGE, CREATE ON SCHEMA public TO bread_bot; -- Начиная с Postgresql 15 GRANT ALL PRIVILEGES ON DATABASE не даёт пользователю прав на public схему
 ```
 
 Миграция схемы баз данных
