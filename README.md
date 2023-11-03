@@ -202,6 +202,16 @@ alembic downgrade -1
 alembic revision --autogenerate -m 'my migration message'
 ```
 
+Применение схемы для procrastinate в БД
+```shell
+procrastinate --app=bread_bot.main.procrastinate.app schema --apply
+```
+
+Запуск воркера procrastinate
+```shell
+procrastinate --verbose --app=bread_bot.main.procrastinate.app worker --concurrency=30
+```
+
 Запускаем локально веб-сервер
 
 ```shell
