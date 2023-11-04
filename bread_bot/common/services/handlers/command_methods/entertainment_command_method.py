@@ -145,7 +145,7 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         morph_service = MorphService(db=self.db, chat_id=self.member_service.chat.id)
         if hasattr(self.command_instance, "value"):
             if self.command_instance.value.isdigit():
-                scale_factor = int(self.command_instance.rest_text)
+                scale_factor = int(self.command_instance.value)
             else:
                 raise RaiseUpException("Коэффициент бреда должен быть целым числом от 1 до бесконечности")
         else:
