@@ -35,13 +35,13 @@ class MorphService:
         )
 
     @classmethod
-    def _get_maximum_words_to_replace(cls, words_count: int) -> int:
+    def _get_maximum_words_to_replace(cls, words_count: int, scale_factor: int) -> int:
         if words_count == 1:
             coefficient = 1
         elif words_count == 2:
-            coefficient = 0.5
+            coefficient = 0.5 * scale_factor
         else:
-            coefficient = 0.3
+            coefficient = 0.3 * scale_factor
         return math.ceil(words_count * coefficient)
 
     async def _get_dictionary_words(self) -> dict[tuple, Any]:
@@ -57,7 +57,7 @@ class MorphService:
                     result[key] = [item.word]
         return result
 
-    async def morph_text(self, text: str) -> str:
+    async def morph_text(self, text: str, scale_factor: int = 1) -> str:
         lines_with_words = self.tokenize_text(text)
         dictionary_words = await self._get_dictionary_words()
         if not dictionary_words:
@@ -75,7 +75,7 @@ class MorphService:
             if not words_indexes:
                 result_strings.append("".join(words))
                 continue
-            max_words_count = self._get_maximum_words_to_replace(len(words_indexes))
+            max_words_count = self._get_maximum_words_to_replace(len(words_indexes), scale_factor)
             for _ in range(0, max_words_count):
                 random_word_index = random.choice(words_indexes)
                 item = morph.parse(words[random_word_index])[0]

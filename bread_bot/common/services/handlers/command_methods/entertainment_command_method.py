@@ -143,13 +143,22 @@ class EntertainmentCommandMethod(BaseCommandMethod):
         reply = self.message_service.message.reply
         content = self.message_service.select_content_from_message(reply)
         morph_service = MorphService(db=self.db, chat_id=self.member_service.chat.id)
+        if hasattr(self.command_instance, "value"):
+            if self.command_instance.value.isdigit():
+                scale_factor = int(self.command_instance.rest_text)
+            else:
+                raise RaiseUpException("Коэффициент бреда должен быть целым числом от 1 до бесконечности")
+        else:
+            scale_factor = 1
+        if scale_factor < 1:
+            raise RaiseUpException("Коэффициент бреда меньше 1")
         match content.content_type:
             case AnswerEntityContentTypesEnum.TEXT:
-                result = await morph_service.morph_text(content.value)
+                result = await morph_service.morph_text(content.value, scale_factor)
             case AnswerEntityContentTypesEnum.PICTURE | AnswerEntityContentTypesEnum.VIDEO:
                 if not content.caption:
                     raise RaiseUpException("Контент не содержит подписи")
-                result = await morph_service.morph_text(content.caption)
+                result = await morph_service.morph_text(content.caption, scale_factor)
             case _:
                 raise RaiseUpException("Тип контента не поддерживается")
         return TextAnswerSchema(

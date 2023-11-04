@@ -272,6 +272,25 @@ class TestCommandParser:
                     raw_command="цитата",
                 ),
             ),
+            (
+                "Хлеб бред",
+                CommandSchema(
+                    header="Хлеб",
+                    command=EntertainmentCommandsEnum.REGENERATE_MESSAGE,
+                    rest_text="",
+                    raw_command="бред",
+                ),
+            ),
+            (
+                "Хлеб бред 3",
+                ValueCommandSchema(
+                    header="Хлеб",
+                    command=EntertainmentCommandsEnum.REGENERATE_MESSAGE,
+                    rest_text="",
+                    value="3",
+                    raw_command="бред",
+                ),
+            ),
         ],
     )
     async def test_parse_command(self, message_text, expected_result):

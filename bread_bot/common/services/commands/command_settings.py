@@ -300,9 +300,14 @@ class CommandSettings:
         CommandSettingsSchema(
             aliases=["бред", "давай"],
             command=EntertainmentCommandsEnum.REGENERATE_MESSAGE,
-            description="[Надо выбрать сообщение в качестве ответа] заменяет сообщение на известные слова боту",
+            to_find_for_values=True,
+            description=(
+                "[Надо выбрать сообщение в качестве ответа] заменяет сообщение на известные слова боту. "
+                "Также можно применить коэффициент на выборку текста, где минимальный коэффициент - 1."
+            ),
             examples=[
                 f"{BOT_NAME} бред",
+                f"{BOT_NAME} бред 3",
             ],
         ),
         CommandSettingsSchema(
