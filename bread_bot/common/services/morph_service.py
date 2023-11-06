@@ -42,7 +42,7 @@ class MorphService:
             coefficient = 0.5 * scale_factor
         else:
             coefficient = 0.3 * scale_factor
-        return math.ceil(words_count * coefficient)
+        return max(words_count, math.ceil(words_count * coefficient))
 
     async def _get_dictionary_words(self) -> dict[tuple, Any]:
         entities = await DictionaryEntity.async_filter(self.db, DictionaryEntity.chat_id == self.chat_id)
