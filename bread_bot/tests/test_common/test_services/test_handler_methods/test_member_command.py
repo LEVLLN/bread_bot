@@ -20,6 +20,7 @@ from bread_bot.common.schemas.telegram_messages import ChatMemberBodySchema, Mem
 from bread_bot.common.services.handlers.command_methods.member_command_method import MemberCommandMethod
 from bread_bot.common.services.member_service import ExternalMemberService
 from bread_bot.common.utils.structs import MemberCommandsEnum
+from bread_bot.main import settings
 
 
 class TestMemberCommands:
@@ -118,7 +119,7 @@ class TestMemberCommands:
         members = ChatMemberBodySchema(**{"result": member_content_list})
         content = members.dict()
         content["ok"] = True
-        return respx.post("https://api.telegram.org/bot/getChatAdministrators").mock(
+        return respx.post(f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/getChatAdministrators").mock(
             return_value=Response(status_code=200, content=json.dumps(content))
         )
 
