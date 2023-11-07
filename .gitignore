@@ -33,3 +33,6 @@ tmp/
 .idea/
 /static
 htmlcov/
+
+#vscode root env. variables
+/.env
