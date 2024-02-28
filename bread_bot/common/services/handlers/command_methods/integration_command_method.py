@@ -30,14 +30,15 @@ class IntegrationCommandMethod(BaseCommandMethod):
         return super()._return_answer(f"{quote.text}\n\n© {quote.author}")
 
     async def get_insult(self):
-        username = None
-        if self.message_service.message.reply:
-            username = f"@{self.member_service.message.reply.source.username}"
-        evil_insult = await EvilInsultClient().get_evil_insult()
-        insult = f"{evil_insult.insult}\n\n© {evil_insult.comment}"
-        if username:
-            return super()._return_answer(f"{username}\n{insult}")
-        return super()._return_answer(insult)
+        raise NextStepException("Не найдена команда")
+        # username = None
+        # if self.message_service.message.reply:
+        #     username = f"@{self.member_service.message.reply.source.username}"
+        # evil_insult = await EvilInsultClient().get_evil_insult()
+        # insult = f"{evil_insult.insult}\n\n© {evil_insult.comment}"
+        # if username:
+        #     return super()._return_answer(f"{username}\n{insult}")
+        # return super()._return_answer(insult)
 
     async def get_joke(self):
         joke_vendor = BaneksClient()

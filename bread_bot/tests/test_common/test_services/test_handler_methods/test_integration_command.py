@@ -70,6 +70,7 @@ class TestIntegrationCommand:
         assert result.text == "Some text\n\n© some_author"
         mock.assert_called_once()
 
+    @pytest.mark.skip
     async def test_insult_without_reply(self, mocker, integration_command_method):
         integration_command_method.command_instance.command = IntegrationCommandsEnum.INSULT
         mock = mocker.patch.object(
@@ -86,6 +87,7 @@ class TestIntegrationCommand:
         assert result.text == "Some insult\n\n© some comment"
         mock.assert_called_once()
 
+    @pytest.mark.skip
     async def test_insult_with_reply(self, mocker, integration_command_method, message_service):
         integration_command_method.message_service.message.reply = message_service.message
         integration_command_method.command_instance.command = IntegrationCommandsEnum.INSULT
