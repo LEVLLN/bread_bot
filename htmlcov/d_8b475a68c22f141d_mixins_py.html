@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_8993f0705a6a36d0_procrastinate_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-02-28 10:42 +0000
+            created at 2024-03-05 16:50 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -309,9 +309,9 @@
     <p class="run"><span class="n"><a id="t227" href="#t227">227</a></span><span class="t">            <span class="key">try</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t228" href="#t228">228</a></span><span class="t">                <span class="key">await</span> <span class="nam">db</span><span class="op">.</span><span class="nam">refresh</span><span class="op">(</span><span class="nam">instance</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t229" href="#t229">229</a></span><span class="t">            <span class="key">except</span> <span class="nam">Exception</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t230" href="#t230">230</a></span><span class="t">                <span class="nam">logger</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">f"&#1053;&#1077;&#1074;&#1086;&#1079;&#1084;&#1086;&#1078;&#1085;&#1086; &#1086;&#1073;&#1085;&#1086;&#1074;&#1080;&#1090;&#1100; &#1086;&#1073;&#1098;&#1077;&#1082;&#1090;: {instance}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t230" href="#t230">230</a></span><span class="t">                <span class="nam">logger</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="fst">f"</span><span class="fst">&#1053;&#1077;&#1074;&#1086;&#1079;&#1084;&#1086;&#1078;&#1085;&#1086; &#1086;&#1073;&#1085;&#1086;&#1074;&#1080;&#1090;&#1100; &#1086;&#1073;&#1098;&#1077;&#1082;&#1090;: </span><span class="op">{</span><span class="nam">instance</span><span class="op">}</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t231" href="#t231">231</a></span><span class="t">                <span class="key">return</span> <span class="nam">instance</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">f"&#1057;&#1086;&#1079;&#1076;&#1072;&#1085;/&#1054;&#1073;&#1085;&#1086;&#1074;&#1083;&#1105;&#1085; {cls.__name__}: {instance}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f"</span><span class="fst">&#1057;&#1086;&#1079;&#1076;&#1072;&#1085;/&#1054;&#1073;&#1085;&#1086;&#1074;&#1083;&#1105;&#1085; </span><span class="op">{</span><span class="nam">cls</span><span class="op">.</span><span class="nam">__name__</span><span class="op">}</span><span class="fst">: </span><span class="op">{</span><span class="nam">instance</span><span class="op">}</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t233" href="#t233">233</a></span><span class="t">            <span class="key">return</span> <span class="nam">instance</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t">    <span class="op">@</span><span class="nam">classmethod</span>&nbsp;</span><span class="r"></span></p>
@@ -350,7 +350,7 @@
     <p class="run"><span class="n"><a id="t268" href="#t268">268</a></span><span class="t">            <span class="nam">db</span><span class="op">.</span><span class="nam">rollback</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t269" href="#t269">269</a></span><span class="t">            <span class="key">raise</span> <span class="nam">exc</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t270" href="#t270">270</a></span><span class="t">        <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">f"&#1057;&#1086;&#1079;&#1076;&#1072;&#1085;/&#1054;&#1073;&#1085;&#1086;&#1074;&#1083;&#1105;&#1085; {cls.__name__}: {instance}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f"</span><span class="fst">&#1057;&#1086;&#1079;&#1076;&#1072;&#1085;/&#1054;&#1073;&#1085;&#1086;&#1074;&#1083;&#1105;&#1085; </span><span class="op">{</span><span class="nam">cls</span><span class="op">.</span><span class="nam">__name__</span><span class="op">}</span><span class="fst">: </span><span class="op">{</span><span class="nam">instance</span><span class="op">}</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t272" href="#t272">272</a></span><span class="t">            <span class="key">return</span> <span class="nam">instance</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t273" href="#t273">273</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t274" href="#t274">274</a></span><span class="t">    <span class="op">@</span><span class="nam">classmethod</span>&nbsp;</span><span class="r"></span></p>
@@ -374,7 +374,7 @@
             <a id="nextFileLink" class="nav" href="d_8993f0705a6a36d0_procrastinate_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.3">coverage.py v7.4.3</a>,
-            created at 2024-02-28 10:42 +0000
+            created at 2024-03-05 16:50 +0000
         </p>
     </div>
 </footer>
