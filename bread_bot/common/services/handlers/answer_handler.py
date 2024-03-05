@@ -27,6 +27,7 @@ from bread_bot.common.utils.structs import (
     AnswerEntityReactionTypesEnum,
     AnswerEntityContentTypesEnum,
 )
+from bread_bot.main.settings import IGNORED_USERS
 
 morph = pymorphy2.MorphAnalyzer()
 
@@ -122,6 +123,8 @@ class SubstringAnswerHandler(AnswerHandler):
         self,
         message_text: str | None = None,
     ) -> BaseAnswerSchema:
+        if self.message_service.message.source.id in IGNORED_USERS:
+            raise NextStepException("Пользователь игнорируется")
         self._init_cached_keys()
         start = time.time()
         exclude = set(cached_keys[self.member_service.chat.id].values())
@@ -184,6 +187,8 @@ class TriggerAnswerHandler(AnswerHandler):
         message_text: str | None = None,
     ) -> BaseAnswerSchema:
         start = time.time()
+        if self.message_service.message.source.id in IGNORED_USERS:
+            raise NextStepException("Пользователь игнорируется")
         answer_keys = {
             answer_entity_key
             for answer_entity_key in await AnswerEntity.get_keys(
@@ -272,6 +277,8 @@ class MorphAnswerHandler(AnswerHandler):
             )
 
     async def process(self) -> BaseAnswerSchema:
+        if self.message_service.message.source.id in IGNORED_USERS:
+            raise NextStepException("Пользователь игнорируется")
         if random.random() > self.member_service.chat.morph_answer_chance / 100:
             raise NextStepException("Пропуск ответа по проценту срабатывания")
         return await self.process_morph()

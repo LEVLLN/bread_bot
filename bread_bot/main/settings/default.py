@@ -124,3 +124,5 @@ DEFAULT_SENSITIVE_KEY_WORDS_PATTERN = "|".join(map(lambda x: f"\\b{x}\\b", DEFAU
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 APP_HOST = os.getenv("APP_HOST", "localhost:8080")
 MESSAGE_LEN_LIMIT = int(os.getenv("MESSAGE_LEN_LIMIT", 4096))
+IGNORED_USERS = list(map(int, os.getenv("IGNORED_USERS", "").split(","))) \
+    if os.getenv("IGNORED_USERS", None) is not None else []
