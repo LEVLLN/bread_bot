@@ -157,14 +157,14 @@ class AdminCommandMethod(BaseCommandMethod):
         self._check_reply_existed()
         reply = self.message_service.message.reply
         content = self.message_service.select_content_from_message(reply)
-        try:
-            is_admin = await ExternalMemberService(
-                self.db, self.member_service, self.message_service
-            ).check_admin_permission()
-        except ValueError:
-            is_admin = True
-        if not is_admin:
-            raise RaiseUpException("Нет прав для удаления контента в данном чате")
+        # try:
+        #     is_admin = await ExternalMemberService(
+        #         self.db, self.member_service, self.message_service
+        #     ).check_admin_permission()
+        # except ValueError:
+        #     is_admin = True
+        # if not is_admin:
+        #     raise RaiseUpException("Нет прав для удаления контента в данном чате")
         if self.default_answer_pack is None:
             raise RaiseUpException("У чата нет ни одного пакета под управлением")
         answer_entities = await AnswerEntity.async_filter(
